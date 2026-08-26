@@ -1,75 +1,61 @@
-export interface ThemeColor {
-	name: string
-	label: string
-	hex: string
-	twClass: string
-}
+export const primaryColors = [
+	'red',
+	'orange',
+	'amber',
+	'yellow',
+	'lime',
+	'green',
+	'emerald',
+	'teal',
+	'cyan',
+	'sky',
+	'blue',
+	'indigo',
+	'violet',
+	'purple',
+	'fuchsia',
+	'pink',
+	'rose'
+] as const
 
-export interface NeutralColor {
-	name: string
-	label: string
-	hex: string
-}
+export const neutralColors = [
+	'slate',
+	'gray',
+	'zinc',
+	'neutral',
+	'stone',
+	'taupe',
+	'mauve',
+	'mist',
+	'olive'
+] as const
 
-export const PRIMARY_COLORS: ThemeColor[] = [
-	{ name: 'black', label: 'Black', hex: '#09090b', twClass: 'bg-neutral-900' },
-	{ name: 'red', label: 'Red', hex: '#ef4444', twClass: 'bg-red-500' },
-	{ name: 'orange', label: 'Orange', hex: '#f97316', twClass: 'bg-orange-500' },
-	{ name: 'amber', label: 'Amber', hex: '#f59e0b', twClass: 'bg-amber-500' },
-	{ name: 'yellow', label: 'Yellow', hex: '#eab308', twClass: 'bg-yellow-500' },
-	{ name: 'lime', label: 'Lime', hex: '#84cc16', twClass: 'bg-lime-500' },
-	{ name: 'green', label: 'Green', hex: '#22c55e', twClass: 'bg-green-500' },
-	{ name: 'emerald', label: 'Emerald', hex: '#10b981', twClass: 'bg-emerald-500' },
-	{ name: 'teal', label: 'Teal', hex: '#14b8a6', twClass: 'bg-teal-500' },
-	{ name: 'cyan', label: 'Cyan', hex: '#06b6d4', twClass: 'bg-cyan-500' },
-	{ name: 'sky', label: 'Sky', hex: '#0ea5e9', twClass: 'bg-sky-500' },
-	{ name: 'blue', label: 'Blue', hex: '#3b82f6', twClass: 'bg-blue-500' },
-	{ name: 'indigo', label: 'Indigo', hex: '#6366f1', twClass: 'bg-indigo-500' },
-	{ name: 'violet', label: 'Violet', hex: '#8b5cf6', twClass: 'bg-violet-500' },
-	{ name: 'purple', label: 'Purple', hex: '#a855f7', twClass: 'bg-purple-500' },
-	{ name: 'fuchsia', label: 'Fuchsia', hex: '#d946ef', twClass: 'bg-fuchsia-500' },
-	{ name: 'pink', label: 'Pink', hex: '#ec4899', twClass: 'bg-pink-500' },
-	{ name: 'rose', label: 'Rose', hex: '#f43f5e', twClass: 'bg-rose-500' }
+export const radiuses = [0, 0.125, 0.25, 0.375, 0.5] as const
+
+export const fonts = [
+	'Public Sans',
+	'Inter',
+	'Plus Jakarta Sans',
+	'Geist',
+	'Outfit',
+	'DM Sans',
+	'Roboto'
+] as const
+
+export const icons = [
+	{ label: 'Lucide', value: 'lucide', icon: 'i-lucide-sparkles' },
+	{ label: 'Heroicons', value: 'heroicons', icon: 'i-heroicons-sparkles' },
+	{ label: 'Tabler', value: 'tabler', icon: 'i-tabler-sparkles' },
+	{ label: 'Phosphor', value: 'ph', icon: 'i-ph-sparkle' }
 ]
 
-export const NEUTRAL_COLORS: NeutralColor[] = [
-	{ name: 'slate', label: 'Slate', hex: '#64748b' },
-	{ name: 'gray', label: 'Gray', hex: '#6b7280' },
-	{ name: 'zinc', label: 'Zinc', hex: '#71717a' },
-	{ name: 'neutral', label: 'Neutral', hex: '#737373' },
-	{ name: 'stone', label: 'Stone', hex: '#78716c' },
-	{ name: 'taupe', label: 'Taupe', hex: '#7e7269' },
-	{ name: 'mauve', label: 'Mauve', hex: '#7c6f85' },
-	{ name: 'mist', label: 'Mist', hex: '#6b7d87' },
-	{ name: 'olive', label: 'Olive', hex: '#6d7560' }
+export const modes = [
+	{ label: 'system', icon: 'i-lucide-laptop' },
+	{ label: 'light', icon: 'i-lucide-sun' },
+	{ label: 'dark', icon: 'i-lucide-moon' }
 ]
 
-export const RADIUS_OPTIONS = [
-	{ label: '0', value: '0rem' },
-	{ label: '0.125', value: '0.125rem' },
-	{ label: '0.25', value: '0.25rem' },
-	{ label: '0.375', value: '0.375rem' },
-	{ label: '0.5', value: '0.5rem' }
-]
-
-export const FONT_OPTIONS = [
-	{ label: 'Public Sans', value: 'Public Sans, sans-serif' },
-	{ label: 'Inter', value: 'Inter, sans-serif' },
-	{ label: 'Plus Jakarta Sans', value: 'Plus Jakarta Sans, sans-serif' },
-	{ label: 'Geist', value: 'Geist, sans-serif' },
-	{ label: 'Outfit', value: 'Outfit, sans-serif' },
-	{ label: 'DM Sans', value: 'DM Sans, sans-serif' },
-	{ label: 'Roboto', value: 'Roboto, sans-serif' }
-]
-
-export const ICON_COLLECTIONS = [
-	{ label: 'Lucide', value: 'lucide' },
-	{ label: 'Heroicons', value: 'heroicons' },
-	{ label: 'Tabler', value: 'tabler' },
-	{ label: 'Phosphor', value: 'ph' }
-]
-
-const COLOR_MAP: Record<string, string> = {
+export const COLOR_HEX_MAP: Record<string, string> = {
 	black: '#09090b',
 	red: '#ef4444',
 	orange: '#f97316',
@@ -87,29 +73,59 @@ const COLOR_MAP: Record<string, string> = {
 	purple: '#a855f7',
 	fuchsia: '#d946ef',
 	pink: '#ec4899',
-	rose: '#f43f5e'
+	rose: '#f43f5e',
+	slate: '#64748b',
+	gray: '#6b7280',
+	zinc: '#71717a',
+	neutral: '#737373',
+	stone: '#78716c',
+	taupe: '#7e7269',
+	mauve: '#7c6f85',
+	mist: '#6b7d87',
+	olive: '#6d7560'
 }
 
 export const useTheme = () => {
-	const primary = useState<string>('theme-primary', () => 'green')
-	const neutral = useState<string>('theme-neutral', () => 'slate')
-	const radius = useState<string>('theme-radius', () => '0.25rem')
-	const font = useState<string>('theme-font', () => 'Public Sans, sans-serif')
-	const iconCollection = useState<string>('theme-icon', () => 'lucide')
+	const appConfig = useAppConfig()
+	const colorMode = useColorMode()
 
-	// Apply live CSS variables to root
+	const primary = useState<string>('nuxt-ui-primary', () => 'green')
+	const neutral = useState<string>('nuxt-ui-neutral', () => 'slate')
+	const blackAsPrimary = useState<boolean>('nuxt-ui-black-as-primary', () => false)
+	const radius = useState<number>('nuxt-ui-radius', () => 0.25)
+	const font = useState<string>('nuxt-ui-font', () => 'Public Sans')
+	const icon = useState<string>('nuxt-ui-icon', () => 'lucide')
+	const mode = computed({
+		get: () => colorMode.preference,
+		set: (val: string) => {
+			colorMode.preference = val
+		}
+	})
+
+	const setBlackAsPrimary = (val: boolean) => {
+		blackAsPrimary.value = val
+	}
+
 	const applyTheme = () => {
 		if (process.client) {
 			const root = document.documentElement
-			const hex = COLOR_MAP[primary.value] || '#22c55e'
-			root.style.setProperty('--ui-primary', hex)
-			root.style.setProperty('--color-primary-500', hex)
-			root.style.setProperty('--ui-radius', radius.value)
-			root.style.setProperty('--font-sans', font.value)
+			const primaryHex = blackAsPrimary.value ? (colorMode.value === 'dark' ? '#ffffff' : '#000000') : (COLOR_HEX_MAP[primary.value] || '#22c55e')
+			root.style.setProperty('--ui-primary', primaryHex)
+			root.style.setProperty('--color-primary-500', primaryHex)
+			root.style.setProperty('--ui-radius', `${radius.value}rem`)
+			root.style.setProperty('--font-sans', `${font.value}, sans-serif`)
 		}
 	}
 
-	watch([primary, neutral, radius, font], () => {
+	watch([primary, neutral, blackAsPrimary, radius, font, icon, () => colorMode.value], () => {
+		if (blackAsPrimary.value) {
+			// handled in applyTheme
+		} else {
+			if (appConfig.ui?.colors) {
+				appConfig.ui.colors.primary = primary.value
+				appConfig.ui.colors.neutral = neutral.value
+			}
+		}
 		applyTheme()
 	})
 
@@ -117,12 +133,84 @@ export const useTheme = () => {
 		applyTheme()
 	})
 
+	const hasCSSChanges = computed(() => {
+		return radius.value !== 0.25 || blackAsPrimary.value || font.value !== 'Public Sans'
+	})
+
+	const hasConfigChanges = computed(() => {
+		return primary.value !== 'green' || neutral.value !== 'slate' || icon.value !== 'lucide'
+	})
+
+	const exportCSS = (): string => {
+		const lines: string[] = ['@import "tailwindcss";', '@import "@nuxt/ui";']
+
+		if (font.value !== 'Public Sans') {
+			lines.push('', '@theme {', `  --font-sans: '${font.value}', sans-serif;`, '}')
+		}
+
+		const rootLines: string[] = []
+		if (radius.value !== 0.25) {
+			rootLines.push(`  --ui-radius: ${radius.value}rem;`)
+		}
+		if (blackAsPrimary.value) {
+			rootLines.push('  --ui-primary: black;')
+		}
+
+		if (rootLines.length) {
+			lines.push('', ':root {', ...rootLines, '}')
+		}
+
+		if (blackAsPrimary.value) {
+			lines.push('', '.dark {', '  --ui-primary: white;', '}')
+		}
+
+		return lines.join('\n')
+	}
+
+	const exportConfig = (): string => {
+		const config: Record<string, any> = {
+			ui: {
+				colors: {
+					primary: blackAsPrimary.value ? 'neutral' : primary.value,
+					neutral: neutral.value
+				}
+			}
+		}
+		return `export default defineAppConfig(${JSON.stringify(config, null, 2).replace(/"([^"]+)":/g, '$1:').replace(/"/g, '\'')})`
+	}
+
+	const resetTheme = () => {
+		primary.value = 'green'
+		neutral.value = 'slate'
+		blackAsPrimary.value = false
+		radius.value = 0.25
+		font.value = 'Public Sans'
+		icon.value = 'lucide'
+		colorMode.preference = 'system'
+		applyTheme()
+	}
+
 	return {
+		primaryColors,
 		primary,
+		neutralColors,
 		neutral,
+		blackAsPrimary,
+		setBlackAsPrimary,
+		radiuses,
 		radius,
+		fonts,
 		font,
-		iconCollection,
+		icons,
+		icon,
+		modes,
+		mode,
+		hasCSSChanges,
+		hasConfigChanges,
+		configLabel: computed(() => 'app.config.ts'),
+		exportCSS,
+		exportConfig,
+		resetTheme,
 		applyTheme
 	}
 }

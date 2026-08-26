@@ -7,7 +7,6 @@ import BuilderCanvas from '~/components/builder/BuilderCanvas.vue'
 import BuilderInspector from '~/components/builder/BuilderInspector.vue'
 import ExportModal from '~/components/builder/ExportModal.vue'
 import TemplatePicker from '~/components/builder/TemplatePicker.vue'
-import ThemeCustomizerModal from '~/components/builder/ThemeCustomizerModal.vue'
 
 useSeoMeta({
 	title: 'NuxtUI Studio - Visual Drag & Drop Builder for Nuxt 4 & Nuxt UI',
@@ -30,7 +29,6 @@ useTheme()
 
 const showExportModal = ref(false)
 const showTemplateModal = ref(false)
-const showThemeModal = ref(false)
 
 // Global keyboard shortcuts (Ctrl+Z, Ctrl+Y, Delete, Esc)
 onMounted(() => {
@@ -121,11 +119,6 @@ onMounted(() => {
 		<!-- Template Picker Modal -->
 		<TemplatePicker
 			v-model="showTemplateModal"
-		/>
-
-		<!-- Theme Customizer Modal -->
-		<ThemeCustomizerModal
-			v-model="showThemeModal"
 		/>
 	</div>
 </template>

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { useBuilder } from '~/composables/useBuilder'
+import ThemePicker from '~/components/theme-picker/ThemePicker.vue'
 import type { ViewportMode } from '~/types/builder'
 
 const emit = defineEmits<{
@@ -138,15 +139,8 @@ const handleClear = () => {
 
 		<!-- Right: Theme Customizer, Right Inspector Toggle, Preview, Clear, Theme, Export -->
 		<div class="flex items-center gap-2">
-			<!-- Theme Customizer Button -->
-			<UButton
-				color="neutral"
-				variant="outline"
-				size="sm"
-				icon="lucide:palette"
-				label="Theme"
-				@click="emit('openTheme')"
-			/>
+			<!-- Official Nuxt UI ThemePicker Popover -->
+			<ThemePicker />
 
 			<!-- Toggle Right Inspector Button -->
 			<UButton
