@@ -13,6 +13,7 @@ const {
 	selectedElementId,
 	hoveredElementId,
 	previewMode,
+	viewport,
 	selectElement,
 	hoverElement,
 	removeElement,
@@ -22,6 +23,9 @@ const {
 	moveElementTo,
 	findElementAndParent
 } = useBuilder()
+
+const isMobile = computed(() => viewport.value === 'mobile')
+const isTablet = computed(() => viewport.value === 'tablet')
 
 const isSelected = computed(() => selectedElementId.value === props.element.id)
 const isHovered = computed(() => hoveredElementId.value === props.element.id && !isSelected.value && !previewMode.value)
@@ -551,32 +555,35 @@ const splitFeatures = computed(() => {
 		<section
 			v-else-if="element.type === 'hero-section'"
 			:class="[
-				'relative overflow-hidden py-16 px-6 lg:py-24',
+				'relative overflow-hidden',
+				isMobile ? 'py-8 px-4' : 'py-16 px-6 lg:py-24',
 				styleClasses
 			]"
 		>
 			<div
-				class="max-w-7xl mx-auto flex flex-col gap-10"
+				class="max-w-7xl mx-auto flex flex-col"
 				:class="[
-					element.props.orientation === 'horizontal'
-						? (element.props.reverse ? 'lg:flex-row-reverse lg:items-center lg:justify-between' : 'lg:flex-row lg:items-center lg:justify-between')
-						: (element.props.reverse ? 'flex-col-reverse items-center text-center' : 'items-center text-center')
+					isMobile ? 'gap-6 text-center items-center' :
+					(element.props.orientation === 'horizontal'
+						? (element.props.reverse ? 'lg:flex-row-reverse lg:items-center lg:justify-between gap-10' : 'lg:flex-row lg:items-center lg:justify-between gap-10')
+						: (element.props.reverse ? 'flex-col-reverse items-center text-center gap-10' : 'items-center text-center gap-10'))
 				]"
 			>
 				<!-- Main Text Content & Headline & Links -->
 				<div
-					class="flex flex-col gap-5"
+					class="flex flex-col w-full"
 					:class="[
-						element.props.orientation === 'horizontal'
-							? 'lg:max-w-xl text-left items-start'
-							: 'max-w-3xl items-center text-center mx-auto'
+						isMobile ? 'gap-3.5 items-center text-center' :
+						(element.props.orientation === 'horizontal'
+							? 'lg:max-w-xl text-left items-start gap-5'
+							: 'max-w-3xl items-center text-center mx-auto gap-5')
 					]"
 				>
 					<!-- Headline Slot / Badge -->
 					<div v-if="element.props.headline || element.props.badgeText">
 						<UBadge
 							variant="subtle"
-							size="lg"
+							:size="isMobile ? 'sm' : 'lg'"
 							icon="lucide:sparkles"
 							:label="element.props.headline || element.props.badgeText"
 							class="font-semibold"
@@ -584,20 +591,36 @@ const splitFeatures = computed(() => {
 					</div>
 
 					<!-- Title -->
-					<h1 class="text-4xl sm:text-6xl font-extrabold tracking-tight text-neutral-900 dark:text-white leading-[1.1]">
+					<h1
+						:class="[
+							'font-extrabold tracking-tight text-neutral-900 dark:text-white break-words max-w-full',
+							isMobile ? 'text-2xl leading-tight' : 'text-4xl sm:text-6xl leading-[1.1]'
+						]"
+					>
 						{{ element.props.title || 'Ultimate Vue UI Library' }}
 					</h1>
 
 					<!-- Description -->
-					<p class="text-lg sm:text-xl text-neutral-600 dark:text-neutral-300 leading-relaxed">
+					<p
+						:class="[
+							'text-neutral-600 dark:text-neutral-300 leading-relaxed break-words max-w-full',
+							isMobile ? 'text-sm px-1' : 'text-lg sm:text-xl'
+						]"
+					>
 						{{ element.props.description || element.props.subtitle || 'A Nuxt/Vue-integrated UI library providing a rich set of fully-styled, accessible components.' }}
 					</p>
 
 					<!-- Links / Action Buttons -->
-					<div class="flex flex-wrap items-center gap-3.5 pt-2">
+					<div
+						:class="[
+							'w-full pt-2',
+							isMobile ? 'flex flex-col gap-2.5 px-2' : 'flex flex-wrap items-center gap-3.5'
+						]"
+					>
 						<UButton
 							v-if="element.props.primaryBtnText"
-							size="xl"
+							:size="isMobile ? 'md' : 'xl'"
+							:block="isMobile"
 							:color="element.props.primaryBtnColor || 'primary'"
 							:variant="element.props.primaryBtnVariant || 'solid'"
 							:label="element.props.primaryBtnText"
@@ -606,7 +629,8 @@ const splitFeatures = computed(() => {
 						/>
 						<UButton
 							v-if="element.props.secondaryBtnText"
-							size="xl"
+							:size="isMobile ? 'md' : 'xl'"
+							:block="isMobile"
 							:color="element.props.secondaryBtnColor || 'neutral'"
 							:variant="element.props.secondaryBtnVariant || 'outline'"
 							:label="element.props.secondaryBtnText"
@@ -619,7 +643,7 @@ const splitFeatures = computed(() => {
 				<div
 					v-if="(element.children && element.children.length > 0) || element.props.showIllustration || !previewMode"
 					class="w-full flex-1 transition-all"
-					:class="element.props.orientation === 'horizontal' ? 'lg:max-w-xl' : 'max-w-4xl mx-auto w-full mt-6'"
+					:class="isMobile ? 'max-w-full mt-4' : (element.props.orientation === 'horizontal' ? 'lg:max-w-xl' : 'max-w-4xl mx-auto w-full mt-6')"
 				>
 					<template v-if="element.children && element.children.length > 0">
 						<div class="space-y-4 w-full">
@@ -926,21 +950,41 @@ const splitFeatures = computed(() => {
 		<!-- UPageHeader -->
 		<div
 			v-else-if="element.type === 'page-header'"
-			:class="['border-b border-neutral-200 dark:border-neutral-800 pb-8 text-left', styleClasses]"
+			:class="[
+				'border-b border-neutral-200 dark:border-neutral-800 text-left',
+				isMobile ? 'pb-4 px-1' : 'pb-8',
+				styleClasses
+			]"
 		>
 			<div class="flex items-center gap-2 mb-2">
-				<UBadge v-if="element.props.headline" color="primary" variant="subtle" size="sm" :label="element.props.headline" />
-				<UIcon v-if="element.props.icon" :name="element.props.icon" class="w-5 h-5 text-primary" />
+				<UBadge v-if="element.props.headline" color="primary" variant="subtle" :size="isMobile ? 'xs' : 'sm'" :label="element.props.headline" />
+				<UIcon v-if="element.props.icon" :name="element.props.icon" :class="isMobile ? 'w-4 h-4 text-primary' : 'w-5 h-5 text-primary'" />
 			</div>
-			<h1 class="text-3xl sm:text-4xl font-extrabold text-neutral-900 dark:text-white tracking-tight mb-3">
+			<h1
+				:class="[
+					'font-extrabold text-neutral-900 dark:text-white tracking-tight break-words max-w-full mb-2',
+					isMobile ? 'text-2xl' : 'text-3xl sm:text-4xl mb-3'
+				]"
+			>
 				{{ element.props.title || 'Page Title' }}
 			</h1>
-			<p class="text-base text-neutral-600 dark:text-neutral-300 max-w-3xl leading-relaxed mb-6">
+			<p
+				:class="[
+					'text-neutral-600 dark:text-neutral-300 max-w-3xl leading-relaxed break-words',
+					isMobile ? 'text-xs mb-4' : 'text-base mb-6'
+				]"
+			>
 				{{ element.props.description || '' }}
 			</p>
-			<div v-if="element.props.primaryBtnText || element.props.secondaryBtnText" class="flex items-center gap-3">
-				<UButton v-if="element.props.primaryBtnText" color="primary" size="md" :label="element.props.primaryBtnText" />
-				<UButton v-if="element.props.secondaryBtnText" color="neutral" variant="outline" size="md" :label="element.props.secondaryBtnText" />
+			<div
+				v-if="element.props.primaryBtnText || element.props.secondaryBtnText"
+				:class="[
+					'w-full',
+					isMobile ? 'flex flex-col gap-2' : 'flex items-center gap-3'
+				]"
+			>
+				<UButton v-if="element.props.primaryBtnText" color="primary" :size="isMobile ? 'sm' : 'md'" :block="isMobile" :label="element.props.primaryBtnText" />
+				<UButton v-if="element.props.secondaryBtnText" color="neutral" variant="outline" :size="isMobile ? 'sm' : 'md'" :block="isMobile" :label="element.props.secondaryBtnText" />
 			</div>
 		</div>
 
@@ -948,7 +992,7 @@ const splitFeatures = computed(() => {
 		<div
 			v-else-if="element.type === 'page-body'"
 			:class="[
-				'w-full',
+				'w-full max-w-full overflow-hidden',
 				element.props.prose ? 'prose dark:prose-invert max-w-none' : '',
 				styleClasses
 			]"
@@ -1020,9 +1064,10 @@ const splitFeatures = computed(() => {
 		<div
 			v-else-if="element.type === 'page-grid'"
 			:class="[
-				'grid gap-6',
-				element.props.columns === '2' ? 'grid-cols-1 md:grid-cols-2' :
-				element.props.columns === '4' ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-4' : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3',
+				'grid',
+				isMobile ? 'grid-cols-1 gap-4' :
+				(element.props.columns === '2' ? 'grid-cols-1 md:grid-cols-2 gap-6' :
+				element.props.columns === '4' ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6' : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'),
 				styleClasses
 			]"
 		>
@@ -1047,7 +1092,10 @@ const splitFeatures = computed(() => {
 		<!-- UPageColumns -->
 		<div
 			v-else-if="element.type === 'page-columns'"
-			:class="['columns-1 md:columns-2 lg:columns-3 gap-6 space-y-6', styleClasses]"
+			:class="[
+				isMobile ? 'columns-1 gap-4 space-y-4' : 'columns-1 md:columns-2 lg:columns-3 gap-6 space-y-6',
+				styleClasses
+			]"
 		>
 			<template v-if="element.children && element.children.length > 0">
 				<BuilderComponentRenderer
@@ -1072,14 +1120,14 @@ const splitFeatures = computed(() => {
 			v-else-if="element.type === 'page-card'"
 			:variant="element.props.variant || 'outline'"
 			:class="[
-				'group relative hover:shadow-xl transition-all duration-300',
+				'group relative hover:shadow-xl transition-all duration-300 max-w-full',
 				element.props.highlight ? 'ring-1 ring-primary-500/30' : '',
 				styleClasses
 			]"
 		>
 			<div
 				class="flex flex-col gap-4"
-				:class="element.props.orientation === 'horizontal' ? 'md:flex-row md:items-center' : ''"
+				:class="element.props.orientation === 'horizontal' && !isMobile ? 'md:flex-row md:items-center' : ''"
 			>
 				<div
 					v-if="element.props.icon"
@@ -1088,10 +1136,10 @@ const splitFeatures = computed(() => {
 					<UIcon :name="element.props.icon" class="w-6 h-6" />
 				</div>
 				<div class="flex-1 text-left">
-					<h3 class="text-base font-bold text-neutral-900 dark:text-white group-hover:text-primary transition-colors mb-1.5">
+					<h3 class="text-base font-bold text-neutral-900 dark:text-white group-hover:text-primary transition-colors mb-1.5 break-words">
 						{{ element.props.title || 'Card Title' }}
 					</h3>
-					<p class="text-xs text-neutral-500 dark:text-neutral-400 leading-relaxed">
+					<p class="text-xs text-neutral-500 dark:text-neutral-400 leading-relaxed break-words">
 						{{ element.props.description || '' }}
 					</p>
 					<div v-if="element.children && element.children.length > 0" class="mt-4">
@@ -1111,51 +1159,79 @@ const splitFeatures = computed(() => {
 		<div
 			v-else-if="element.type === 'page-feature'"
 			:class="[
-				'flex gap-3 text-left',
-				element.props.orientation === 'vertical' ? 'flex-col items-start' : 'items-start',
+				'flex gap-3 text-left max-w-full',
+				element.props.orientation === 'vertical' || isMobile ? 'flex-col items-start' : 'items-start',
 				styleClasses
 			]"
 		>
 			<div class="p-2 rounded-lg bg-primary-50 dark:bg-primary-950/60 text-primary shrink-0 ring-1 ring-primary/20">
 				<UIcon :name="element.props.icon || 'lucide:sparkles'" class="w-5 h-5" />
 			</div>
-			<div>
-				<h4 class="text-sm font-bold text-neutral-900 dark:text-white mb-1">{{ element.props.title || 'Feature' }}</h4>
-				<p class="text-xs text-neutral-500 dark:text-neutral-400 leading-relaxed">{{ element.props.description || '' }}</p>
+			<div class="max-w-full">
+				<h4 class="text-sm font-bold text-neutral-900 dark:text-white mb-1 break-words">{{ element.props.title || 'Feature' }}</h4>
+				<p class="text-xs text-neutral-500 dark:text-neutral-400 leading-relaxed break-words">{{ element.props.description || '' }}</p>
 			</div>
 		</div>
 
 		<!-- UPageSection -->
 		<section
 			v-else-if="element.type === 'page-section'"
-			:class="['relative py-16 px-6 lg:py-24', styleClasses]"
+			:class="[
+				'relative',
+				isMobile ? 'py-8 px-4' : 'py-16 px-6 lg:py-24',
+				styleClasses
+			]"
 		>
 			<div
-				class="max-w-7xl mx-auto flex flex-col gap-10"
-				:class="element.props.orientation === 'horizontal' ? (element.props.reverse ? 'lg:flex-row-reverse lg:items-center' : 'lg:flex-row lg:items-center') : 'text-center items-center'"
+				class="max-w-7xl mx-auto flex flex-col"
+				:class="[
+					isMobile ? 'gap-6 text-center items-center' :
+					(element.props.orientation === 'horizontal'
+						? (element.props.reverse ? 'lg:flex-row-reverse lg:items-center gap-10' : 'lg:flex-row lg:items-center gap-10')
+						: 'text-center items-center gap-10')
+				]"
 			>
 				<div
-					class="flex flex-col gap-4"
-					:class="element.props.orientation === 'horizontal' ? 'lg:max-w-xl text-left items-start' : 'max-w-3xl mx-auto items-center text-center'"
+					class="flex flex-col w-full"
+					:class="[
+						isMobile ? 'gap-3.5 items-center text-center' :
+						(element.props.orientation === 'horizontal' ? 'lg:max-w-xl text-left items-start gap-4' : 'max-w-3xl mx-auto items-center text-center gap-4')
+					]"
 				>
-					<UBadge v-if="element.props.headline" color="primary" variant="subtle" size="md" :label="element.props.headline" />
-					<UIcon v-if="element.props.icon" :name="element.props.icon" class="w-8 h-8 text-primary" />
-					<h2 class="text-3xl sm:text-5xl font-extrabold text-neutral-900 dark:text-white tracking-tight leading-tight">
+					<UBadge v-if="element.props.headline" color="primary" variant="subtle" :size="isMobile ? 'xs' : 'md'" :label="element.props.headline" />
+					<UIcon v-if="element.props.icon" :name="element.props.icon" :class="isMobile ? 'w-6 h-6 text-primary' : 'w-8 h-8 text-primary'" />
+					<h2
+						:class="[
+							'font-extrabold text-neutral-900 dark:text-white tracking-tight leading-tight break-words max-w-full',
+							isMobile ? 'text-2xl' : 'text-3xl sm:text-5xl'
+						]"
+					>
 						{{ element.props.title || 'Section Title' }}
 					</h2>
-					<p class="text-base text-neutral-600 dark:text-neutral-300 leading-relaxed">
+					<p
+						:class="[
+							'text-neutral-600 dark:text-neutral-300 leading-relaxed break-words max-w-full',
+							isMobile ? 'text-sm' : 'text-base'
+						]"
+					>
 						{{ element.props.description || '' }}
 					</p>
-					<div v-if="element.props.primaryBtnText || element.props.secondaryBtnText" class="flex flex-wrap items-center gap-3 pt-2">
-						<UButton v-if="element.props.primaryBtnText" color="primary" size="lg" :label="element.props.primaryBtnText" />
-						<UButton v-if="element.props.secondaryBtnText" color="neutral" variant="outline" size="lg" :label="element.props.secondaryBtnText" />
+					<div
+						v-if="element.props.primaryBtnText || element.props.secondaryBtnText"
+						:class="[
+							'w-full pt-1',
+							isMobile ? 'flex flex-col gap-2' : 'flex flex-wrap items-center gap-3 pt-2'
+						]"
+					>
+						<UButton v-if="element.props.primaryBtnText" color="primary" :size="isMobile ? 'md' : 'lg'" :block="isMobile" :label="element.props.primaryBtnText" />
+						<UButton v-if="element.props.secondaryBtnText" color="neutral" variant="outline" :size="isMobile ? 'md' : 'lg'" :block="isMobile" :label="element.props.secondaryBtnText" />
 					</div>
 				</div>
 
 				<div
 					v-if="(element.children && element.children.length > 0) || element.props.showIllustration || !previewMode"
 					class="w-full flex-1"
-					:class="element.props.orientation === 'horizontal' ? 'lg:max-w-xl' : 'max-w-5xl mx-auto w-full mt-6'"
+					:class="isMobile ? 'max-w-full mt-4' : (element.props.orientation === 'horizontal' ? 'lg:max-w-xl' : 'max-w-5xl mx-auto w-full mt-6')"
 				>
 					<template v-if="element.children && element.children.length > 0">
 						<div class="space-y-4 w-full">
@@ -1189,18 +1265,38 @@ const splitFeatures = computed(() => {
 		<section
 			v-else-if="element.type === 'page-cta'"
 			:class="[
-				'relative py-16 px-6 rounded-3xl overflow-hidden text-center my-6',
+				'relative overflow-hidden text-center max-w-full',
+				isMobile ? 'py-8 px-4 rounded-2xl my-3' : 'py-16 px-6 rounded-3xl my-6',
 				element.props.variant === 'solid' ? 'bg-primary text-inverted' : 'bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800',
 				styleClasses
 			]"
 		>
 			<div class="max-w-3xl mx-auto flex flex-col items-center gap-4">
-				<UBadge v-if="element.props.headline" color="primary" variant="subtle" size="sm" :label="element.props.headline" />
-				<h2 class="text-3xl sm:text-5xl font-extrabold tracking-tight">{{ element.props.title || 'CTA Title' }}</h2>
-				<p class="text-base text-neutral-500 dark:text-neutral-400 max-w-xl">{{ element.props.description || '' }}</p>
-				<div class="flex flex-wrap items-center gap-3 pt-2">
-					<UButton v-if="element.props.primaryBtnText" color="primary" size="xl" :label="element.props.primaryBtnText" />
-					<UButton v-if="element.props.secondaryBtnText" color="neutral" variant="outline" size="xl" :label="element.props.secondaryBtnText" />
+				<UBadge v-if="element.props.headline" color="primary" variant="subtle" :size="isMobile ? 'xs' : 'sm'" :label="element.props.headline" />
+				<h2
+					:class="[
+						'font-extrabold tracking-tight break-words max-w-full',
+						isMobile ? 'text-2xl' : 'text-3xl sm:text-5xl'
+					]"
+				>
+					{{ element.props.title || 'CTA Title' }}
+				</h2>
+				<p
+					:class="[
+						'text-neutral-500 dark:text-neutral-400 max-w-xl break-words',
+						isMobile ? 'text-sm' : 'text-base'
+					]"
+				>
+					{{ element.props.description || '' }}
+				</p>
+				<div
+					:class="[
+						'w-full pt-1',
+						isMobile ? 'flex flex-col gap-2' : 'flex flex-wrap items-center justify-center gap-3 pt-2'
+					]"
+				>
+					<UButton v-if="element.props.primaryBtnText" color="primary" :size="isMobile ? 'md' : 'xl'" :block="isMobile" :label="element.props.primaryBtnText" />
+					<UButton v-if="element.props.secondaryBtnText" color="neutral" variant="outline" :size="isMobile ? 'md' : 'xl'" :block="isMobile" :label="element.props.secondaryBtnText" />
 				</div>
 				<div v-if="element.children && element.children.length > 0" class="mt-6 w-full">
 					<BuilderComponentRenderer
@@ -1217,16 +1313,23 @@ const splitFeatures = computed(() => {
 		<!-- UPageLogos -->
 		<section
 			v-else-if="element.type === 'page-logos'"
-			:class="['py-12 px-6 text-center border-y border-neutral-100 dark:border-neutral-900', styleClasses]"
+			:class="[
+				'text-center border-y border-neutral-100 dark:border-neutral-900',
+				isMobile ? 'py-6 px-3' : 'py-12 px-6',
+				styleClasses
+			]"
 		>
-			<p class="text-xs font-semibold text-neutral-400 uppercase tracking-widest mb-8">{{ element.props.title || 'Trusted by leaders' }}</p>
-			<div class="max-w-6xl mx-auto flex flex-wrap items-center justify-center gap-8 md:gap-16 opacity-75 grayscale hover:grayscale-0 transition-all">
+			<p class="text-xs font-semibold text-neutral-400 uppercase tracking-widest mb-4 sm:mb-8">{{ element.props.title || 'Trusted by leaders' }}</p>
+			<div
+				class="max-w-6xl mx-auto flex flex-wrap items-center justify-center opacity-75 grayscale hover:grayscale-0 transition-all"
+				:class="isMobile ? 'gap-4 text-sm' : 'gap-8 md:gap-16 text-lg'"
+			>
 				<div
 					v-for="(logo, lIdx) in (element.props.logos || '').split(',').map((s: string) => s.trim()).filter(Boolean)"
 					:key="lIdx"
-					class="font-extrabold text-lg tracking-tight text-neutral-700 dark:text-neutral-300 flex items-center gap-1.5"
+					class="font-extrabold tracking-tight text-neutral-700 dark:text-neutral-300 flex items-center gap-1.5"
 				>
-					<UIcon name="lucide:sparkles" class="w-4 h-4 text-primary" />
+					<UIcon name="lucide:sparkles" class="w-3.5 h-3.5 text-primary" />
 					<span>{{ logo }}</span>
 				</div>
 			</div>
@@ -1235,10 +1338,21 @@ const splitFeatures = computed(() => {
 		<!-- UPageList -->
 		<div
 			v-else-if="element.type === 'page-list'"
-			:class="['text-left max-w-4xl mx-auto py-10 space-y-4', styleClasses]"
+			:class="[
+				'text-left max-w-4xl mx-auto space-y-4',
+				isMobile ? 'py-6 px-2' : 'py-10',
+				styleClasses
+			]"
 		>
-			<h3 class="text-2xl font-bold text-neutral-900 dark:text-white">{{ element.props.title || 'Frequently Asked Questions' }}</h3>
-			<p class="text-sm text-neutral-500 mb-6">{{ element.props.description || '' }}</p>
+			<h3
+				:class="[
+					'font-bold text-neutral-900 dark:text-white break-words',
+					isMobile ? 'text-xl' : 'text-2xl'
+				]"
+			>
+				{{ element.props.title || 'Frequently Asked Questions' }}
+			</h3>
+			<p class="text-xs sm:text-sm text-neutral-500 mb-6 break-words">{{ element.props.description || '' }}</p>
 			<div class="space-y-4">
 				<template v-if="element.children && element.children.length > 0">
 					<BuilderComponentRenderer
@@ -1261,14 +1375,14 @@ const splitFeatures = computed(() => {
 		<!-- UPageLinks -->
 		<div
 			v-else-if="element.type === 'page-links'"
-			:class="['text-left p-4 space-y-3', styleClasses]"
+			:class="['text-left p-4 space-y-3 max-w-full', styleClasses]"
 		>
 			<h4 class="text-xs font-bold text-neutral-400 uppercase tracking-wider">{{ element.props.title || 'Resources' }}</h4>
 			<ul class="space-y-2 text-xs">
 				<li
 					v-for="(link, lIdx) in (element.props.links || '').split(',').map((s: string) => s.trim()).filter(Boolean)"
 					:key="lIdx"
-					class="flex items-center gap-2 text-neutral-700 dark:text-neutral-300 hover:text-primary cursor-pointer transition-colors"
+					class="flex items-center gap-2 text-neutral-700 dark:text-neutral-300 hover:text-primary cursor-pointer transition-colors break-words"
 				>
 					<UIcon name="lucide:external-link" class="w-3.5 h-3.5 text-primary shrink-0" />
 					<span>{{ link }}</span>
@@ -1280,26 +1394,26 @@ const splitFeatures = computed(() => {
 		<UCard
 			v-else-if="element.type === 'pricing-plan'"
 			:class="[
-				'relative flex flex-col justify-between h-full transition-all text-left',
+				'relative flex flex-col justify-between h-full transition-all text-left max-w-full',
 				element.props.highlight ? 'ring-2 ring-primary shadow-2xl shadow-primary/10' : '',
 				styleClasses
 			]"
 		>
 			<div>
 				<div class="flex items-center justify-between mb-3">
-					<h3 class="text-xl font-bold text-neutral-900 dark:text-white">{{ element.props.title || 'Plan' }}</h3>
+					<h3 class="text-xl font-bold text-neutral-900 dark:text-white break-words">{{ element.props.title || 'Plan' }}</h3>
 					<UBadge v-if="element.props.badge" color="primary" variant="subtle" size="sm" :label="element.props.badge" />
 				</div>
-				<p class="text-xs text-neutral-500 mb-6 leading-relaxed">{{ element.props.description || '' }}</p>
+				<p class="text-xs text-neutral-500 mb-6 leading-relaxed break-words">{{ element.props.description || '' }}</p>
 				<div class="flex items-baseline gap-1 mb-6">
-					<span class="text-4xl font-extrabold text-neutral-900 dark:text-white">{{ element.props.price || '$0' }}</span>
-					<span class="text-sm text-neutral-400">{{ element.props.billingPeriod || '/month' }}</span>
+					<span class="text-3xl sm:text-4xl font-extrabold text-neutral-900 dark:text-white">{{ element.props.price || '$0' }}</span>
+					<span class="text-xs sm:text-sm text-neutral-400">{{ element.props.billingPeriod || '/month' }}</span>
 				</div>
 				<ul class="space-y-3 mb-8">
 					<li
 						v-for="(feat, fIdx) in (element.props.features || '').split(',').map((s: string) => s.trim()).filter(Boolean)"
 						:key="fIdx"
-						class="flex items-center gap-2 text-sm text-neutral-600 dark:text-neutral-300"
+						class="flex items-center gap-2 text-xs sm:text-sm text-neutral-600 dark:text-neutral-300 break-words"
 					>
 						<UIcon name="lucide:check" class="w-4 h-4 text-primary shrink-0" />
 						<span>{{ feat }}</span>
@@ -1308,7 +1422,7 @@ const splitFeatures = computed(() => {
 			</div>
 			<UButton
 				block
-				size="lg"
+				:size="isMobile ? 'md' : 'lg'"
 				:color="element.props.highlight ? 'primary' : 'neutral'"
 				:variant="element.props.highlight ? 'solid' : 'outline'"
 				:label="element.props.buttonText || 'Subscribe'"
@@ -1318,7 +1432,11 @@ const splitFeatures = computed(() => {
 		<!-- UPricingPlans Container -->
 		<div
 			v-else-if="element.type === 'pricing-plans'"
-			:class="['grid grid-cols-1 md:grid-cols-3 gap-8 max-w-7xl mx-auto py-12 items-stretch', styleClasses]"
+			:class="[
+				'grid max-w-7xl mx-auto items-stretch',
+				isMobile ? 'grid-cols-1 gap-4 py-6 px-2' : 'grid-cols-1 md:grid-cols-3 gap-8 py-12',
+				styleClasses
+			]"
 		>
 			<template v-if="element.children && element.children.length > 0">
 				<BuilderComponentRenderer
@@ -1341,40 +1459,51 @@ const splitFeatures = computed(() => {
 		<!-- UPricingTable -->
 		<div
 			v-else-if="element.type === 'pricing-table'"
-			:class="['max-w-6xl mx-auto py-12 text-left space-y-6', styleClasses]"
+			:class="[
+				'max-w-6xl mx-auto text-left space-y-6 max-w-full overflow-hidden',
+				isMobile ? 'py-6 px-2' : 'py-12',
+				styleClasses
+			]"
 		>
 			<div class="text-center max-w-2xl mx-auto mb-8">
-				<h2 class="text-3xl font-extrabold text-neutral-900 dark:text-white">{{ element.props.title || 'Compare Features' }}</h2>
-				<p class="text-xs text-neutral-500 mt-2">{{ element.props.description || '' }}</p>
+				<h2
+					:class="[
+						'font-extrabold text-neutral-900 dark:text-white break-words',
+						isMobile ? 'text-2xl' : 'text-3xl'
+					]"
+				>
+					{{ element.props.title || 'Compare Features' }}
+				</h2>
+				<p class="text-xs text-neutral-500 mt-2 break-words">{{ element.props.description || '' }}</p>
 			</div>
-			<div class="border border-neutral-200 dark:border-neutral-800 rounded-xl overflow-hidden shadow-sm">
-				<table class="w-full text-xs text-left">
+			<div class="border border-neutral-200 dark:border-neutral-800 rounded-xl overflow-x-auto shadow-sm max-w-full">
+				<table class="w-full text-xs text-left min-w-[320px]">
 					<thead class="bg-neutral-50 dark:bg-neutral-900 border-b border-neutral-200 dark:border-neutral-800">
 						<tr>
-							<th class="p-4 font-bold">Feature</th>
-							<th class="p-4 font-bold text-center">Starter</th>
-							<th class="p-4 font-bold text-center text-primary">Pro</th>
-							<th class="p-4 font-bold text-center">Enterprise</th>
+							<th class="p-3 sm:p-4 font-bold">Feature</th>
+							<th class="p-3 sm:p-4 font-bold text-center">Starter</th>
+							<th class="p-3 sm:p-4 font-bold text-center text-primary">Pro</th>
+							<th class="p-3 sm:p-4 font-bold text-center">Enterprise</th>
 						</tr>
 					</thead>
 					<tbody class="divide-y divide-neutral-200 dark:divide-neutral-800">
 						<tr>
-							<td class="p-4 font-medium">Visual Builder Canvas</td>
-							<td class="p-4 text-center"><UIcon name="lucide:check" class="w-4 h-4 text-primary inline" /></td>
-							<td class="p-4 text-center"><UIcon name="lucide:check" class="w-4 h-4 text-primary inline" /></td>
-							<td class="p-4 text-center"><UIcon name="lucide:check" class="w-4 h-4 text-primary inline" /></td>
+							<td class="p-3 sm:p-4 font-medium">Visual Builder Canvas</td>
+							<td class="p-3 sm:p-4 text-center"><UIcon name="lucide:check" class="w-4 h-4 text-primary inline" /></td>
+							<td class="p-3 sm:p-4 text-center"><UIcon name="lucide:check" class="w-4 h-4 text-primary inline" /></td>
+							<td class="p-3 sm:p-4 text-center"><UIcon name="lucide:check" class="w-4 h-4 text-primary inline" /></td>
 						</tr>
 						<tr>
-							<td class="p-4 font-medium">Vue 4 SFC & MDC Export</td>
-							<td class="p-4 text-center text-neutral-400">-</td>
-							<td class="p-4 text-center"><UIcon name="lucide:check" class="w-4 h-4 text-primary inline" /></td>
-							<td class="p-4 text-center"><UIcon name="lucide:check" class="w-4 h-4 text-primary inline" /></td>
+							<td class="p-3 sm:p-4 font-medium">Vue 4 SFC & MDC Export</td>
+							<td class="p-3 sm:p-4 text-center text-neutral-400">-</td>
+							<td class="p-3 sm:p-4 text-center"><UIcon name="lucide:check" class="w-4 h-4 text-primary inline" /></td>
+							<td class="p-3 sm:p-4 text-center"><UIcon name="lucide:check" class="w-4 h-4 text-primary inline" /></td>
 						</tr>
 						<tr>
-							<td class="p-4 font-medium">Custom Theme Engine</td>
-							<td class="p-4 text-center text-neutral-400">-</td>
-							<td class="p-4 text-center"><UIcon name="lucide:check" class="w-4 h-4 text-primary inline" /></td>
-							<td class="p-4 text-center"><UIcon name="lucide:check" class="w-4 h-4 text-primary inline" /></td>
+							<td class="p-3 sm:p-4 font-medium">Custom Theme Engine</td>
+							<td class="p-3 sm:p-4 text-center text-neutral-400">-</td>
+							<td class="p-3 sm:p-4 text-center"><UIcon name="lucide:check" class="w-4 h-4 text-primary inline" /></td>
+							<td class="p-3 sm:p-4 text-center"><UIcon name="lucide:check" class="w-4 h-4 text-primary inline" /></td>
 						</tr>
 					</tbody>
 				</table>

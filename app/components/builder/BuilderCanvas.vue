@@ -20,14 +20,14 @@ const isBottomDragOver = ref(false)
 const viewportClass = computed(() => {
 	switch (viewport.value) {
 		case 'mobile':
-			return 'w-[375px] my-6 rounded-2xl shadow-2xl ring-1 ring-neutral-300 dark:ring-neutral-700 min-h-[667px]'
+			return 'w-[375px] max-w-full my-6 rounded-3xl shadow-2xl ring-1 ring-neutral-300 dark:ring-neutral-700 min-h-[667px] overflow-x-hidden'
 		case 'tablet':
-			return 'w-[768px] my-6 rounded-2xl shadow-2xl ring-1 ring-neutral-300 dark:ring-neutral-700 min-h-[800px]'
+			return 'w-[768px] max-w-full my-6 rounded-2xl shadow-2xl ring-1 ring-neutral-300 dark:ring-neutral-700 min-h-[800px] overflow-x-hidden'
 		case 'laptop':
-			return 'w-[1024px] my-6 rounded-xl shadow-2xl ring-1 ring-neutral-300 dark:ring-neutral-700 min-h-[800px]'
+			return 'w-[1024px] max-w-full my-6 rounded-xl shadow-2xl ring-1 ring-neutral-300 dark:ring-neutral-700 min-h-[800px] overflow-x-hidden'
 		case 'desktop':
 		default:
-			return 'w-full min-h-full'
+			return 'w-full min-h-full overflow-x-hidden'
 	}
 })
 
