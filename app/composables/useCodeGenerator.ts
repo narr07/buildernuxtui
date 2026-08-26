@@ -765,9 +765,185 @@ ${mdcBody}
 `
 	}
 
+	const generateNuxtContentYaml = (elements: BuilderElement[]): string => {
+		const lines: string[] = []
+
+		// Global title & description
+		const heroEl = elements.find((e) => e.type === 'hero-section')
+		const pageTitle = heroEl?.props.title || 'Nuxt UI Landing Page'
+		const pageDesc = heroEl?.props.description || heroEl?.props.subtitle || 'Built visually with Nuxt UI Studio.'
+
+		lines.push(`title: "${pageTitle}"`)
+		lines.push(`description: "${pageDesc}"`)
+		lines.push('')
+
+		// 1. HERO BLOCK
+		if (heroEl) {
+			lines.push('hero:')
+			if (heroEl.props.headline || heroEl.props.badgeText) {
+				lines.push(`  headline: "${heroEl.props.headline || heroEl.props.badgeText}"`)
+			}
+			lines.push(`  title: "${heroEl.props.title || 'Hero Title'}"`)
+			lines.push(`  description: "${heroEl.props.description || heroEl.props.subtitle || ''}"`)
+			if (heroEl.props.orientation) {
+				lines.push(`  orientation: "${heroEl.props.orientation}"`)
+			}
+			if (heroEl.props.showIllustration && heroEl.props.imageUrl) {
+				lines.push('  image:')
+				lines.push(`    src: "${heroEl.props.imageUrl}"`)
+				lines.push('    alt: "Hero illustration"')
+			}
+			lines.push('  links:')
+			if (heroEl.props.primaryBtnText) {
+				lines.push(`    - label: "${heroEl.props.primaryBtnText}"`)
+				lines.push(`      color: "${heroEl.props.primaryBtnColor || 'primary'}"`)
+				lines.push('      size: "xl"')
+				lines.push(`      icon: "${heroEl.props.primaryBtnIcon || 'i-lucide-arrow-right'}"`)
+				lines.push('      trailing: true')
+			}
+			if (heroEl.props.secondaryBtnText) {
+				lines.push(`    - label: "${heroEl.props.secondaryBtnText}"`)
+				lines.push(`      color: "${heroEl.props.secondaryBtnColor || 'neutral'}"`)
+				lines.push(`      variant: "${heroEl.props.secondaryBtnVariant || 'outline'}"`)
+				lines.push('      size: "xl"')
+				lines.push(`      icon: "${heroEl.props.secondaryBtnIcon || 'i-lucide-book-open'}"`)
+			}
+			lines.push('')
+		}
+
+		// 2. SECTIONS & FEATURES
+		const sectionEls = elements.filter((e) => e.type === 'page-section' || e.type === 'feature-card' || e.type === 'page-feature')
+		if (sectionEls.length > 0) {
+			lines.push('sections:')
+			for (const sec of sectionEls) {
+				if (sec.type === 'page-section') {
+					lines.push(`  - headline: "${sec.props.headline || 'Features'}"`)
+					lines.push(`    title: "${sec.props.title || 'Section Title'}"`)
+					lines.push(`    description: "${sec.props.description || ''}"`)
+					if (sec.props.icon) lines.push(`    icon: "${sec.props.icon}"`)
+					if (sec.props.orientation) lines.push(`    orientation: "${sec.props.orientation}"`)
+					if (sec.children && sec.children.length > 0) {
+						lines.push('    items:')
+						for (const ch of sec.children) {
+							lines.push(`      - title: "${ch.props.title || 'Feature Item'}"`)
+							lines.push(`        description: "${ch.props.description || ''}"`)
+							if (ch.props.icon) lines.push(`        icon: "${ch.props.icon}"`)
+						}
+					}
+				} else {
+					lines.push(`  - title: "${sec.props.title || 'Feature'}"`)
+					lines.push(`    description: "${sec.props.description || ''}"`)
+					if (sec.props.icon) lines.push(`    icon: "${sec.props.icon}"`)
+				}
+			}
+			lines.push('')
+		}
+
+		// 3. PRICING PLANS
+		const pricingPlans = elements.filter((e) => e.type === 'pricing-plan' || e.type === 'pricing-card')
+		const pricingContainer = elements.find((e) => e.type === 'pricing-plans')
+		const allPricing = pricingPlans.concat(pricingContainer?.children?.filter((c) => c.type === 'pricing-plan' || c.type === 'pricing-card') || [])
+
+		if (allPricing.length > 0) {
+			lines.push('pricing:')
+			lines.push('  title: "Simple, transparent pricing"')
+			lines.push('  description: "Choose the plan that best fits your workflow and project requirements."')
+			lines.push('  plans:')
+			for (const p of allPricing) {
+				lines.push(`    - title: "${p.props.title || p.props.plan || 'Plan'}"`)
+				lines.push(`      description: "${p.props.description || ''}"`)
+				lines.push(`      price: "${p.props.price || '$0'}"`)
+				lines.push(`      billingPeriod: "${p.props.billingPeriod || p.props.period || '/month'}"`)
+				if (p.props.badge) lines.push(`      badge: "${p.props.badge}"`)
+				if (p.props.highlight || p.props.featured) lines.push('      highlight: true')
+				lines.push('      button:')
+				lines.push(`        label: "${p.props.buttonText || 'Get Started'}"`)
+				lines.push(`        color: "${p.props.highlight || p.props.featured ? 'primary' : 'neutral'}"`)
+				const features = (p.props.features || '').split(',').map((s: string) => s.trim()).filter(Boolean)
+				if (features.length > 0) {
+					lines.push('      features:')
+					for (const feat of features) {
+						lines.push(`        - "${feat}"`)
+					}
+				}
+			}
+			lines.push('')
+		}
+
+		// 4. CTA BLOCK
+		const ctaEl = elements.find((e) => e.type === 'page-cta')
+		if (ctaEl) {
+			lines.push('cta:')
+			if (ctaEl.props.headline) lines.push(`  headline: "${ctaEl.props.headline}"`)
+			lines.push(`  title: "${ctaEl.props.title || 'Call to action'}"`)
+			lines.push(`  description: "${ctaEl.props.description || ''}"`)
+			lines.push('  links:')
+			if (ctaEl.props.primaryBtnText) {
+				lines.push(`    - label: "${ctaEl.props.primaryBtnText}"`)
+				lines.push('      color: "primary"')
+				lines.push('      size: "xl"')
+			}
+			if (ctaEl.props.secondaryBtnText) {
+				lines.push(`    - label: "${ctaEl.props.secondaryBtnText}"`)
+				lines.push('      color: "neutral"')
+				lines.push('      variant: "outline"')
+				lines.push('      size: "xl"')
+			}
+			lines.push('')
+		}
+
+		// 5. LOGOS SHOWCASE
+		const logosEl = elements.find((e) => e.type === 'page-logos')
+		if (logosEl) {
+			lines.push('logos:')
+			lines.push(`  title: "${logosEl.props.title || 'Trusted by engineering teams'}"`)
+			const logos = (logosEl.props.logos || '').split(',').map((s: string) => s.trim()).filter(Boolean)
+			if (logos.length > 0) {
+				lines.push('  items:')
+				for (const lg of logos) {
+					lines.push(`    - "${lg}"`)
+				}
+			}
+			lines.push('')
+		}
+
+		// 6. FAQ & LISTS
+		const listEl = elements.find((e) => e.type === 'page-list')
+		if (listEl) {
+			lines.push('faq:')
+			lines.push(`  title: "${listEl.props.title || 'Frequently Asked Questions'}"`)
+			lines.push(`  description: "${listEl.props.description || ''}"`)
+			lines.push('  items:')
+			lines.push('    - question: "How does code export work?"')
+			lines.push('      answer: "Nuxt UI Studio translates your visual edits into production Vue SFC, Markdown MDC, and YAML content."')
+			lines.push('    - question: "Can I customize the themes?"')
+			lines.push('      answer: "Yes, you can configure 18 primary colors, neutral palettes, border radius, and typography live."')
+			lines.push('')
+		}
+
+		// 7. TESTIMONIALS
+		const testimonials = elements.filter((e) => e.type === 'testimonial-card')
+		if (testimonials.length > 0) {
+			lines.push('testimonials:')
+			lines.push('  title: "Loved by developers worldwide"')
+			lines.push('  items:')
+			for (const t of testimonials) {
+				lines.push(`    - quote: "${t.props.quote || ''}"`)
+				lines.push('      author:')
+				lines.push(`        name: "${t.props.author || 'Author'}"`)
+				lines.push(`        role: "${t.props.role || ''}"`)
+				if (t.props.avatarUrl) lines.push(`        avatar: "${t.props.avatarUrl}"`)
+			}
+			lines.push('')
+		}
+
+		return lines.join('\n')
+	}
+
 	return {
 		renderElementCode,
 		generateFullSfcCode,
-		generateNuxtContentMarkdown
+		generateNuxtContentMarkdown,
+		generateNuxtContentYaml
 	}
 }

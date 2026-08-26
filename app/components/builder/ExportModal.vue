@@ -11,11 +11,12 @@ const emit = defineEmits<{
 }>()
 
 const { elements, importFromJSON, exportToJSON } = useBuilder()
-const { generateFullSfcCode, generateNuxtContentMarkdown } = useCodeGenerator()
+const { generateFullSfcCode, generateNuxtContentMarkdown, generateNuxtContentYaml } = useCodeGenerator()
 
-const activeTab = ref<'code' | 'mdc' | 'exportJson' | 'importJson'>('code')
+const activeTab = ref<'code' | 'mdc' | 'yaml' | 'exportJson' | 'importJson'>('code')
 const copiedCode = ref(false)
 const copiedMdc = ref(false)
+const copiedYaml = ref(false)
 const copiedJson = ref(false)
 const importInput = ref('')
 const importError = ref('')
@@ -26,6 +27,10 @@ const generatedCode = computed(() => {
 
 const generatedMdc = computed(() => {
 	return generateNuxtContentMarkdown(elements.value)
+})
+
+const generatedYaml = computed(() => {
+	return generateNuxtContentYaml(elements.value)
 })
 
 const generatedJson = computed(() => {
@@ -56,6 +61,18 @@ const copyMdcToClipboard = async () => {
 	}
 }
 
+const copyYamlToClipboard = async () => {
+	try {
+		await navigator.clipboard.writeText(generatedYaml.value)
+		copiedYaml.value = true
+		setTimeout(() => {
+			copiedYaml.value = false
+		}, 2000)
+	} catch (e) {
+		console.error('Failed to copy', e)
+	}
+}
+
 const copyJsonToClipboard = async () => {
 	try {
 		await navigator.clipboard.writeText(generatedJson.value)
@@ -73,7 +90,7 @@ const downloadVueFile = () => {
 	const url = URL.createObjectURL(blob)
 	const link = document.createElement('a')
 	link.href = url
-	link.download = 'PageBuilder.vue'
+	link.download = 'index.vue'
 	link.click()
 	URL.revokeObjectURL(url)
 }
@@ -83,7 +100,17 @@ const downloadMdcFile = () => {
 	const url = URL.createObjectURL(blob)
 	const link = document.createElement('a')
 	link.href = url
-	link.download = 'page.md'
+	link.download = 'index.md'
+	link.click()
+	URL.revokeObjectURL(url)
+}
+
+const downloadYamlFile = () => {
+	const blob = new Blob([generatedYaml.value], { type: 'text/yaml;charset=utf-8' })
+	const url = URL.createObjectURL(blob)
+	const link = document.createElement('a')
+	link.href = url
+	link.download = 'index.yml'
 	link.click()
 	URL.revokeObjectURL(url)
 }
@@ -118,7 +145,7 @@ const handleImport = () => {
 	<UModal
 		:model-value="modelValue"
 		title="Export & Share Code"
-		description="Export clean Nuxt 4 Vue code, Nuxt Content (.md / MDC) documents, or backup/restore JSON design schemas."
+		description="Export ready-to-use Vue 4 SFC pages, Nuxt Content Markdown (.md) or YAML (.yml) templates matching nuxt-ui-templates."
 		@update:model-value="emit('update:modelValue', $event)"
 	>
 		<template #body>
@@ -130,7 +157,7 @@ const handleImport = () => {
 						:class="activeTab === 'code' ? 'border-primary-500 text-primary-600 dark:text-primary-400' : 'border-transparent text-neutral-500 hover:text-neutral-900 dark:hover:text-white'"
 						@click="activeTab = 'code'"
 					>
-						<UIcon name="lucide:code-2" class="w-4 h-4" />
+						<UIcon name="lucide:file-code-2" class="w-4 h-4" />
 						<span>Vue SFC (.vue)</span>
 					</button>
 
@@ -141,6 +168,15 @@ const handleImport = () => {
 					>
 						<UIcon name="lucide:file-text" class="w-4 h-4" />
 						<span>Nuxt Content (.md)</span>
+					</button>
+
+					<button
+						class="pb-2 text-xs font-semibold border-b-2 transition-all flex items-center gap-1.5 whitespace-nowrap"
+						:class="activeTab === 'yaml' ? 'border-primary-500 text-primary-600 dark:text-primary-400' : 'border-transparent text-neutral-500 hover:text-neutral-900 dark:hover:text-white'"
+						@click="activeTab = 'yaml'"
+					>
+						<UIcon name="lucide:file-cog" class="w-4 h-4" />
+						<span>Nuxt Content (.yml)</span>
 					</button>
 
 					<button
@@ -165,7 +201,7 @@ const handleImport = () => {
 				<!-- ================= TAB 1: VUE SFC CODE ================= -->
 				<div v-if="activeTab === 'code'" class="space-y-3">
 					<div class="flex items-center justify-between">
-						<span class="text-xs text-neutral-500">Ready to paste into <code>app/pages/</code> or <code>app/components/</code></span>
+						<span class="text-xs text-neutral-500">Save as <code>pages/index.vue</code> or in <code>app/components/</code></span>
 						<div class="flex items-center gap-2">
 							<UButton
 								size="xs"
@@ -193,7 +229,7 @@ const handleImport = () => {
 				<!-- ================= TAB 2: NUXT CONTENT (.md / MDC) ================= -->
 				<div v-else-if="activeTab === 'mdc'" class="space-y-3">
 					<div class="flex items-center justify-between">
-						<span class="text-xs text-neutral-500">Ready to paste into <code>content/</code> folder for <code>@nuxt/content</code></span>
+						<span class="text-xs text-neutral-500">Save as <code>content/index.md</code> for <code>@nuxt/content</code> & MDC</span>
 						<div class="flex items-center gap-2">
 							<UButton
 								size="xs"
@@ -218,7 +254,35 @@ const handleImport = () => {
 					</div>
 				</div>
 
-				<!-- ================= TAB 3: JSON SCHEMA EXPORT ================= -->
+				<!-- ================= TAB 3: NUXT CONTENT (.yml / YAML) ================= -->
+				<div v-else-if="activeTab === 'yaml'" class="space-y-3">
+					<div class="flex items-center justify-between">
+						<span class="text-xs text-neutral-500">Save as <code>content/index.yml</code> as used in <code>nuxt-ui-templates/landing</code></span>
+						<div class="flex items-center gap-2">
+							<UButton
+								size="xs"
+								color="neutral"
+								variant="outline"
+								icon="lucide:download"
+								label="Download .yml"
+								@click="downloadYamlFile"
+							/>
+							<UButton
+								size="xs"
+								:color="copiedYaml ? 'success' : 'primary'"
+								:icon="copiedYaml ? 'lucide:check' : 'lucide:copy'"
+								:label="copiedYaml ? 'Copied!' : 'Copy YAML'"
+								@click="copyYamlToClipboard"
+							/>
+						</div>
+					</div>
+
+					<div class="relative rounded-lg bg-neutral-950 text-neutral-100 p-4 font-mono text-xs overflow-x-auto max-h-[380px] border border-neutral-800 select-text leading-relaxed">
+						<pre><code>{{ generatedYaml }}</code></pre>
+					</div>
+				</div>
+
+				<!-- ================= TAB 4: JSON SCHEMA EXPORT ================= -->
 				<div v-else-if="activeTab === 'exportJson'" class="space-y-3">
 					<div class="flex items-center justify-between">
 						<span class="text-xs text-neutral-500">Save complete design structure to restore or share with team</span>
@@ -246,7 +310,7 @@ const handleImport = () => {
 					</div>
 				</div>
 
-				<!-- ================= TAB 4: IMPORT JSON ================= -->
+				<!-- ================= TAB 5: IMPORT JSON ================= -->
 				<div v-else-if="activeTab === 'importJson'" class="space-y-3">
 					<p class="text-xs text-neutral-500">
 						Paste a previously exported JSON schema to load the project onto the canvas.
