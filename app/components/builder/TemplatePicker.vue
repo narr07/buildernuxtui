@@ -1,17 +1,17 @@
 <script setup lang="ts">
-const open = defineModel<boolean>({ default: false })
+import { TEMPLATE_PRESETS } from '~/composables/useTemplates'
 
-const { loadTemplate } = useBuilder()
+const { showTemplateModal, loadTemplate } = useBuilder()
 
 const handleSelect = (templateId: string) => {
 	loadTemplate(templateId)
-	open.value = false
+	showTemplateModal.value = false
 }
 </script>
 
 <template>
 	<UModal
-		v-model:open="open"
+		v-model:open="showTemplateModal"
 		title="Page & Section Templates"
 		description="Jumpstart your website with professionally crafted Nuxt UI templates."
 	>

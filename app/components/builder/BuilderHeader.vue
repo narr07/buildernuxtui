@@ -1,13 +1,10 @@
 <script setup lang="ts">
-const emit = defineEmits<{
-	'open-export': []
-	'open-templates': []
-}>()
-
 const {
 	viewport,
 	previewMode,
 	showGrid,
+	showExportModal,
+	showTemplateModal,
 	canUndo,
 	canRedo,
 	undo,
@@ -69,7 +66,7 @@ const handleClear = () => {
 				icon="lucide:layout-template"
 				label="Templates"
 				class="hidden sm:inline-flex"
-				@click="emit('open-templates')"
+				@click="showTemplateModal = true"
 			/>
 		</div>
 
@@ -154,14 +151,25 @@ const handleClear = () => {
 				@click="handleClear"
 			/>
 
-			<UButton
-				color="neutral"
-				variant="ghost"
-				size="sm"
-				:icon="colorMode.value === 'dark' ? 'lucide:moon' : 'lucide:sun'"
-				title="Toggle Dark / Light Theme"
-				@click="toggleColorMode"
-			/>
+			<ClientOnly>
+				<UButton
+					color="neutral"
+					variant="ghost"
+					size="sm"
+					:icon="colorMode.value === 'dark' ? 'lucide:moon' : 'lucide:sun'"
+					title="Toggle Dark / Light Theme"
+					@click="toggleColorMode"
+				/>
+				<template #fallback>
+					<UButton
+						color="neutral"
+						variant="ghost"
+						size="sm"
+						icon="lucide:sun"
+						title="Toggle Dark / Light Theme"
+					/>
+				</template>
+			</ClientOnly>
 
 			<UButton
 				color="primary"
@@ -169,7 +177,7 @@ const handleClear = () => {
 				size="sm"
 				icon="lucide:code"
 				label="Export Code"
-				@click="emit('open-export')"
+				@click="showExportModal = true"
 			/>
 		</div>
 	</header>

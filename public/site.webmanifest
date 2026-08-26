@@ -2,7 +2,7 @@
   "name": "Builder Nuxt UI",
   "short_name": "BuilderNuxtUI",
   "description": "Visual Drag & Drop Builder for Nuxt 4 & Nuxt UI",
-  "start_url": "https://buildernuxtui.permadi.dev/",
+  "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#ffffff",

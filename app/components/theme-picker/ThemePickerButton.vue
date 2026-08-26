@@ -1,5 +1,7 @@
 <script setup lang="ts">
-defineProps<{
+import { COLOR_HEX_MAP } from '~/composables/useTheme'
+
+const props = defineProps<{
 	label: string
 	icon?: string
 	chip?: string
@@ -9,6 +11,11 @@ defineProps<{
 const slots = defineSlots<{
 	leading: () => any
 }>()
+
+const chipColor = computed(() => {
+	if (!props.chip) return null
+	return COLOR_HEX_MAP[props.chip] || '#22c55e'
+})
 </script>
 
 <template>
@@ -27,12 +34,8 @@ const slots = defineSlots<{
 		>
 			<slot name="leading">
 				<span
-					class="inline-block size-2 rounded-full shadow-xs"
-					:class="`bg-(--color-light) dark:bg-(--color-dark)`"
-					:style="{
-						'--color-light': `var(--color-${chip}-500, #22c55e)`,
-						'--color-dark': `var(--color-${chip}-400, #4ade80)`,
-					}"
+					class="inline-block size-2 rounded-full shadow-xs shrink-0"
+					:style="{ backgroundColor: chipColor || '#22c55e' }"
 				/>
 			</slot>
 		</template>

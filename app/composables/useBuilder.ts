@@ -15,6 +15,8 @@ export const useBuilder = () => {
 	const showGrid = useState<boolean>('builder-show-grid', () => true)
 	const showLeftSidebar = useState<boolean>('builder-show-left-sidebar', () => true)
 	const showRightSidebar = useState<boolean>('builder-show-right-sidebar', () => true)
+	const showExportModal = useState<boolean>('builder-show-export-modal', () => false)
+	const showTemplateModal = useState<boolean>('builder-show-template-modal', () => false)
 
 	const toggleLeftSidebar = () => {
 		showLeftSidebar.value = !showLeftSidebar.value
@@ -336,6 +338,8 @@ export const useBuilder = () => {
 		showGrid,
 		showLeftSidebar,
 		showRightSidebar,
+		showExportModal,
+		showTemplateModal,
 		toggleLeftSidebar,
 		toggleRightSidebar,
 		canUndo,

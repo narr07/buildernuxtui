@@ -2,7 +2,6 @@
 export default defineNuxtConfig({
 	modules: [
 		'@nuxt/ui',
-		'@nuxt/icon',
 		'@vueuse/nuxt',
 		'@nuxt/eslint',
 	],
@@ -36,6 +35,9 @@ export default defineNuxtConfig({
 				{ rel: 'icon', href: '/favicon.ico' },
 				{ rel: 'apple-touch-icon', href: '/apple-touch-icon.png' },
 				{ rel: 'manifest', href: '/site.webmanifest' },
+				{ rel: 'preconnect', href: 'https://fonts.googleapis.com' },
+				{ rel: 'preconnect', href: 'https://fonts.gstatic.com', crossorigin: '' },
+				{ rel: 'stylesheet', href: 'https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Geist:wght@100..900&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Outfit:wght@100..900&family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&family=Public+Sans:ital,wght@0,100..900;1,100..900&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap' },
 			],
 		},
 	},
@@ -54,8 +56,6 @@ export default defineNuxtConfig({
 		},
 	},
 	icon: {
-		serverBundle: {
-			collections: ['lucide'],
-		},
+		mode: 'css',
 	},
 })

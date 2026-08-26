@@ -656,7 +656,11 @@ export const useCodeGenerator = () => {
 			}
 
 			case 'footer-section': {
-				return `${indent}<footer class="border-t border-neutral-200 dark:border-neutral-800 py-12 px-6">\n${childIndent}<div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-6">\n${childIndent}\t<div class="text-center sm:text-left">\n${childIndent}\t\t<h4 class="text-lg font-bold text-primary">${el.props.brandName || 'Brand'}</h4>\n${childIndent}\t\t<p class="text-xs text-neutral-500 mt-1">${el.props.tagline || ''}</p>\n${childIndent}\t</div>\n${childIndent}\t<p class="text-xs text-neutral-400">${el.props.copyright || '© 2026'}</p>\n${childIndent}</div>\n${indent}</footer>`
+				const brand = el.props.brandName ? `<span class="font-bold text-highlighted">${el.props.brandName}</span>\n${childIndent}\t` : ''
+				const tagline = el.props.tagline ? `<p class="text-xs text-muted mt-0.5">${el.props.tagline}</p>\n${childIndent}\t` : ''
+				const copyright = el.props.copyright || '© 2026 Horizon Academy. All rights reserved.'
+
+				return `${indent}<UFooter${classAttr}>\n${childIndent}<template #left>\n${childIndent}\t<div class="flex flex-col text-left">\n${childIndent}\t\t${brand}${tagline}</div>\n${childIndent}</template>\n\n${childIndent}<template #right>\n${childIndent}\t<p class="text-xs text-muted">${copyright}</p>\n${childIndent}</template>\n${indent}</UFooter>`
 			}
 
 			// Page and pro components

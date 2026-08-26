@@ -523,11 +523,23 @@ const parseFooterColumns = (colsStr?: string) => {
 
 		<!-- FOOTER -->
 		<footer
-			v-else-if="element.type === 'footer'"
+			v-else-if="element.type === 'footer' || element.type === 'footer-section'"
 			:class="['w-full border-t border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 py-8 px-4 sm:px-6 transition-all', styleClasses]"
 		>
 			<div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-neutral-500 dark:text-neutral-400">
-				<div>
+				<div class="text-center sm:text-left">
+					<h4
+						v-if="element.props.brandName"
+						class="text-sm font-bold text-primary mb-0.5"
+					>
+						{{ element.props.brandName }}
+					</h4>
+					<p
+						v-if="element.props.tagline"
+						class="text-xs text-neutral-500 dark:text-neutral-400 mb-1"
+					>
+						{{ element.props.tagline }}
+					</p>
 					<p>{{ element.props.copyright || 'Copyright © 2026. All rights reserved.' }}</p>
 				</div>
 				<div class="flex items-center gap-4">
@@ -2201,20 +2213,6 @@ const parseFooterColumns = (colsStr?: string) => {
 				</div>
 			</div>
 		</UCard>
-
-		<!-- FOOTER SECTION -->
-		<footer
-			v-else-if="element.type === 'footer-section'"
-			:class="['border-t border-neutral-200 dark:border-neutral-800', styleClasses]"
-		>
-			<div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-6">
-				<div class="text-center sm:text-left">
-					<h4 class="text-lg font-bold text-primary">{{ element.props.brandName || 'Brand' }}</h4>
-					<p class="text-xs text-neutral-500 mt-1">{{ element.props.tagline || '' }}</p>
-				</div>
-				<p class="text-xs text-neutral-400">{{ element.props.copyright || '© 2026' }}</p>
-			</div>
-		</footer>
 
 		<!-- ================= PAGE & PRO COMPONENTS ================= -->
 

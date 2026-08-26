@@ -10,16 +10,17 @@ export const TEMPLATE_PRESETS: TemplatePreset[] = [
 		elements: [
 			{
 				id: 'el-hero-1',
-				type: 'hero-section',
+				type: 'page-hero',
 				props: {
-					badgeText: '🚀 Nuxt 4 & Nuxt UI v4 Ready',
+					headline: '🚀 Nuxt 4 & Nuxt UI v4 Ready',
 					title: 'Ship Modern Vue Applications 10x Faster',
-					subtitle: 'Build polished web interfaces with drag and drop simplicity, powered by accessible Nuxt UI components and instant code generation.',
+					description: 'Build polished web interfaces with drag and drop simplicity, powered by accessible Nuxt UI components and instant code generation.',
+					orientation: 'vertical',
 					primaryBtnText: 'Start Building Free',
 					secondaryBtnText: 'View Examples',
 					primaryBtnIcon: 'lucide:sparkles',
 					secondaryBtnIcon: 'lucide:external-link',
-					align: 'center',
+					highlight: true,
 				},
 				styles: {
 					padding: 'py-20 px-6',
@@ -51,13 +52,13 @@ export const TEMPLATE_PRESETS: TemplatePreset[] = [
 						children: [
 							{
 								id: 'el-stat-1',
-								type: 'stat-card',
+								type: 'page-card',
 								props: {
-									title: 'Active Developers',
-									value: '120,000+',
-									change: '+32.4% this month',
-									changeType: 'positive',
+									title: '120,000+ Developers',
+									description: 'Active engineers building modern apps monthly across 85+ countries.',
 									icon: 'lucide:users',
+									variant: 'subtle',
+									highlight: true,
 								},
 								styles: {
 									padding: 'p-6',
@@ -66,13 +67,13 @@ export const TEMPLATE_PRESETS: TemplatePreset[] = [
 							},
 							{
 								id: 'el-stat-2',
-								type: 'stat-card',
+								type: 'page-card',
 								props: {
-									title: 'Components Rendered',
-									value: '4.8 Million',
-									change: '+99.9% uptime',
-									changeType: 'positive',
+									title: '4.8M Components Rendered',
+									description: 'High-speed UI generation powered by Tailwind CSS v4 and Reka UI.',
 									icon: 'lucide:cpu',
+									variant: 'subtle',
+									highlight: true,
 								},
 								styles: {
 									padding: 'p-6',
@@ -81,13 +82,13 @@ export const TEMPLATE_PRESETS: TemplatePreset[] = [
 							},
 							{
 								id: 'el-stat-3',
-								type: 'stat-card',
+								type: 'page-card',
 								props: {
-									title: 'Production Deployments',
-									value: '95,400',
-									change: 'Zero config needed',
-									changeType: 'positive',
+									title: '99.99% Production Uptime',
+									description: 'Enterprise grade reliability with edge SSR and zero-overhead styles.',
 									icon: 'lucide:cloud-upload',
+									variant: 'subtle',
+									highlight: true,
 								},
 								styles: {
 									padding: 'p-6',
@@ -104,7 +105,7 @@ export const TEMPLATE_PRESETS: TemplatePreset[] = [
 				props: {},
 				styles: {
 					maxWidth: 'max-w-7xl',
-					padding: 'py-12 px-6',
+					padding: 'py-16 px-6',
 					margin: 'mx-auto',
 				},
 				children: [
@@ -113,8 +114,8 @@ export const TEMPLATE_PRESETS: TemplatePreset[] = [
 						type: 'heading',
 						props: {
 							text: 'Engineered for Exceptional Developer Experience',
-							level: 'h2',
-							gradient: true,
+							as: 'h2',
+							highlight: true,
 						},
 						styles: {
 							textAlign: 'center',
@@ -126,8 +127,7 @@ export const TEMPLATE_PRESETS: TemplatePreset[] = [
 						type: 'paragraph',
 						props: {
 							text: 'Everything you need to craft responsive, accessible and blazing fast interfaces with Vue 3 and Tailwind CSS v4.',
-							size: 'text-lg',
-							color: 'muted',
+							size: 'lg',
 						},
 						styles: {
 							textAlign: 'center',
@@ -196,8 +196,7 @@ export const TEMPLATE_PRESETS: TemplatePreset[] = [
 						type: 'heading',
 						props: {
 							text: 'Flexible Pricing for Every Scale',
-							level: 'h2',
-							gradient: false,
+							as: 'h2',
 						},
 						styles: {
 							textAlign: 'center',
@@ -291,16 +290,17 @@ export const TEMPLATE_PRESETS: TemplatePreset[] = [
 		elements: [
 			{
 				id: 'el-p-hero',
-				type: 'hero-section',
+				type: 'page-hero',
 				props: {
-					badgeText: 'Simple, Transparent Pricing',
+					headline: 'Simple, Transparent Pricing',
 					title: 'Invest in Faster Delivery',
-					subtitle: 'No hidden fees. Switch or cancel anytime. All plans include full access to component libraries.',
+					description: 'No hidden fees. Switch or cancel anytime. All plans include full access to component libraries and visual builder.',
+					orientation: 'vertical',
 					primaryBtnText: 'Get Started with Free Trial',
 					secondaryBtnText: 'Compare Plans',
 					primaryBtnIcon: 'lucide:arrow-right',
 					secondaryBtnIcon: 'lucide:list-ordered',
-					align: 'center',
+					highlight: true,
 				},
 				styles: {
 					padding: 'py-16 px-6',
@@ -308,7 +308,7 @@ export const TEMPLATE_PRESETS: TemplatePreset[] = [
 				},
 			},
 			{
-				id: 'el-testi-container',
+				id: 'el-p-container',
 				type: 'container',
 				props: {},
 				styles: {
@@ -317,6 +317,90 @@ export const TEMPLATE_PRESETS: TemplatePreset[] = [
 					margin: 'mx-auto',
 				},
 				children: [
+					{
+						id: 'el-p-grid',
+						type: 'grid',
+						props: {
+							gridCols: 'grid-cols-1 md:grid-cols-3',
+						},
+						styles: {
+							display: 'grid',
+							gridCols: 'grid-cols-1 md:grid-cols-3',
+							gap: '6',
+							width: 'w-full',
+						},
+						children: [
+							{
+								id: 'el-p-card-1',
+								type: 'pricing-card',
+								props: {
+									plan: 'Starter',
+									badge: 'Free',
+									price: '$0',
+									period: '/month',
+									description: 'Essential toolkit for personal projects and prototypes.',
+									buttonText: 'Get Started',
+									featured: false,
+									features: 'Up to 5 builder projects,Full Nuxt UI library,Community support,Vue SFC export',
+								},
+								styles: { padding: 'p-6', width: 'w-full' },
+							},
+							{
+								id: 'el-p-card-2',
+								type: 'pricing-card',
+								props: {
+									plan: 'Professional',
+									badge: 'Popular',
+									price: '$49',
+									period: '/month',
+									description: 'Full power for production websites and team projects.',
+									buttonText: 'Start Pro Trial',
+									featured: true,
+									features: 'Unlimited projects,Advanced layout engine,Export Nuxt Content MDC,Custom brand palettes,Team collaboration',
+								},
+								styles: { padding: 'p-6', width: 'w-full' },
+							},
+							{
+								id: 'el-p-card-3',
+								type: 'pricing-card',
+								props: {
+									plan: 'Enterprise',
+									badge: 'Scale',
+									price: '$199',
+									period: '/month',
+									description: 'Custom components, security SLA, and dedicated onboarding.',
+									buttonText: 'Talk to Team',
+									featured: false,
+									features: 'Custom design tokens,Private component registry,Role-based access,99.99% uptime SLA,Dedicated support channel',
+								},
+								styles: { padding: 'p-6', width: 'w-full' },
+							},
+						],
+					},
+				],
+			},
+			{
+				id: 'el-testi-container',
+				type: 'container',
+				props: {},
+				styles: {
+					maxWidth: 'max-w-7xl',
+					padding: 'py-12 px-6',
+					margin: 'mx-auto',
+				},
+				children: [
+					{
+						id: 'el-testi-heading',
+						type: 'heading',
+						props: {
+							text: 'Loved by Developers Worldwide',
+							as: 'h2',
+						},
+						styles: {
+							textAlign: 'center',
+							margin: 'mb-8',
+						},
+					},
 					{
 						id: 'el-testi-grid',
 						type: 'grid',
@@ -355,6 +439,21 @@ export const TEMPLATE_PRESETS: TemplatePreset[] = [
 						],
 					},
 				],
+			},
+			{
+				id: 'el-p-cta',
+				type: 'page-cta',
+				props: {
+					headline: 'Get Started Today',
+					title: 'Ready to Accelerate Your Nuxt Development?',
+					description: 'Join thousands of creators and product teams building with Builder Nuxt UI.',
+					primaryBtnText: 'Start Free Trial',
+					variant: 'subtle',
+				},
+				styles: {
+					padding: 'py-12 px-6',
+					width: 'w-full',
+				},
 			},
 		],
 	},
@@ -406,37 +505,37 @@ export const TEMPLATE_PRESETS: TemplatePreset[] = [
 						children: [
 							{
 								id: 'el-d-stat-1',
-								type: 'stat-card',
+								type: 'page-card',
 								props: {
-									title: 'Monthly Recurring Revenue',
-									value: '$84,230',
-									change: '+14.5% vs last month',
-									changeType: 'positive',
+									title: '$84,230 MRR',
+									description: '+14.5% revenue growth compared to previous billing cycle.',
 									icon: 'lucide:dollar-sign',
+									variant: 'subtle',
+									highlight: true,
 								},
 								styles: { padding: 'p-5', width: 'w-full' },
 							},
 							{
 								id: 'el-d-stat-2',
-								type: 'stat-card',
+								type: 'page-card',
 								props: {
-									title: 'API Request Volume',
-									value: '12.4M reqs',
-									change: '+5.2% average load',
-									changeType: 'positive',
+									title: '12.4M API Requests',
+									description: 'Average response time 24ms across global Edge network.',
 									icon: 'lucide:activity',
+									variant: 'subtle',
+									highlight: true,
 								},
 								styles: { padding: 'p-5', width: 'w-full' },
 							},
 							{
 								id: 'el-d-stat-3',
-								type: 'stat-card',
+								type: 'page-card',
 								props: {
-									title: 'Conversion Rate',
-									value: '4.82%',
-									change: '+0.6% improvement',
-									changeType: 'positive',
+									title: '4.82% Conversion Rate',
+									description: '+0.6% improvement following landing page optimization.',
 									icon: 'lucide:target',
+									variant: 'subtle',
+									highlight: true,
 								},
 								styles: { padding: 'p-5', width: 'w-full' },
 							},
@@ -469,9 +568,9 @@ export const TEMPLATE_PRESETS: TemplatePreset[] = [
 										id: 'el-d-switch-1',
 										type: 'switch',
 										props: {
-											label: 'Automatic CDN Caching',
-											description: 'Cache static assets at global edge locations',
-											checked: true,
+											label: 'Automatic Edge Caching',
+											description: 'Cache static assets at global cloud edge locations',
+											defaultValue: true,
 											color: 'primary',
 										},
 										styles: { margin: 'mb-4' },
@@ -480,7 +579,7 @@ export const TEMPLATE_PRESETS: TemplatePreset[] = [
 										id: 'el-d-slider-1',
 										type: 'slider',
 										props: {
-											value: 80,
+											defaultValue: 80,
 											color: 'primary',
 										},
 										styles: { margin: 'mb-4', width: 'w-full' },
@@ -523,8 +622,7 @@ export const TEMPLATE_PRESETS: TemplatePreset[] = [
 										type: 'paragraph',
 										props: {
 											text: '780 GB of 1000 GB used this billing period. Next reset in 6 days.',
-											size: 'text-sm',
-											color: 'muted',
+											size: 'sm',
 										},
 										styles: { margin: 'mb-4' },
 									},
@@ -544,6 +642,340 @@ export const TEMPLATE_PRESETS: TemplatePreset[] = [
 						],
 					},
 				],
+			},
+		],
+	},
+	{
+		id: 'school',
+		title: 'School & Academy Landing',
+		description: 'Modern educational institution landing page with hero, academic programs, facilities, and registration CTA.',
+		category: 'Education',
+		thumbnailIcon: 'lucide:graduation-cap',
+		elements: [
+			{
+				id: 'el-sch-hero',
+				type: 'page-hero',
+				props: {
+					headline: '🎓 Admissions Open for Academic Year 2026/2027',
+					title: 'Empowering Future Leaders Through Excellence & Character',
+					description: 'A forward-thinking academy offering integrated STEM curricula, smart digital classrooms, certified global educators, and holistic student development.',
+					orientation: 'vertical',
+					primaryBtnText: 'Apply for Admission',
+					secondaryBtnText: 'Download Prospectus',
+					primaryBtnIcon: 'lucide:user-plus',
+					secondaryBtnIcon: 'lucide:download',
+					highlight: true,
+				},
+				styles: {
+					padding: 'py-20 px-6',
+					width: 'w-full',
+				},
+			},
+			{
+				id: 'el-sch-stat-container',
+				type: 'container',
+				props: {},
+				styles: {
+					maxWidth: 'max-w-7xl',
+					padding: 'py-8 px-6',
+					margin: 'mx-auto',
+				},
+				children: [
+					{
+						id: 'el-sch-stat-grid',
+						type: 'grid',
+						props: {
+							gridCols: 'grid-cols-1 md:grid-cols-3',
+						},
+						styles: {
+							display: 'grid',
+							gridCols: 'grid-cols-1 md:grid-cols-3',
+							gap: 'gap-6',
+							width: 'w-full',
+						},
+						children: [
+							{
+								id: 'el-sch-stat-1',
+								type: 'page-card',
+								props: {
+									title: '1,500+ Active Students',
+									description: 'Over 120 regional and national awards across science, robotics, and arts.',
+									icon: 'lucide:award',
+									variant: 'subtle',
+									highlight: true,
+								},
+								styles: { padding: 'p-6', width: 'w-full' },
+							},
+							{
+								id: 'el-sch-stat-2',
+								type: 'page-card',
+								props: {
+									title: '98% University Placement',
+									description: 'Graduates accepted into leading national and international universities.',
+									icon: 'lucide:graduation-cap',
+									variant: 'subtle',
+									highlight: true,
+								},
+								styles: { padding: 'p-6', width: 'w-full' },
+							},
+							{
+								id: 'el-sch-stat-3',
+								type: 'page-card',
+								props: {
+									title: 'Grade A Accreditation',
+									description: 'State-of-the-art facilities, modern science laboratories, and inclusive learning spaces.',
+									icon: 'lucide:shield-check',
+									variant: 'subtle',
+									highlight: true,
+								},
+								styles: { padding: 'p-6', width: 'w-full' },
+							},
+						],
+					},
+				],
+			},
+			{
+				id: 'el-sch-prog-container',
+				type: 'container',
+				props: {},
+				styles: {
+					maxWidth: 'max-w-7xl',
+					padding: 'py-16 px-6',
+					margin: 'mx-auto',
+				},
+				children: [
+					{
+						id: 'el-sch-prog-heading',
+						type: 'heading',
+						props: {
+							text: 'Signature Academic & Leadership Programs',
+							as: 'h2',
+							highlight: true,
+						},
+						styles: {
+							textAlign: 'center',
+							margin: 'mb-4',
+						},
+					},
+					{
+						id: 'el-sch-prog-sub',
+						type: 'paragraph',
+						props: {
+							text: 'A well-rounded educational pathway combining digital technology, global languages, analytical research, and character formation.',
+							size: 'lg',
+						},
+						styles: {
+							textAlign: 'center',
+							margin: 'mb-10 max-w-2xl mx-auto',
+						},
+					},
+					{
+						id: 'el-sch-prog-grid',
+						type: 'grid',
+						props: {
+							gridCols: 'grid-cols-1 md:grid-cols-3',
+						},
+						styles: {
+							display: 'grid',
+							gridCols: 'grid-cols-1 md:grid-cols-3',
+							gap: 'gap-6',
+							width: 'w-full',
+						},
+						children: [
+							{
+								id: 'el-sch-feat-1',
+								type: 'feature-card',
+								props: {
+									title: 'Modern STEM Curriculum',
+									description: 'Project-based discovery, fundamental coding, robotics, and practical laboratory experimentation.',
+									icon: 'lucide:laptop',
+								},
+								styles: { padding: 'p-6', width: 'w-full' },
+							},
+							{
+								id: 'el-sch-feat-2',
+								type: 'feature-card',
+								props: {
+									title: 'Bilingual & Global Languages',
+									description: 'Immersive English and Mandarin instruction delivered by certified native-level educators.',
+									icon: 'lucide:globe',
+								},
+								styles: { padding: 'p-6', width: 'w-full' },
+							},
+							{
+								id: 'el-sch-feat-3',
+								type: 'feature-card',
+								props: {
+									title: '25+ Extracurricular Clubs',
+									description: 'Comprehensive student activities spanning competitive sports, music, debate, and leadership councils.',
+									icon: 'lucide:trophy',
+								},
+								styles: { padding: 'p-6', width: 'w-full' },
+							},
+						],
+					},
+				],
+			},
+			{
+				id: 'el-sch-fac-container',
+				type: 'container',
+				props: {},
+				styles: {
+					maxWidth: 'max-w-7xl',
+					padding: 'py-12 px-6',
+					margin: 'mx-auto',
+				},
+				children: [
+					{
+						id: 'el-sch-fac-heading',
+						type: 'heading',
+						props: {
+							text: 'Campus Facilities & Learning Spaces',
+							as: 'h2',
+						},
+						styles: {
+							textAlign: 'center',
+							margin: 'mb-8',
+						},
+					},
+					{
+						id: 'el-sch-fac-grid',
+						type: 'grid',
+						props: {
+							gridCols: 'grid-cols-1 md:grid-cols-3',
+						},
+						styles: {
+							display: 'grid',
+							gridCols: 'grid-cols-1 md:grid-cols-3',
+							gap: 'gap-6',
+							width: 'w-full',
+						},
+						children: [
+							{
+								id: 'el-sch-fac-1',
+								type: 'page-card',
+								props: {
+									title: 'Smart Digital Classrooms',
+									description: 'Equipped with interactive touchscreen displays, high-speed campus fiber, and digital learning suites.',
+									icon: 'lucide:screen-share',
+									variant: 'outline',
+								},
+								styles: { padding: 'p-6', width: 'w-full' },
+							},
+							{
+								id: 'el-sch-fac-2',
+								type: 'page-card',
+								props: {
+									title: 'Science & Computer Labs',
+									description: 'Industry-standard equipment for physics, chemistry, biology, and software development research.',
+									icon: 'lucide:flask-conical',
+									variant: 'outline',
+								},
+								styles: { padding: 'p-6', width: 'w-full' },
+							},
+							{
+								id: 'el-sch-fac-3',
+								type: 'page-card',
+								props: {
+									title: 'Library & Athletics Complex',
+									description: 'Extensive physical and digital book archives, indoor gymnasium, and multi-purpose sports fields.',
+									icon: 'lucide:book-open',
+									variant: 'outline',
+								},
+								styles: { padding: 'p-6', width: 'w-full' },
+							},
+						],
+					},
+				],
+			},
+			{
+				id: 'el-sch-testi-container',
+				type: 'container',
+				props: {},
+				styles: {
+					maxWidth: 'max-w-7xl',
+					padding: 'py-12 px-6',
+					margin: 'mx-auto',
+				},
+				children: [
+					{
+						id: 'el-sch-testi-heading',
+						type: 'heading',
+						props: {
+							text: 'What Parents & Alumni Say',
+							as: 'h2',
+						},
+						styles: {
+							textAlign: 'center',
+							margin: 'mb-8',
+						},
+					},
+					{
+						id: 'el-sch-testi-grid',
+						type: 'grid',
+						props: {
+							gridCols: 'grid-cols-1 md:grid-cols-2',
+						},
+						styles: {
+							display: 'grid',
+							gridCols: 'grid-cols-1 md:grid-cols-2',
+							gap: 'gap-6',
+							width: 'w-full',
+						},
+						children: [
+							{
+								id: 'el-sch-testi-1',
+								type: 'testimonial-card',
+								props: {
+									quote: 'Our daughter grew remarkably in confidence, curiosity, and critical thinking. The faculty provides attentive guidance and genuine care for every student.',
+									author: 'Sarah Jenkins, Ph.D.',
+									role: 'Parent of Class of 2025 Graduate',
+									avatarUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150',
+								},
+								styles: { padding: 'p-6', width: 'w-full' },
+							},
+							{
+								id: 'el-sch-testi-2',
+								type: 'testimonial-card',
+								props: {
+									quote: 'The academic rigour and leadership opportunities prepared me thoroughly for university life. The teachers inspired my passion for computer engineering.',
+									author: 'David Harrison',
+									role: 'Alumni (Class of 2024, MIT Freshman)',
+									avatarUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150',
+								},
+								styles: { padding: 'p-6', width: 'w-full' },
+							},
+						],
+					},
+				],
+			},
+			{
+				id: 'el-sch-cta',
+				type: 'page-cta',
+				props: {
+					headline: 'Limited Enrollment',
+					title: 'Start Your Child’s Journey with Us',
+					description: 'Schedule a personalized campus tour and learn more about merit scholarship opportunities.',
+					primaryBtnText: 'Start Online Application',
+					variant: 'subtle',
+				},
+				styles: {
+					padding: 'py-12 px-6',
+					width: 'w-full',
+				},
+			},
+			{
+				id: 'el-sch-footer',
+				type: 'footer-section',
+				props: {
+					brandName: 'Horizon Academy',
+					tagline: 'Inspiring Minds, Building Character, Shaping the Future.',
+					copyright: '© 2026 Horizon Academy. All rights reserved.',
+				},
+				styles: {
+					padding: 'py-12 px-6',
+					width: 'w-full',
+				},
 			},
 		],
 	},

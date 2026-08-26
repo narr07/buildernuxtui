@@ -1,4 +1,11 @@
 <script setup lang="ts">
+import BuilderHeader from '~/components/builder/BuilderHeader.vue'
+import BuilderSidebar from '~/components/builder/BuilderSidebar.vue'
+import BuilderCanvas from '~/components/builder/BuilderCanvas.vue'
+import BuilderInspector from '~/components/builder/BuilderInspector.vue'
+import ExportModal from '~/components/builder/ExportModal.vue'
+import TemplatePicker from '~/components/builder/TemplatePicker.vue'
+
 useSeoMeta({
 	title: 'Builder Nuxt UI - Visual Drag & Drop Builder for Nuxt 4 & Nuxt UI',
 	description: 'Create responsive, high-converting websites and dashboards visually with Nuxt UI v4 components and export clean Vue SFC code.',
@@ -25,9 +32,6 @@ const {
 
 // Initialize live theme
 useTheme()
-
-const showExportModal = ref(false)
-const showTemplateModal = ref(false)
 
 // Global keyboard shortcuts (Ctrl+Z, Ctrl+Y, Delete, Esc)
 onMounted(() => {
@@ -71,10 +75,7 @@ onMounted(() => {
 <template>
 	<div class="h-screen w-screen flex flex-col overflow-hidden bg-white dark:bg-neutral-950 text-neutral-900 dark:text-neutral-100 font-sans antialiased">
 		<!-- Header Top Bar -->
-		<BuilderHeader
-			@open-export="showExportModal = true"
-			@open-templates="showTemplateModal = true"
-		/>
+		<BuilderHeader />
 
 		<!-- Studio Main Workspace Area -->
 		<div class="flex-1 flex overflow-hidden min-h-0 relative">
@@ -121,14 +122,8 @@ onMounted(() => {
 
 		<!-- Export Code & Nuxt Content (.md) Modal -->
 		<ClientOnly>
-			<ExportModal
-				v-model="showExportModal"
-			/>
-
-			<!-- Template Picker Modal -->
-			<TemplatePicker
-				v-model="showTemplateModal"
-			/>
+			<ExportModal />
+			<TemplatePicker />
 		</ClientOnly>
 	</div>
 </template>

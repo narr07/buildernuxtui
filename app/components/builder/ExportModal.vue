@@ -1,7 +1,5 @@
 <script setup lang="ts">
-const open = defineModel<boolean>({ default: false })
-
-const { elements } = useBuilder()
+const { elements, showExportModal } = useBuilder()
 const { generateFullSfcCode, generateNuxtContentMarkdown } = useCodeGenerator()
 
 const activeTab = ref<'code' | 'mdc'>('code')
@@ -65,7 +63,7 @@ const downloadMdcFile = () => {
 
 <template>
 	<UModal
-		v-model:open="open"
+		v-model:open="showExportModal"
 		title="Export Code"
 		description="Export ready-to-use Vue 4 SFC template (.vue) or Nuxt Content Markdown document (.md)."
 	>

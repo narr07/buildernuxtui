@@ -33,13 +33,11 @@ export const neutralColors = [
 export const radiuses = [0, 0.125, 0.25, 0.375, 0.5] as const
 
 export const fonts = [
-	'Public Sans',
 	'Inter',
 	'Plus Jakarta Sans',
 	'Geist',
-	'Outfit',
-	'DM Sans',
-	'Roboto',
+	'TikTok Sans',
+	'Google Sans',
 ] as const
 
 export const icons = [
@@ -113,7 +111,8 @@ export const useTheme = () => {
 			root.style.setProperty('--ui-primary', primaryHex)
 			root.style.setProperty('--color-primary-500', primaryHex)
 			root.style.setProperty('--ui-radius', `${radius.value}rem`)
-			root.style.setProperty('--font-sans', `${font.value}, sans-serif`)
+			root.style.setProperty('--font-sans', `'${font.value}', -apple-system, BlinkMacSystemFont, sans-serif`)
+			document.body.style.fontFamily = `'${font.value}', -apple-system, BlinkMacSystemFont, sans-serif`
 		}
 	}
 
