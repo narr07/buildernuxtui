@@ -118,6 +118,10 @@ const selectParent = (e: MouseEvent) => {
 	}
 }
 
+const insertBelow = (type: string = 'container') => {
+	addElement(type, props.parentId || null, props.index + 1)
+}
+
 const styleClasses = computed(() => {
 	const s = props.element.styles || {}
 	const classes: string[] = []
@@ -197,6 +201,17 @@ const splitFeatures = computed(() => {
 				@click="selectParent"
 			>
 				<UIcon name="lucide:corner-left-up" class="w-3.5 h-3.5" />
+			</button>
+
+			<div class="h-3 w-px bg-neutral-700 mx-0.5" />
+
+			<button
+				title="Add section below"
+				class="p-1 px-1.5 hover:bg-neutral-800 rounded text-primary-400 hover:text-primary-300 flex items-center gap-1 font-medium text-[11px]"
+				@click="insertBelow('container')"
+			>
+				<UIcon name="lucide:plus" class="w-3.5 h-3.5" />
+				<span>Add Below</span>
 			</button>
 
 			<div class="h-3 w-px bg-neutral-700 mx-0.5" />
