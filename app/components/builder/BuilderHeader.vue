@@ -1,8 +1,4 @@
 <script setup lang="ts">
-import { useBuilder } from '~/composables/useBuilder'
-import ThemePicker from '~/components/theme-picker/ThemePicker.vue'
-import type { ViewportMode } from '~/types/builder'
-
 const emit = defineEmits<{
 	openExport: []
 	openTemplates: []
@@ -11,16 +7,13 @@ const emit = defineEmits<{
 
 const {
 	viewport,
-	zoom,
 	previewMode,
 	showGrid,
-	showLeftSidebar,
-	showRightSidebar,
 	canUndo,
 	canRedo,
 	undo,
 	redo,
-	clearCanvas
+	clearCanvas,
 } = useBuilder()
 
 const colorMode = useColorMode()
@@ -29,11 +22,11 @@ const toggleColorMode = () => {
 	colorMode.preference = colorMode.value === 'dark' ? 'light' : 'dark'
 }
 
-const viewports: { mode: ViewportMode; icon: string; label: string }[] = [
+const viewports: { mode: ViewportMode, icon: string, label: string }[] = [
 	{ mode: 'desktop', icon: 'lucide:monitor', label: 'Desktop (100%)' },
 	{ mode: 'laptop', icon: 'lucide:laptop', label: 'Laptop (1024px)' },
 	{ mode: 'tablet', icon: 'lucide:tablet', label: 'Tablet (768px)' },
-	{ mode: 'mobile', icon: 'lucide:smartphone', label: 'Mobile (375px)' }
+	{ mode: 'mobile', icon: 'lucide:smartphone', label: 'Mobile (375px)' },
 ]
 
 const handleClear = () => {
@@ -48,22 +41,22 @@ const handleClear = () => {
 		<!-- Left: Brand, Sidebar Toggle & Template Picker -->
 		<div class="flex items-center gap-2">
 			<!-- Toggle Left Sidebar Button -->
-			<UButton
-				color="neutral"
-				:variant="showLeftSidebar ? 'subtle' : 'ghost'"
-				size="sm"
-				:icon="showLeftSidebar ? 'lucide:panel-left-close' : 'lucide:panel-left'"
-				:title="showLeftSidebar ? 'Hide Left Sidebar' : 'Show Left Sidebar'"
-				class="mr-1"
-				@click="showLeftSidebar = !showLeftSidebar"
-			/>
 
 			<div class="flex items-center gap-2.5">
-				<img src="/favicon.svg" alt="Builder Nuxt UI Logo" class="h-8 w-8 object-contain rounded-lg shadow-sm" />
+				<img
+					src="/logo.svg"
+					alt="Builder Nuxt UI Logo"
+					class="h-8 w-8 object-contain"
+				/>
 				<div>
 					<span class="font-bold text-sm tracking-tight text-neutral-900 dark:text-white flex items-center gap-1.5">
 						Builder <span class="text-primary-500">Nuxt UI</span>
-						<UBadge color="primary" variant="subtle" size="xs" label="v4" />
+						<UBadge
+							color="primary"
+							variant="subtle"
+							size="xs"
+							label="v4"
+						/>
 					</span>
 				</div>
 			</div>
@@ -93,7 +86,10 @@ const handleClear = () => {
 					:class="viewport === v.mode ? 'bg-white dark:bg-neutral-700 text-primary-500 shadow-xs' : 'text-neutral-500 hover:text-neutral-900 dark:hover:text-white'"
 					@click="viewport = v.mode"
 				>
-					<UIcon :name="v.icon" class="w-4 h-4" />
+					<UIcon
+						:name="v.icon"
+						class="w-4 h-4"
+					/>
 				</button>
 			</div>
 
@@ -139,16 +135,6 @@ const handleClear = () => {
 		<div class="flex items-center gap-2">
 			<!-- Official Nuxt UI ThemePicker Popover -->
 			<ThemePicker />
-
-			<!-- Toggle Right Inspector Button -->
-			<UButton
-				color="neutral"
-				:variant="showRightSidebar ? 'subtle' : 'ghost'"
-				size="sm"
-				:icon="showRightSidebar ? 'lucide:panel-right-close' : 'lucide:panel-right'"
-				:title="showRightSidebar ? 'Hide Right Inspector' : 'Show Right Inspector'"
-				@click="showRightSidebar = !showRightSidebar"
-			/>
 
 			<UButton
 				:color="previewMode ? 'primary' : 'neutral'"

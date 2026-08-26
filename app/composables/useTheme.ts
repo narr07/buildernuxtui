@@ -15,7 +15,7 @@ export const primaryColors = [
 	'purple',
 	'fuchsia',
 	'pink',
-	'rose'
+	'rose',
 ] as const
 
 export const neutralColors = [
@@ -27,7 +27,7 @@ export const neutralColors = [
 	'taupe',
 	'mauve',
 	'mist',
-	'olive'
+	'olive',
 ] as const
 
 export const radiuses = [0, 0.125, 0.25, 0.375, 0.5] as const
@@ -39,20 +39,20 @@ export const fonts = [
 	'Geist',
 	'Outfit',
 	'DM Sans',
-	'Roboto'
+	'Roboto',
 ] as const
 
 export const icons = [
 	{ label: 'Lucide', value: 'lucide', icon: 'i-lucide-sparkles' },
 	{ label: 'Heroicons', value: 'heroicons', icon: 'i-heroicons-sparkles' },
 	{ label: 'Tabler', value: 'tabler', icon: 'i-tabler-sparkles' },
-	{ label: 'Phosphor', value: 'ph', icon: 'i-ph-sparkle' }
+	{ label: 'Phosphor', value: 'ph', icon: 'i-ph-sparkle' },
 ]
 
 export const modes = [
 	{ label: 'system', icon: 'i-lucide-laptop' },
 	{ label: 'light', icon: 'i-lucide-sun' },
-	{ label: 'dark', icon: 'i-lucide-moon' }
+	{ label: 'dark', icon: 'i-lucide-moon' },
 ]
 
 export const COLOR_HEX_MAP: Record<string, string> = {
@@ -82,7 +82,7 @@ export const COLOR_HEX_MAP: Record<string, string> = {
 	taupe: '#7e7269',
 	mauve: '#7c6f85',
 	mist: '#6b7d87',
-	olive: '#6d7560'
+	olive: '#6d7560',
 }
 
 export const useTheme = () => {
@@ -99,7 +99,7 @@ export const useTheme = () => {
 		get: () => colorMode.preference,
 		set: (val: string) => {
 			colorMode.preference = val
-		}
+		},
 	})
 
 	const setBlackAsPrimary = (val: boolean) => {
@@ -107,7 +107,7 @@ export const useTheme = () => {
 	}
 
 	const applyTheme = () => {
-		if (process.client) {
+		if (import.meta.client) {
 			const root = document.documentElement
 			const primaryHex = blackAsPrimary.value ? (colorMode.value === 'dark' ? '#ffffff' : '#000000') : (COLOR_HEX_MAP[primary.value] || '#22c55e')
 			root.style.setProperty('--ui-primary', primaryHex)
@@ -120,7 +120,8 @@ export const useTheme = () => {
 	watch([primary, neutral, blackAsPrimary, radius, font, icon, () => colorMode.value], () => {
 		if (blackAsPrimary.value) {
 			// handled in applyTheme
-		} else {
+		}
+		else {
 			if (appConfig.ui?.colors) {
 				appConfig.ui.colors.primary = primary.value
 				appConfig.ui.colors.neutral = neutral.value
@@ -172,9 +173,9 @@ export const useTheme = () => {
 			ui: {
 				colors: {
 					primary: blackAsPrimary.value ? 'neutral' : primary.value,
-					neutral: neutral.value
-				}
-			}
+					neutral: neutral.value,
+				},
+			},
 		}
 		return `export default defineAppConfig(${JSON.stringify(config, null, 2).replace(/"([^"]+)":/g, '$1:').replace(/"/g, '\'')})`
 	}
@@ -211,6 +212,6 @@ export const useTheme = () => {
 		exportCSS,
 		exportConfig,
 		resetTheme,
-		applyTheme
+		applyTheme,
 	}
 }

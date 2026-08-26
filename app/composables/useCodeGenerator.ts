@@ -22,7 +22,8 @@ export const useCodeGenerator = () => {
 				if (styles.justifyContent === 'end') classes.push('justify-end')
 				if (styles.justifyContent === 'around') classes.push('justify-around')
 			}
-		} else if (styles.display === 'grid') {
+		}
+		else if (styles.display === 'grid') {
 			classes.push('grid')
 			if (styles.gridCols) classes.push(styles.gridCols)
 		}
@@ -45,7 +46,7 @@ export const useCodeGenerator = () => {
 		return classes.filter(Boolean).join(' ')
 	}
 
-	// ==================== 1. VUE SFC GENERATOR ====================
+	// Vue SFC template generator
 	const renderElementCode = (el: BuilderElement, depth: number = 2): string => {
 		const indent = '\t'.repeat(depth)
 		const childIndent = '\t'.repeat(depth + 1)
@@ -53,42 +54,85 @@ export const useCodeGenerator = () => {
 		const classAttr = styleClass ? ` class="${styleClass}"` : ''
 
 		switch (el.type) {
-			case 'container': {
+			case 'app': {
+				const dirAttr = el.props.dir && el.props.dir !== 'ltr' ? ` dir="${el.props.dir}"` : ''
 				const childrenCode = el.children && el.children.length > 0
-					? el.children.map((c) => renderElementCode(c, depth + 1)).join('\n')
-					: `${childIndent}<!-- Drop components here -->`
-				return `${indent}<div${classAttr}>\n${childrenCode}\n${indent}</div>`
+					? el.children.map(c => renderElementCode(c, depth + 1)).join('\n')
+					: `${childIndent}<NuxtPage />`
+				return `${indent}<UApp${dirAttr}>\n${childrenCode}\n${indent}</UApp>`
+			}
+
+			case 'container': {
+				const asAttr = el.props.as && el.props.as !== 'div' ? ` as="${el.props.as}"` : ''
+				const childrenCode = el.children && el.children.length > 0
+					? el.children.map(c => renderElementCode(c, depth + 1)).join('\n')
+					: `${childIndent}<!-- Content -->`
+				return `${indent}<UContainer${asAttr}${classAttr}>\n${childrenCode}\n${indent}</UContainer>`
+			}
+
+			case 'header': {
+				const titleAttr = el.props.title ? ` title="${el.props.title}"` : ''
+				const toAttr = el.props.to && el.props.to !== '/' ? ` to="${el.props.to}"` : ''
+				const modeAttr = el.props.mode && el.props.mode !== 'modal' ? ` mode="${el.props.mode}"` : ''
+				const toggleSideAttr = el.props.toggleSide && el.props.toggleSide !== 'right' ? ` toggle-side="${el.props.toggleSide}"` : ''
+				const asAttr = el.props.as && el.props.as !== 'header' ? ` as="${el.props.as}"` : ''
+				const childrenCode = el.children && el.children.length > 0
+					? '\n' + el.children.map(c => renderElementCode(c, depth + 1)).join('\n') + `\n${indent}`
+					: ''
+				return `${indent}<UHeader${titleAttr}${toAttr}${modeAttr}${toggleSideAttr}${asAttr}${classAttr}>${childrenCode ? childrenCode : `\n${childIndent}<template #right>\n${childIndent}\t<UButton color="neutral" variant="ghost" icon="i-simple-icons-github" />\n${childIndent}</template>\n${indent}`}</UHeader>`
+			}
+
+			case 'main': {
+				const asAttr = el.props.as && el.props.as !== 'main' ? ` as="${el.props.as}"` : ''
+				const childrenCode = el.children && el.children.length > 0
+					? el.children.map(c => renderElementCode(c, depth + 1)).join('\n')
+					: `${childIndent}<!-- Main content -->`
+				return `${indent}<UMain${asAttr}${classAttr}>\n${childrenCode}\n${indent}</UMain>`
+			}
+
+			case 'footer': {
+				const asAttr = el.props.as && el.props.as !== 'footer' ? ` as="${el.props.as}"` : ''
+				const copyrightText = el.props.copyright || 'Copyright © 2026. All rights reserved.'
+				const childrenCode = el.children && el.children.length > 0
+					? '\n' + el.children.map(c => renderElementCode(c, depth + 1)).join('\n') + '\n'
+					: ''
+				return `${indent}<UFooter${asAttr}${classAttr}>\n${childIndent}<template #left>\n${childIndent}\t<p class="text-sm text-neutral-500">${copyrightText}</p>\n${childIndent}</template>${childrenCode}${indent}</UFooter>`
 			}
 
 			case 'grid': {
 				const childrenCode = el.children && el.children.length > 0
-					? el.children.map((c) => renderElementCode(c, depth + 1)).join('\n')
+					? el.children.map(c => renderElementCode(c, depth + 1)).join('\n')
 					: `${childIndent}<!-- Grid items -->`
 				return `${indent}<div${classAttr}>\n${childrenCode}\n${indent}</div>`
 			}
 
 			case 'flex': {
 				const childrenCode = el.children && el.children.length > 0
-					? el.children.map((c) => renderElementCode(c, depth + 1)).join('\n')
+					? el.children.map(c => renderElementCode(c, depth + 1)).join('\n')
 					: `${childIndent}<!-- Flex items -->`
 				return `${indent}<div${classAttr}>\n${childrenCode}\n${indent}</div>`
 			}
 
 			case 'card': {
-				const variantAttr = el.props.variant ? ` variant="${el.props.variant}"` : ''
+				const titleAttr = el.props.title ? ` title="${el.props.title}"` : ''
+				const descAttr = el.props.description ? ` description="${el.props.description}"` : ''
+				const variantAttr = el.props.variant && el.props.variant !== 'outline' ? ` variant="${el.props.variant}"` : ''
+				const asAttr = el.props.as && el.props.as !== 'div' ? ` as="${el.props.as}"` : ''
 				let inner = ''
-				if (el.props.showHeader) {
-					inner += `\n${childIndent}<template #header>\n${childIndent}\t<h3 class="font-semibold text-lg">${el.props.headerText || 'Card Title'}</h3>\n${childIndent}</template>`
+				if (el.props.showHeader && el.props.headerText) {
+					inner += `\n${childIndent}<template #header>\n${childIndent}\t<h3 class="font-semibold text-lg">${el.props.headerText}</h3>\n${childIndent}</template>`
 				}
 				if (el.children && el.children.length > 0) {
-					inner += '\n' + el.children.map((c) => renderElementCode(c, depth + 1)).join('\n')
-				} else {
+					inner += '\n' + el.children.map(c => renderElementCode(c, depth + 1)).join('\n')
+				}
+				else if (!el.props.title && !el.props.description) {
 					inner += `\n${childIndent}<p class="text-sm text-neutral-500">Card body content goes here.</p>`
 				}
 				if (el.props.showFooter && el.props.footerText) {
 					inner += `\n${childIndent}<template #footer>\n${childIndent}\t<p class="text-xs text-neutral-400">${el.props.footerText}</p>\n${childIndent}</template>`
 				}
-				return `${indent}<UCard${variantAttr}${classAttr}>${inner}\n${indent}</UCard>`
+				const closeTag = inner ? `${inner}\n${indent}</UCard>` : ' />'
+				return `${indent}<UCard${titleAttr}${descAttr}${variantAttr}${asAttr}${classAttr}${closeTag.startsWith(' />') ? ' />' : closeTag}`
 			}
 
 			case 'separator': {
@@ -96,12 +140,14 @@ export const useCodeGenerator = () => {
 				const iconAttr = el.props.icon ? ` icon="${el.props.icon}"` : ''
 				const colorAttr = el.props.color && el.props.color !== 'neutral' ? ` color="${el.props.color}"` : ''
 				const typeAttr = el.props.type && el.props.type !== 'solid' ? ` type="${el.props.type}"` : ''
-				return `${indent}<USeparator${labelAttr}${iconAttr}${colorAttr}${typeAttr}${classAttr} />`
+				const orientAttr = el.props.orientation && el.props.orientation !== 'horizontal' ? ` orientation="${el.props.orientation}"` : ''
+				const asAttr = el.props.as && el.props.as !== 'hr' ? ` as="${el.props.as}"` : ''
+				return `${indent}<USeparator${labelAttr}${iconAttr}${colorAttr}${typeAttr}${orientAttr}${asAttr}${classAttr} />`
 			}
 
 			case 'heading': {
 				const tag = el.props.level || 'h2'
-				let headingClasses = []
+				const headingClasses = []
 				if (tag === 'h1') headingClasses.push('text-4xl md:text-5xl font-extrabold tracking-tight')
 				else if (tag === 'h2') headingClasses.push('text-3xl font-bold tracking-tight')
 				else if (tag === 'h3') headingClasses.push('text-2xl font-semibold')
@@ -130,7 +176,7 @@ export const useCodeGenerator = () => {
 			}
 
 			case 'blockquote': {
-				return `${indent}<blockquote class="pl-5 py-2 border-l-4 border-primary-500 my-4 italic text-neutral-700 dark:text-neutral-300">\n${childIndent}<p>"${el.props.quote || ''}"</p>\n${childIndent}${el.props.author ? `<footer class="text-xs font-semibold not-italic text-neutral-500 mt-2">— ${el.props.author}</footer>` : ''}\n${indent}</blockquote>`
+				return `${indent}<blockquote class="pl-5 py-2 border-l-4 border-primary-500 my-4 italic text-neutral-700 dark:text-neutral-300">\n${childIndent}<p>"${el.props.quote || ''}"</p>\n${childIndent}${el.props.author ? `<footer class="text-xs font-semibold not-italic text-neutral-500 mt-2">by ${el.props.author}</footer>` : ''}\n${indent}</blockquote>`
 			}
 
 			case 'list': {
@@ -138,16 +184,19 @@ export const useCodeGenerator = () => {
 				if (el.props.type === 'ordered') {
 					const lis = items.map((it: string) => `${childIndent}<li>${it}</li>`).join('\n')
 					return `${indent}<ol class="list-decimal list-inside space-y-2 text-sm text-neutral-700 dark:text-neutral-300">\n${lis}\n${indent}</ol>`
-				} else if (el.props.type === 'icon') {
+				}
+				else if (el.props.type === 'icon') {
 					const lis = items.map((it: string) => `${childIndent}<li class="flex items-start gap-2"><UIcon name="${el.props.icon || 'lucide:check-circle-2'}" class="w-4 h-4 text-primary shrink-0 mt-0.5" /><span>${it}</span></li>`).join('\n')
 					return `${indent}<ul class="space-y-2.5 text-sm text-neutral-700 dark:text-neutral-300">\n${lis}\n${indent}</ul>`
-				} else {
+				}
+				else {
 					const lis = items.map((it: string) => `${childIndent}<li>${it}</li>`).join('\n')
 					return `${indent}<ul class="list-disc list-inside space-y-2 text-sm text-neutral-700 dark:text-neutral-300">\n${lis}\n${indent}</ul>`
 				}
 			}
 
-			case 'table': {
+			case 'table':
+			case 'table-doc': {
 				return `${indent}<div class="border border-neutral-200 dark:border-neutral-800 rounded-xl overflow-x-auto shadow-sm my-4">\n${childIndent}<table class="w-full text-xs text-left">\n${childIndent}\t<thead class="bg-neutral-50 dark:bg-neutral-900 border-b border-neutral-200 dark:border-neutral-800">\n${childIndent}\t\t<tr><th class="p-3 font-semibold">Prop</th><th class="p-3 font-semibold">Type</th><th class="p-3 font-semibold">Default</th><th class="p-3 font-semibold">Description</th></tr>\n${childIndent}\t</thead>\n${childIndent}\t<tbody class="divide-y divide-neutral-200 dark:divide-neutral-800 font-mono text-[11px]">\n${childIndent}\t\t<tr><td class="p-3 font-bold text-primary">color</td><td class="p-3 text-neutral-500">string</td><td class="p-3 text-neutral-400">'primary'</td><td class="p-3 font-sans text-neutral-600 dark:text-neutral-300">Color scheme.</td></tr>\n${childIndent}\t</tbody>\n${childIndent}</table>\n${indent}</div>`
 			}
 
@@ -190,14 +239,14 @@ export const useCodeGenerator = () => {
 
 			case 'card-group': {
 				const childrenCode = el.children && el.children.length > 0
-					? el.children.map((c) => renderElementCode(c, depth + 1)).join('\n')
+					? el.children.map(c => renderElementCode(c, depth + 1)).join('\n')
 					: `${childIndent}<!-- Cards -->`
 				return `${indent}<div class="grid grid-cols-1 md:grid-cols-2 gap-4 my-4">\n${childrenCode}\n${indent}</div>`
 			}
 
 			case 'collapsible': {
 				const childrenCode = el.children && el.children.length > 0
-					? el.children.map((c) => renderElementCode(c, depth + 1)).join('\n')
+					? el.children.map(c => renderElementCode(c, depth + 1)).join('\n')
 					: `${childIndent}<!-- Collapsible content -->`
 				return `${indent}<div class="border border-neutral-200 dark:border-neutral-800 rounded-xl overflow-hidden my-3 text-left">\n${childIndent}<div class="p-3.5 bg-neutral-50 dark:bg-neutral-900 font-medium text-xs">${el.props.title || 'Expand details'}</div>\n${childIndent}<div class="p-4 bg-white dark:bg-neutral-950 border-t border-neutral-200 dark:border-neutral-800">\n${childrenCode}\n${childIndent}</div>\n${indent}</div>`
 			}
@@ -208,7 +257,7 @@ export const useCodeGenerator = () => {
 
 			case 'field-group': {
 				const childrenCode = el.children && el.children.length > 0
-					? el.children.map((c) => renderElementCode(c, depth + 1)).join('\n')
+					? el.children.map(c => renderElementCode(c, depth + 1)).join('\n')
 					: `${childIndent}<!-- Fields -->`
 				return `${indent}<div class="border border-neutral-200 dark:border-neutral-800 rounded-xl p-4 text-left my-4 space-y-3 bg-neutral-50/50 dark:bg-neutral-900/30">\n${childIndent}<h4 class="text-xs font-bold text-neutral-900 dark:text-white uppercase tracking-wider">${el.props.title || 'Properties'}</h4>\n${childrenCode}\n${indent}</div>`
 			}
@@ -219,11 +268,50 @@ export const useCodeGenerator = () => {
 				return `${indent}<div class="text-left my-4 space-y-4">\n${stepsHtml}\n${indent}</div>`
 			}
 
+			case 'breadcrumb': {
+				const colorAttr = el.props.color ? ` color="${el.props.color}"` : ''
+				const iconAttr = el.props.separatorIcon ? ` separator-icon="${el.props.separatorIcon}"` : ''
+				const asAttr = el.props.as && el.props.as !== 'nav' ? ` as="${el.props.as}"` : ''
+				return `${indent}<UBreadcrumb :items="breadcrumbItems"${colorAttr}${iconAttr}${asAttr}${classAttr} />`
+			}
+
+			case 'footer-columns': {
+				const asAttr = el.props.as && el.props.as !== 'nav' ? ` as="${el.props.as}"` : ''
+				return `${indent}<UFooterColumns :columns="footerColumns"${asAttr}${classAttr} />`
+			}
+
+			case 'navigation-menu': {
+				const orientAttr = el.props.orientation && el.props.orientation !== 'horizontal' ? ` orientation="${el.props.orientation}"` : ''
+				const variantAttr = el.props.variant && el.props.variant !== 'pill' ? ` variant="${el.props.variant}"` : ''
+				const colorAttr = el.props.color ? ` color="${el.props.color}"` : ''
+				const highlightAttr = el.props.highlight === false ? ` :highlight="false"` : ''
+				const asAttr = el.props.as && el.props.as !== 'nav' ? ` as="${el.props.as}"` : ''
+				return `${indent}<UNavigationMenu :items="navigationItems"${orientAttr}${variantAttr}${colorAttr}${highlightAttr}${asAttr}${classAttr} />`
+			}
+
+			case 'pagination': {
+				const colorAttr = el.props.color ? ` color="${el.props.color}"` : ''
+				const variantAttr = el.props.variant ? ` variant="${el.props.variant}"` : ''
+				const sizeAttr = el.props.size ? ` size="${el.props.size}"` : ''
+				const asAttr = el.props.as && el.props.as !== 'nav' ? ` as="${el.props.as}"` : ''
+				return `${indent}<UPagination v-model:page="page" :total="${el.props.total || 100}" :items-per-page="${el.props.itemsPerPage || 10}"${colorAttr}${variantAttr}${sizeAttr}${asAttr}${classAttr} />`
+			}
+
+			case 'stepper': {
+				const orientAttr = el.props.orientation && el.props.orientation !== 'horizontal' ? ` orientation="${el.props.orientation}"` : ''
+				const colorAttr = el.props.color ? ` color="${el.props.color}"` : ''
+				const sizeAttr = el.props.size ? ` size="${el.props.size}"` : ''
+				const asAttr = el.props.as && el.props.as !== 'div' ? ` as="${el.props.as}"` : ''
+				return `${indent}<UStepper v-model="step" :items="stepperItems"${orientAttr}${colorAttr}${sizeAttr}${asAttr}${classAttr} />`
+			}
+
 			case 'tabs': {
-				const childrenCode = el.children && el.children.length > 0
-					? el.children.map((c) => renderElementCode(c, depth + 1)).join('\n')
-					: `${childIndent}<!-- Tab content -->`
-				return `${indent}<div class="border border-neutral-200 dark:border-neutral-800 rounded-xl overflow-hidden my-4 text-left">\n${childIndent}<div class="flex border-b border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-900 px-3 pt-2 gap-4 text-xs font-medium"><span class="pb-2 border-b-2 border-primary text-primary font-semibold">${el.props.tab1 || 'Overview'}</span><span class="pb-2 text-neutral-400">${el.props.tab2 || 'Usage'}</span></div>\n${childIndent}<div class="p-4 bg-white dark:bg-neutral-950">\n${childrenCode}\n${childIndent}</div>\n${indent}</div>`
+				const orientAttr = el.props.orientation && el.props.orientation !== 'horizontal' ? ` orientation="${el.props.orientation}"` : ''
+				const variantAttr = el.props.variant && el.props.variant !== 'pill' ? ` variant="${el.props.variant}"` : ''
+				const colorAttr = el.props.color ? ` color="${el.props.color}"` : ''
+				const sizeAttr = el.props.size ? ` size="${el.props.size}"` : ''
+				const asAttr = el.props.as && el.props.as !== 'div' ? ` as="${el.props.as}"` : ''
+				return `${indent}<UTabs :items="tabItems"${orientAttr}${variantAttr}${colorAttr}${sizeAttr}${asAttr}${classAttr} />`
 			}
 
 			case 'accordion': {
@@ -368,7 +456,7 @@ export const useCodeGenerator = () => {
 
 			case 'form': {
 				const childrenCode = el.children && el.children.length > 0
-					? el.children.map((c) => renderElementCode(c, depth + 1)).join('\n')
+					? el.children.map(c => renderElementCode(c, depth + 1)).join('\n')
 					: `${childIndent}<!-- Form fields -->`
 				return `${indent}<UForm${classAttr}>\n${childrenCode}\n${childIndent}<UButton type="submit" label="${el.props.submitText || 'Submit'}" color="primary" />\n${indent}</UForm>`
 			}
@@ -379,7 +467,7 @@ export const useCodeGenerator = () => {
 				const reqAttr = el.props.required ? ` :required="true"` : ''
 				const errAttr = el.props.error ? ` error="${el.props.error}"` : ''
 				const childrenCode = el.children && el.children.length > 0
-					? el.children.map((c) => renderElementCode(c, depth + 1)).join('\n')
+					? el.children.map(c => renderElementCode(c, depth + 1)).join('\n')
 					: `${childIndent}<UInput placeholder="Enter value..." />`
 				return `${indent}<UFormField${labelAttr}${descAttr}${reqAttr}${errAttr}${classAttr}>\n${childrenCode}\n${indent}</UFormField>`
 			}
@@ -493,7 +581,7 @@ export const useCodeGenerator = () => {
 
 			case 'scroll-area': {
 				const childrenCode = el.children && el.children.length > 0
-					? el.children.map((c) => renderElementCode(c, depth + 1)).join('\n')
+					? el.children.map(c => renderElementCode(c, depth + 1)).join('\n')
 					: `${childIndent}<!-- Scroll content -->`
 				return `${indent}<UScrollArea class="${el.props.height || 'h-48'}">\n${childrenCode}\n${indent}</UScrollArea>`
 			}
@@ -519,13 +607,14 @@ export const useCodeGenerator = () => {
 				return `${indent}<UCard${classAttr}>\n${childIndent}<div class="flex items-center justify-between">\n${childIndent}\t<span class="text-sm font-medium text-neutral-500">${el.props.title || 'Stat'}</span>\n${childIndent}\t<UIcon name="${el.props.icon || 'lucide:activity'}" class="h-5 w-5 text-primary" />\n${childIndent}</div>\n${childIndent}<div class="mt-2 flex items-baseline gap-2">\n${childIndent}\t<span class="text-2xl font-bold">${el.props.value || '0'}</span>\n${childIndent}\t<span class="text-xs font-semibold ${el.props.changeType === 'negative' ? 'text-error' : 'text-success'}">${el.props.change || ''}</span>\n${childIndent}</div>\n${indent}</UCard>`
 			}
 
+			case 'page-hero':
 			case 'hero-section': {
 				const headlineAttr = (el.props.headline || el.props.badgeText) ? ` headline="${el.props.headline || el.props.badgeText}"` : ''
 				const titleAttr = el.props.title ? ` title="${el.props.title}"` : ' title="Hero Title"'
 				const descAttr = (el.props.description || el.props.subtitle) ? ` description="${el.props.description || el.props.subtitle}"` : ''
 				const orientAttr = el.props.orientation && el.props.orientation !== 'vertical' ? ` orientation="${el.props.orientation}"` : ''
 				const reverseAttr = el.props.reverse ? ` :reverse="true"` : ''
-				
+
 				const links = []
 				if (el.props.primaryBtnText) {
 					links.push(`{ label: '${el.props.primaryBtnText}', color: '${el.props.primaryBtnColor || 'primary'}', variant: '${el.props.primaryBtnVariant || 'solid'}', trailingIcon: '${el.props.primaryBtnIcon || 'i-lucide-arrow-right'}' }`)
@@ -537,14 +626,16 @@ export const useCodeGenerator = () => {
 
 				let inner = ''
 				if (el.children && el.children.length > 0) {
-					inner = '\n' + el.children.map((c) => renderElementCode(c, depth + 1)).join('\n') + `\n${indent}`
-				} else if (el.props.showIllustration && el.props.imageUrl) {
+					inner = '\n' + el.children.map(c => renderElementCode(c, depth + 1)).join('\n') + `\n${indent}`
+				}
+				else if (el.props.showIllustration && el.props.imageUrl) {
 					inner = `\n${childIndent}<img src="${el.props.imageUrl}" alt="App screenshot" class="rounded-xl shadow-2xl ring-1 ring-neutral-200 dark:ring-neutral-800" />\n${indent}`
 				}
 
 				if (inner) {
 					return `${indent}<UPageHero${headlineAttr}${titleAttr}${descAttr}${orientAttr}${reverseAttr}${linksAttr}${classAttr}>${inner}</UPageHero>`
-				} else {
+				}
+				else {
 					return `${indent}<UPageHero${headlineAttr}${titleAttr}${descAttr}${orientAttr}${reverseAttr}${linksAttr}${classAttr} />`
 				}
 			}
@@ -568,7 +659,7 @@ export const useCodeGenerator = () => {
 				return `${indent}<footer class="border-t border-neutral-200 dark:border-neutral-800 py-12 px-6">\n${childIndent}<div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-6">\n${childIndent}\t<div class="text-center sm:text-left">\n${childIndent}\t\t<h4 class="text-lg font-bold text-primary">${el.props.brandName || 'Brand'}</h4>\n${childIndent}\t\t<p class="text-xs text-neutral-500 mt-1">${el.props.tagline || ''}</p>\n${childIndent}\t</div>\n${childIndent}\t<p class="text-xs text-neutral-400">${el.props.copyright || '© 2026'}</p>\n${childIndent}</div>\n${indent}</footer>`
 			}
 
-			// ================= PAGE & PRO COMPONENTS =================
+			// Page and pro components
 			case 'auth-form': {
 				const titleAttr = el.props.title ? ` title="${el.props.title}"` : ''
 				const descAttr = el.props.description ? ` description="${el.props.description}"` : ''
@@ -593,7 +684,7 @@ export const useCodeGenerator = () => {
 			case 'blog-posts': {
 				const orientAttr = el.props.orientation && el.props.orientation !== 'vertical' ? ` orientation="${el.props.orientation}"` : ''
 				const childrenCode = el.children && el.children.length > 0
-					? el.children.map((c) => renderElementCode(c, depth + 1)).join('\n')
+					? el.children.map(c => renderElementCode(c, depth + 1)).join('\n')
 					: `${childIndent}<!-- Drop UBlogPost cards here -->`
 				return `${indent}<UBlogPosts${orientAttr}${classAttr}>\n${childrenCode}\n${indent}</UBlogPosts>`
 			}
@@ -606,25 +697,26 @@ export const useCodeGenerator = () => {
 				const badgeAttr = el.props.badge ? ` :badge="{ label: '${el.props.badge}' }"` : ''
 				let inner = ''
 				if (el.children && el.children.length > 0) {
-					inner = '\n' + el.children.map((c) => renderElementCode(c, depth + 1)).join('\n') + `\n${indent}`
+					inner = '\n' + el.children.map(c => renderElementCode(c, depth + 1)).join('\n') + `\n${indent}`
 				}
 				if (inner) {
 					return `${indent}<UChangelogVersion${versionAttr}${dateAttr}${titleAttr}${descAttr}${badgeAttr}${classAttr}>${inner}</UChangelogVersion>`
-				} else {
+				}
+				else {
 					return `${indent}<UChangelogVersion${versionAttr}${dateAttr}${titleAttr}${descAttr}${badgeAttr}${classAttr} />`
 				}
 			}
 
 			case 'changelog-versions': {
 				const childrenCode = el.children && el.children.length > 0
-					? el.children.map((c) => renderElementCode(c, depth + 1)).join('\n')
+					? el.children.map(c => renderElementCode(c, depth + 1)).join('\n')
 					: `${childIndent}<!-- Drop UChangelogVersion entries here -->`
 				return `${indent}<UChangelogVersions${classAttr}>\n${childrenCode}\n${indent}</UChangelogVersions>`
 			}
 
 			case 'page': {
 				const childrenCode = el.children && el.children.length > 0
-					? el.children.map((c) => renderElementCode(c, depth + 1)).join('\n')
+					? el.children.map(c => renderElementCode(c, depth + 1)).join('\n')
 					: `${childIndent}<!-- Page content -->`
 				return `${indent}<UPage${classAttr}>\n${childrenCode}\n${indent}</UPage>`
 			}
@@ -644,14 +736,14 @@ export const useCodeGenerator = () => {
 			case 'page-body': {
 				const proseAttr = el.props.prose ? ' :prose="true"' : ''
 				const childrenCode = el.children && el.children.length > 0
-					? el.children.map((c) => renderElementCode(c, depth + 1)).join('\n')
+					? el.children.map(c => renderElementCode(c, depth + 1)).join('\n')
 					: `${childIndent}<!-- Page body content -->`
 				return `${indent}<UPageBody${proseAttr}${classAttr}>\n${childrenCode}\n${indent}</UPageBody>`
 			}
 
 			case 'page-aside': {
 				const childrenCode = el.children && el.children.length > 0
-					? el.children.map((c) => renderElementCode(c, depth + 1)).join('\n')
+					? el.children.map(c => renderElementCode(c, depth + 1)).join('\n')
 					: `${childIndent}<!-- Aside links -->`
 				return `${indent}<UPageAside${classAttr}>\n${childrenCode}\n${indent}</UPageAside>`
 			}
@@ -665,14 +757,14 @@ export const useCodeGenerator = () => {
 
 			case 'page-grid': {
 				const childrenCode = el.children && el.children.length > 0
-					? el.children.map((c) => renderElementCode(c, depth + 1)).join('\n')
+					? el.children.map(c => renderElementCode(c, depth + 1)).join('\n')
 					: `${childIndent}<!-- Page grid items -->`
 				return `${indent}<UPageGrid${classAttr}>\n${childrenCode}\n${indent}</UPageGrid>`
 			}
 
 			case 'page-columns': {
 				const childrenCode = el.children && el.children.length > 0
-					? el.children.map((c) => renderElementCode(c, depth + 1)).join('\n')
+					? el.children.map(c => renderElementCode(c, depth + 1)).join('\n')
 					: `${childIndent}<!-- Page columns items -->`
 				return `${indent}<UPageColumns${classAttr}>\n${childrenCode}\n${indent}</UPageColumns>`
 			}
@@ -686,11 +778,12 @@ export const useCodeGenerator = () => {
 				const orientAttr = el.props.orientation && el.props.orientation !== 'vertical' ? ` orientation="${el.props.orientation}"` : ''
 				let inner = ''
 				if (el.children && el.children.length > 0) {
-					inner = '\n' + el.children.map((c) => renderElementCode(c, depth + 1)).join('\n') + `\n${indent}`
+					inner = '\n' + el.children.map(c => renderElementCode(c, depth + 1)).join('\n') + `\n${indent}`
 				}
 				if (inner) {
 					return `${indent}<UPageCard${titleAttr}${descAttr}${iconAttr}${variantAttr}${highlightAttr}${orientAttr}${classAttr}>${inner}</UPageCard>`
-				} else {
+				}
+				else {
 					return `${indent}<UPageCard${titleAttr}${descAttr}${iconAttr}${variantAttr}${highlightAttr}${orientAttr}${classAttr} />`
 				}
 			}
@@ -717,14 +810,16 @@ export const useCodeGenerator = () => {
 
 				let inner = ''
 				if (el.children && el.children.length > 0) {
-					inner = '\n' + el.children.map((c) => renderElementCode(c, depth + 1)).join('\n') + `\n${indent}`
-				} else if (el.props.showIllustration && el.props.imageUrl) {
+					inner = '\n' + el.children.map(c => renderElementCode(c, depth + 1)).join('\n') + `\n${indent}`
+				}
+				else if (el.props.showIllustration && el.props.imageUrl) {
 					inner = `\n${childIndent}<img src="${el.props.imageUrl}" alt="Illustration" class="rounded-xl shadow-2xl ring-1 ring-neutral-200 dark:ring-neutral-800" />\n${indent}`
 				}
 
 				if (inner) {
 					return `${indent}<UPageSection${headlineAttr}${titleAttr}${descAttr}${iconAttr}${orientAttr}${reverseAttr}${linksAttr}${classAttr}>${inner}</UPageSection>`
-				} else {
+				}
+				else {
 					return `${indent}<UPageSection${headlineAttr}${titleAttr}${descAttr}${iconAttr}${orientAttr}${reverseAttr}${linksAttr}${classAttr} />`
 				}
 			}
@@ -752,7 +847,7 @@ export const useCodeGenerator = () => {
 				const titleAttr = el.props.title ? ` title="${el.props.title}"` : ''
 				const descAttr = el.props.description ? ` description="${el.props.description}"` : ''
 				const childrenCode = el.children && el.children.length > 0
-					? el.children.map((c) => renderElementCode(c, depth + 1)).join('\n')
+					? el.children.map(c => renderElementCode(c, depth + 1)).join('\n')
 					: `${childIndent}<!-- List items -->`
 				return `${indent}<UPageList${titleAttr}${descAttr}${classAttr}>\n${childrenCode}\n${indent}</UPageList>`
 			}
@@ -779,7 +874,7 @@ export const useCodeGenerator = () => {
 			case 'pricing-plans': {
 				const scaleAttr = el.props.scale ? ' :scale="true"' : ''
 				const childrenCode = el.children && el.children.length > 0
-					? el.children.map((c) => renderElementCode(c, depth + 1)).join('\n')
+					? el.children.map(c => renderElementCode(c, depth + 1)).join('\n')
 					: `${childIndent}<!-- Drop UPricingPlan cards here -->`
 				return `${indent}<UPricingPlans${scaleAttr}${classAttr}>\n${childrenCode}\n${indent}</UPricingPlans>`
 			}
@@ -797,7 +892,7 @@ export const useCodeGenerator = () => {
 
 	const generateFullSfcCode = (elements: BuilderElement[]): string => {
 		const templateBody = elements.length > 0
-			? elements.map((el) => renderElementCode(el, 2)).join('\n\n')
+			? elements.map(el => renderElementCode(el, 2)).join('\n\n')
 			: '\t\t<div class="py-20 text-center text-neutral-500">\n\t\t\t<p>No components added yet.</p>\n\t\t</div>'
 
 		return `<script setup lang="ts">
@@ -815,15 +910,16 @@ ${templateBody}
 `
 	}
 
-	// ==================== 2. NUXT CONTENT (.md) MDC GENERATOR ====================
+	// Nuxt Content MDC generator
 	const renderElementMdc = (el: BuilderElement, depth: number = 0): string => {
 		const indent = '  '.repeat(depth)
 		const colons = ':'.repeat(Math.max(2, depth + 2))
 
 		switch (el.type) {
+			case 'page-hero':
 			case 'hero-section': {
 				const childrenMdc = el.children && el.children.length > 0
-					? '\n' + el.children.map((c) => renderElementMdc(c, depth + 1)).join('\n\n') + '\n' + indent
+					? '\n' + el.children.map(c => renderElementMdc(c, depth + 1)).join('\n\n') + '\n' + indent
 					: (el.props.showIllustration && el.props.imageUrl ? `\n${indent}  ![App screenshot](${el.props.imageUrl})\n${indent}` : '')
 
 				const headline = el.props.headline || el.props.badgeText || ''
@@ -834,25 +930,54 @@ ${templateBody}
 				return `${indent}${colons}u-page-hero{title="${el.props.title || 'Hero Title'}" headline="${headline}" description="${desc}" orientation="${orient}"${rev}}${childrenMdc}${colons}`
 			}
 
+			case 'app': {
+				const childrenMdc = el.children && el.children.length > 0
+					? el.children.map(c => renderElementMdc(c, depth + 1)).join('\n\n')
+					: ''
+				return `${indent}${colons}u-app\n${childrenMdc}\n${indent}${colons}`
+			}
+
 			case 'container': {
 				const childrenMdc = el.children && el.children.length > 0
-					? el.children.map((c) => renderElementMdc(c, depth + 1)).join('\n\n')
+					? el.children.map(c => renderElementMdc(c, depth + 1)).join('\n\n')
 					: ''
-				return `${indent}${colons}container\n${childrenMdc}\n${indent}${colons}`
+				return `${indent}${colons}u-container\n${childrenMdc}\n${indent}${colons}`
+			}
+
+			case 'header': {
+				const titleAttr = el.props.title ? ` title="${el.props.title}"` : ''
+				const childrenMdc = el.children && el.children.length > 0
+					? '\n' + el.children.map(c => renderElementMdc(c, depth + 1)).join('\n\n') + '\n' + indent
+					: ''
+				return `${indent}${colons}u-header{${titleAttr}}${childrenMdc}${colons}`
+			}
+
+			case 'main': {
+				const childrenMdc = el.children && el.children.length > 0
+					? el.children.map(c => renderElementMdc(c, depth + 1)).join('\n\n')
+					: ''
+				return `${indent}${colons}u-main\n${childrenMdc}\n${indent}${colons}`
+			}
+
+			case 'footer': {
+				return `${indent}::u-footer{copyright="${el.props.copyright || 'Copyright © 2026'}"}`
 			}
 
 			case 'grid': {
 				const childrenMdc = el.children && el.children.length > 0
-					? el.children.map((c) => renderElementMdc(c, depth + 1)).join('\n\n')
+					? el.children.map(c => renderElementMdc(c, depth + 1)).join('\n\n')
 					: ''
-				return `${indent}${colons}grid{gridCols="${el.props.gridCols || 'grid-cols-1 md:grid-cols-3'}"}\n${childrenMdc}\n${indent}${colons}`
+				return `${indent}${colons}grid{gridCols="${el.props.gridCols || 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3'}"}\n${childrenMdc}\n${indent}${colons}`
 			}
 
 			case 'card': {
+				const titleAttr = el.props.title ? ` title="${el.props.title}"` : ''
+				const descAttr = el.props.description ? ` description="${el.props.description}"` : ''
+				const variantAttr = el.props.variant && el.props.variant !== 'outline' ? ` variant="${el.props.variant}"` : ''
 				const childrenMdc = el.children && el.children.length > 0
-					? el.children.map((c) => renderElementMdc(c, depth + 1)).join('\n\n')
+					? el.children.map(c => renderElementMdc(c, depth + 1)).join('\n\n')
 					: `${indent}  Card content`
-				return `${indent}${colons}card{headerText="${el.props.headerText || 'Card Title'}" variant="${el.props.variant || 'outline'}"}\n${childrenMdc}\n${indent}${colons}`
+				return `${indent}${colons}u-card{${titleAttr}${descAttr}${variantAttr}}\n${childrenMdc}\n${indent}${colons}`
 			}
 
 			case 'heading': {
@@ -870,7 +995,7 @@ ${templateBody}
 			}
 
 			case 'blockquote': {
-				const authorLine = el.props.author ? `\n${indent}>\n${indent}> — ${el.props.author}` : ''
+				const authorLine = el.props.author ? `\n${indent}>\n${indent}> by ${el.props.author}` : ''
 				return `${indent}> ${el.props.quote || ''}${authorLine}`
 			}
 
@@ -878,7 +1003,8 @@ ${templateBody}
 				const items = (el.props.items || '').split(',').map((s: string) => s.trim()).filter(Boolean)
 				if (el.props.type === 'ordered') {
 					return items.map((it: string, idx: number) => `${indent}${idx + 1}. ${it}`).join('\n')
-				} else {
+				}
+				else {
 					return items.map((it: string) => `${indent}- ${it}`).join('\n')
 				}
 			}
@@ -926,14 +1052,14 @@ ${templateBody}
 
 			case 'card-group': {
 				const childrenMdc = el.children && el.children.length > 0
-					? '\n' + el.children.map((c) => renderElementMdc(c, depth + 1)).join('\n\n') + '\n' + indent
+					? '\n' + el.children.map(c => renderElementMdc(c, depth + 1)).join('\n\n') + '\n' + indent
 					: ''
 				return `${indent}${colons}card-group{columns="${el.props.columns || '2'}"}${childrenMdc}${colons}`
 			}
 
 			case 'collapsible': {
 				const childrenMdc = el.children && el.children.length > 0
-					? '\n' + el.children.map((c) => renderElementMdc(c, depth + 1)).join('\n\n') + '\n' + indent
+					? '\n' + el.children.map(c => renderElementMdc(c, depth + 1)).join('\n\n') + '\n' + indent
 					: ''
 				return `${indent}${colons}collapsible{title="${el.props.title || 'Details'}"}${childrenMdc}${colons}`
 			}
@@ -944,7 +1070,7 @@ ${templateBody}
 
 			case 'field-group': {
 				const childrenMdc = el.children && el.children.length > 0
-					? '\n' + el.children.map((c) => renderElementMdc(c, depth + 1)).join('\n\n') + '\n' + indent
+					? '\n' + el.children.map(c => renderElementMdc(c, depth + 1)).join('\n\n') + '\n' + indent
 					: ''
 				return `${indent}${colons}field-group{title="${el.props.title || 'Props'}"}${childrenMdc}${colons}`
 			}
@@ -957,7 +1083,7 @@ ${templateBody}
 
 			case 'tabs': {
 				const childrenMdc = el.children && el.children.length > 0
-					? '\n' + el.children.map((c) => renderElementMdc(c, depth + 1)).join('\n\n') + '\n' + indent
+					? '\n' + el.children.map(c => renderElementMdc(c, depth + 1)).join('\n\n') + '\n' + indent
 					: ''
 				return `${indent}${colons}tabs${childrenMdc}${colons}`
 			}
@@ -982,12 +1108,36 @@ ${templateBody}
 				return `${indent}::u-avatar{src="${el.props.src || ''}" alt="${el.props.alt || 'Avatar'}" size="${el.props.size || 'md'}"}`
 			}
 
+			case 'avatar-group': {
+				return `${indent}::u-avatar-group{size="${el.props.size || 'md'}" max="${el.props.max || 3}"}`
+			}
+
+			case 'banner': {
+				return `${indent}::u-banner{title="${el.props.title || 'Announcement'}" color="${el.props.color || 'primary'}" icon="${el.props.icon || 'lucide:sparkles'}"}`
+			}
+
+			case 'calendar': {
+				return `${indent}::u-calendar{color="${el.props.color || 'primary'}" size="${el.props.size || 'md'}"}`
+			}
+
+			case 'chip': {
+				return `${indent}::u-chip{text="${el.props.text || ''}" color="${el.props.color || 'error'}" position="${el.props.position || 'top-right'}"}`
+			}
+
 			case 'alert': {
 				return `${indent}::u-alert{title="${el.props.title || 'Alert'}" description="${el.props.description || ''}" color="${el.props.color || 'primary'}" icon="${el.props.icon || 'lucide:info'}"}`
 			}
 
 			case 'progress': {
 				return `${indent}::u-progress{value=${el.props.value || 50} color="${el.props.color || 'primary'}"}`
+			}
+
+			case 'progress-group': {
+				return `${indent}::u-progress-group{color="${el.props.color || 'primary'}" items="${el.props.items || ''}"}`
+			}
+
+			case 'skeleton': {
+				return `${indent}::u-skeleton{shape="${el.props.shape || 'rectangle'}"}`
 			}
 
 			case 'stat-card': {
@@ -1010,7 +1160,7 @@ ${templateBody}
 				return `${indent}::footer-section{brandName="${el.props.brandName || 'Brand'}" tagline="${el.props.tagline || ''}" copyright="${el.props.copyright || '© 2026'}"}`
 			}
 
-			// ================= PAGE & PRO COMPONENTS MDC =================
+			// Page and pro components MDC
 			case 'auth-form': {
 				return `${indent}::u-auth-form{title="${el.props.title || 'Welcome back'}" description="${el.props.description || ''}" icon="${el.props.icon || 'lucide:lock'}"}`
 			}
@@ -1021,28 +1171,28 @@ ${templateBody}
 
 			case 'blog-posts': {
 				const childrenMdc = el.children && el.children.length > 0
-					? '\n' + el.children.map((c) => renderElementMdc(c, depth + 1)).join('\n\n') + '\n' + indent
+					? '\n' + el.children.map(c => renderElementMdc(c, depth + 1)).join('\n\n') + '\n' + indent
 					: ''
 				return `${indent}${colons}u-blog-posts${childrenMdc}${colons}`
 			}
 
 			case 'changelog-version': {
 				const childrenMdc = el.children && el.children.length > 0
-					? '\n' + el.children.map((c) => renderElementMdc(c, depth + 1)).join('\n\n') + '\n' + indent
+					? '\n' + el.children.map(c => renderElementMdc(c, depth + 1)).join('\n\n') + '\n' + indent
 					: ''
 				return `${indent}${colons}u-changelog-version{version="${el.props.version || 'v1.0.0'}" date="${el.props.date || ''}" title="${el.props.title || ''}" description="${el.props.description || ''}"}${childrenMdc}${colons}`
 			}
 
 			case 'changelog-versions': {
 				const childrenMdc = el.children && el.children.length > 0
-					? '\n' + el.children.map((c) => renderElementMdc(c, depth + 1)).join('\n\n') + '\n' + indent
+					? '\n' + el.children.map(c => renderElementMdc(c, depth + 1)).join('\n\n') + '\n' + indent
 					: ''
 				return `${indent}${colons}u-changelog-versions${childrenMdc}${colons}`
 			}
 
 			case 'page': {
 				const childrenMdc = el.children && el.children.length > 0
-					? '\n' + el.children.map((c) => renderElementMdc(c, depth + 1)).join('\n\n') + '\n' + indent
+					? '\n' + el.children.map(c => renderElementMdc(c, depth + 1)).join('\n\n') + '\n' + indent
 					: ''
 				return `${indent}${colons}u-page${childrenMdc}${colons}`
 			}
@@ -1053,14 +1203,14 @@ ${templateBody}
 
 			case 'page-body': {
 				const childrenMdc = el.children && el.children.length > 0
-					? '\n' + el.children.map((c) => renderElementMdc(c, depth + 1)).join('\n\n') + '\n' + indent
+					? '\n' + el.children.map(c => renderElementMdc(c, depth + 1)).join('\n\n') + '\n' + indent
 					: ''
 				return `${indent}${colons}u-page-body{prose=${el.props.prose ? 'true' : 'false'}}${childrenMdc}${colons}`
 			}
 
 			case 'page-aside': {
 				const childrenMdc = el.children && el.children.length > 0
-					? '\n' + el.children.map((c) => renderElementMdc(c, depth + 1)).join('\n\n') + '\n' + indent
+					? '\n' + el.children.map(c => renderElementMdc(c, depth + 1)).join('\n\n') + '\n' + indent
 					: ''
 				return `${indent}${colons}u-page-aside{title="${el.props.title || 'Navigation'}"}${childrenMdc}${colons}`
 			}
@@ -1071,21 +1221,21 @@ ${templateBody}
 
 			case 'page-grid': {
 				const childrenMdc = el.children && el.children.length > 0
-					? '\n' + el.children.map((c) => renderElementMdc(c, depth + 1)).join('\n\n') + '\n' + indent
+					? '\n' + el.children.map(c => renderElementMdc(c, depth + 1)).join('\n\n') + '\n' + indent
 					: ''
 				return `${indent}${colons}u-page-grid{columns="${el.props.columns || '3'}"}${childrenMdc}${colons}`
 			}
 
 			case 'page-columns': {
 				const childrenMdc = el.children && el.children.length > 0
-					? '\n' + el.children.map((c) => renderElementMdc(c, depth + 1)).join('\n\n') + '\n' + indent
+					? '\n' + el.children.map(c => renderElementMdc(c, depth + 1)).join('\n\n') + '\n' + indent
 					: ''
 				return `${indent}${colons}u-page-columns${childrenMdc}${colons}`
 			}
 
 			case 'page-card': {
 				const childrenMdc = el.children && el.children.length > 0
-					? '\n' + el.children.map((c) => renderElementMdc(c, depth + 1)).join('\n\n') + '\n' + indent
+					? '\n' + el.children.map(c => renderElementMdc(c, depth + 1)).join('\n\n') + '\n' + indent
 					: ''
 				return `${indent}${colons}u-page-card{title="${el.props.title || 'Card'}" description="${el.props.description || ''}" icon="${el.props.icon || ''}" variant="${el.props.variant || 'outline'}"}${childrenMdc}${colons}`
 			}
@@ -1096,14 +1246,14 @@ ${templateBody}
 
 			case 'page-section': {
 				const childrenMdc = el.children && el.children.length > 0
-					? '\n' + el.children.map((c) => renderElementMdc(c, depth + 1)).join('\n\n') + '\n' + indent
+					? '\n' + el.children.map(c => renderElementMdc(c, depth + 1)).join('\n\n') + '\n' + indent
 					: (el.props.showIllustration && el.props.imageUrl ? `\n${indent}  ![Illustration](${el.props.imageUrl})\n${indent}` : '')
 				return `${indent}${colons}u-page-section{title="${el.props.title || 'Section Title'}" headline="${el.props.headline || ''}" description="${el.props.description || ''}" icon="${el.props.icon || ''}" orientation="${el.props.orientation || 'vertical'}"}${childrenMdc}${colons}`
 			}
 
 			case 'page-cta': {
 				const childrenMdc = el.children && el.children.length > 0
-					? '\n' + el.children.map((c) => renderElementMdc(c, depth + 1)).join('\n\n') + '\n' + indent
+					? '\n' + el.children.map(c => renderElementMdc(c, depth + 1)).join('\n\n') + '\n' + indent
 					: ''
 				return `${indent}${colons}u-page-cta{title="${el.props.title || 'CTA Title'}" headline="${el.props.headline || ''}" description="${el.props.description || ''}" variant="${el.props.variant || 'subtle'}"}${childrenMdc}${colons}`
 			}
@@ -1114,7 +1264,7 @@ ${templateBody}
 
 			case 'page-list': {
 				const childrenMdc = el.children && el.children.length > 0
-					? '\n' + el.children.map((c) => renderElementMdc(c, depth + 1)).join('\n\n') + '\n' + indent
+					? '\n' + el.children.map(c => renderElementMdc(c, depth + 1)).join('\n\n') + '\n' + indent
 					: ''
 				return `${indent}${colons}u-page-list{title="${el.props.title || 'FAQ'}" description="${el.props.description || ''}"}${childrenMdc}${colons}`
 			}
@@ -1129,7 +1279,7 @@ ${templateBody}
 
 			case 'pricing-plans': {
 				const childrenMdc = el.children && el.children.length > 0
-					? '\n' + el.children.map((c) => renderElementMdc(c, depth + 1)).join('\n\n') + '\n' + indent
+					? '\n' + el.children.map(c => renderElementMdc(c, depth + 1)).join('\n\n') + '\n' + indent
 					: ''
 				return `${indent}${colons}u-pricing-plans${childrenMdc}${colons}`
 			}
@@ -1145,7 +1295,7 @@ ${templateBody}
 
 	const generateNuxtContentMarkdown = (elements: BuilderElement[]): string => {
 		const mdcBody = elements.length > 0
-			? elements.map((el) => renderElementMdc(el, 0)).join('\n\n')
+			? elements.map(el => renderElementMdc(el, 0)).join('\n\n')
 			: 'No content yet.'
 
 		return `---
@@ -1163,7 +1313,7 @@ ${mdcBody}
 		const lines: string[] = []
 
 		// Global title & description
-		const heroEl = elements.find((e) => e.type === 'hero-section')
+		const heroEl = elements.find(e => e.type === 'page-hero' || e.type === 'hero-section')
 		const pageTitle = heroEl?.props.title || 'Nuxt UI Landing Page'
 		const pageDesc = heroEl?.props.description || heroEl?.props.subtitle || 'Built visually with Nuxt UI Studio.'
 
@@ -1206,7 +1356,7 @@ ${mdcBody}
 		}
 
 		// 2. SECTIONS & FEATURES
-		const sectionEls = elements.filter((e) => e.type === 'page-section' || e.type === 'feature-card' || e.type === 'page-feature')
+		const sectionEls = elements.filter(e => e.type === 'page-section' || e.type === 'feature-card' || e.type === 'page-feature')
 		if (sectionEls.length > 0) {
 			lines.push('sections:')
 			for (const sec of sectionEls) {
@@ -1224,7 +1374,8 @@ ${mdcBody}
 							if (ch.props.icon) lines.push(`        icon: "${ch.props.icon}"`)
 						}
 					}
-				} else {
+				}
+				else {
 					lines.push(`  - title: "${sec.props.title || 'Feature'}"`)
 					lines.push(`    description: "${sec.props.description || ''}"`)
 					if (sec.props.icon) lines.push(`    icon: "${sec.props.icon}"`)
@@ -1234,9 +1385,9 @@ ${mdcBody}
 		}
 
 		// 3. PRICING PLANS
-		const pricingPlans = elements.filter((e) => e.type === 'pricing-plan' || e.type === 'pricing-card')
-		const pricingContainer = elements.find((e) => e.type === 'pricing-plans')
-		const allPricing = pricingPlans.concat(pricingContainer?.children?.filter((c) => c.type === 'pricing-plan' || c.type === 'pricing-card') || [])
+		const pricingPlans = elements.filter(e => e.type === 'pricing-plan' || e.type === 'pricing-card')
+		const pricingContainer = elements.find(e => e.type === 'pricing-plans')
+		const allPricing = pricingPlans.concat(pricingContainer?.children?.filter(c => c.type === 'pricing-plan' || c.type === 'pricing-card') || [])
 
 		if (allPricing.length > 0) {
 			lines.push('pricing:')
@@ -1265,7 +1416,7 @@ ${mdcBody}
 		}
 
 		// 4. CTA BLOCK
-		const ctaEl = elements.find((e) => e.type === 'page-cta')
+		const ctaEl = elements.find(e => e.type === 'page-cta')
 		if (ctaEl) {
 			lines.push('cta:')
 			if (ctaEl.props.headline) lines.push(`  headline: "${ctaEl.props.headline}"`)
@@ -1287,7 +1438,7 @@ ${mdcBody}
 		}
 
 		// 5. LOGOS SHOWCASE
-		const logosEl = elements.find((e) => e.type === 'page-logos')
+		const logosEl = elements.find(e => e.type === 'page-logos')
 		if (logosEl) {
 			lines.push('logos:')
 			lines.push(`  title: "${logosEl.props.title || 'Trusted by engineering teams'}"`)
@@ -1302,7 +1453,7 @@ ${mdcBody}
 		}
 
 		// 6. FAQ & LISTS
-		const listEl = elements.find((e) => e.type === 'page-list')
+		const listEl = elements.find(e => e.type === 'page-list')
 		if (listEl) {
 			lines.push('faq:')
 			lines.push(`  title: "${listEl.props.title || 'Frequently Asked Questions'}"`)
@@ -1316,7 +1467,7 @@ ${mdcBody}
 		}
 
 		// 7. TESTIMONIALS
-		const testimonials = elements.filter((e) => e.type === 'testimonial-card')
+		const testimonials = elements.filter(e => e.type === 'testimonial-card')
 		if (testimonials.length > 0) {
 			lines.push('testimonials:')
 			lines.push('  title: "Loved by developers worldwide"')
@@ -1338,6 +1489,6 @@ ${mdcBody}
 		renderElementCode,
 		generateFullSfcCode,
 		generateNuxtContentMarkdown,
-		generateNuxtContentYaml
+		generateNuxtContentYaml,
 	}
 }

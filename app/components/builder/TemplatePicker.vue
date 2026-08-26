@@ -1,8 +1,5 @@
 <script setup lang="ts">
-import { TEMPLATE_PRESETS } from '~/composables/useTemplates'
-import { useBuilder } from '~/composables/useBuilder'
-
-const props = defineProps<{
+defineProps<{
 	modelValue: boolean
 }>()
 
@@ -35,7 +32,10 @@ const handleSelect = (templateId: string) => {
 				>
 					<div>
 						<div class="w-10 h-10 rounded-lg bg-primary-50 dark:bg-primary-950/60 flex items-center justify-center text-primary-500 mb-3 group-hover:scale-105 transition-transform">
-							<UIcon :name="tpl.thumbnailIcon" class="w-5 h-5" />
+							<UIcon
+								:name="tpl.thumbnailIcon"
+								class="w-5 h-5"
+							/>
 						</div>
 						<span class="text-[10px] font-semibold uppercase tracking-wider text-primary-500">{{ tpl.category }}</span>
 						<h3 class="text-sm font-bold text-neutral-900 dark:text-white mt-1 mb-2">{{ tpl.title }}</h3>

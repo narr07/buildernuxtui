@@ -1,13 +1,4 @@
 <script setup lang="ts">
-import { useBuilder } from '~/composables/useBuilder'
-import { useTheme } from '~/composables/useTheme'
-import BuilderHeader from '~/components/builder/BuilderHeader.vue'
-import BuilderSidebar from '~/components/builder/BuilderSidebar.vue'
-import BuilderCanvas from '~/components/builder/BuilderCanvas.vue'
-import BuilderInspector from '~/components/builder/BuilderInspector.vue'
-import ExportModal from '~/components/builder/ExportModal.vue'
-import TemplatePicker from '~/components/builder/TemplatePicker.vue'
-
 useSeoMeta({
 	title: 'Builder Nuxt UI - Visual Drag & Drop Builder for Nuxt 4 & Nuxt UI',
 	description: 'Create responsive, high-converting websites and dashboards visually with Nuxt UI v4 components and export clean Vue SFC code.',
@@ -18,7 +9,7 @@ useSeoMeta({
 	twitterCard: 'summary_large_image',
 	twitterTitle: 'Builder Nuxt UI',
 	twitterDescription: 'Visual Drag & Drop Page Builder for Nuxt UI v4 and Nuxt Content',
-	twitterImage: 'https://buildernuxtui.permadi.dev/icon-512.png'
+	twitterImage: 'https://buildernuxtui.permadi.dev/icon-512.png',
 })
 
 const {
@@ -29,7 +20,7 @@ const {
 	undo,
 	redo,
 	removeElement,
-	selectElement
+	selectElement,
 } = useBuilder()
 
 // Initialize live theme
@@ -51,17 +42,21 @@ onMounted(() => {
 			if (e.shiftKey) {
 				e.preventDefault()
 				redo()
-			} else {
+			}
+			else {
 				e.preventDefault()
 				undo()
 			}
-		} else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'y') {
+		}
+		else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'y') {
 			e.preventDefault()
 			redo()
-		} else if ((e.key === 'Delete' || e.key === 'Backspace') && selectedElementId.value) {
+		}
+		else if ((e.key === 'Delete' || e.key === 'Backspace') && selectedElementId.value) {
 			e.preventDefault()
 			removeElement(selectedElementId.value)
-		} else if (e.key === 'Escape') {
+		}
+		else if (e.key === 'Escape') {
 			selectElement(null)
 		}
 	}
@@ -91,7 +86,10 @@ onMounted(() => {
 				class="absolute left-2.5 top-3 z-30 p-1.5 rounded-lg bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 shadow-md text-neutral-600 dark:text-neutral-300 hover:text-primary-500 hover:border-primary-500/50 transition-all flex items-center gap-1 text-xs"
 				@click="showLeftSidebar = true"
 			>
-				<UIcon name="lucide:panel-left-open" class="w-4 h-4 text-primary-500" />
+				<UIcon
+					name="lucide:panel-left-open"
+					class="w-4 h-4 text-primary-500"
+				/>
 			</button>
 
 			<!-- Left Component Palette & Hierarchy Dock -->
@@ -110,7 +108,10 @@ onMounted(() => {
 				class="absolute right-2.5 top-3 z-30 p-1.5 rounded-lg bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 shadow-md text-neutral-600 dark:text-neutral-300 hover:text-primary-500 hover:border-primary-500/50 transition-all flex items-center gap-1 text-xs"
 				@click="showRightSidebar = true"
 			>
-				<UIcon name="lucide:panel-right-open" class="w-4 h-4 text-primary-500" />
+				<UIcon
+					name="lucide:panel-right-open"
+					class="w-4 h-4 text-primary-500"
+				/>
 			</button>
 
 			<!-- Right Properties & Styling Inspector Dock -->

@@ -1,0 +1,196 @@
+import type { ComponentDefinition } from '~/types/builder'
+
+export const compoundComponents: ComponentDefinition[] = [
+	{
+		type: 'feature-card',
+		name: 'Feature Card',
+		category: 'compound',
+		icon: 'lucide:layers',
+		description: 'Feature highlight card with icon container, title and text',
+		isContainer: false,
+		defaultProps: {
+			title: 'Instant Code Generation',
+			description: 'Every visual edit automatically compiles into clean, type-safe Nuxt 4 SFC template code ready for production.',
+			icon: 'lucide:code-2',
+			iconColor: 'primary',
+		},
+		defaultStyles: {
+			padding: 'p-6',
+			width: 'w-full',
+		},
+		propsSchema: [
+			{
+				name: 'title',
+				label: 'Feature Title',
+				type: 'string',
+				default: 'Instant Code Generation',
+			},
+			{
+				name: 'description',
+				label: 'Description',
+				type: 'textarea',
+				default: 'Every visual edit compiles into clean Nuxt 4 SFC code.',
+			},
+			{
+				name: 'icon',
+				label: 'Icon',
+				type: 'icon',
+				default: 'lucide:code-2',
+			},
+		],
+	},
+	{
+		type: 'pricing-card',
+		name: 'Pricing Card',
+		category: 'compound',
+		icon: 'lucide:credit-card',
+		description: 'High-converting pricing plan card with features list and CTA',
+		isContainer: false,
+		defaultProps: {
+			plan: 'Pro Plan',
+			badge: 'Most Popular',
+			price: '$29',
+			period: '/month',
+			description: 'Ideal for fast-growing startups and creative agencies.',
+			buttonText: 'Get Started Now',
+			featured: true,
+			features: 'Unlimited projects,Nuxt 4 code export,Priority support,Team collaboration,Custom themes',
+		},
+		defaultStyles: {
+			padding: 'p-6',
+			width: 'w-full',
+		},
+		propsSchema: [
+			{
+				name: 'plan',
+				label: 'Plan Name',
+				type: 'string',
+				default: 'Pro Plan',
+			},
+			{
+				name: 'badge',
+				label: 'Badge Text',
+				type: 'string',
+				default: 'Most Popular',
+			},
+			{
+				name: 'price',
+				label: 'Price',
+				type: 'string',
+				default: '$29',
+			},
+			{
+				name: 'period',
+				label: 'Billing Period',
+				type: 'string',
+				default: '/month',
+			},
+			{
+				name: 'description',
+				label: 'Plan Description',
+				type: 'textarea',
+				default: 'Ideal for fast-growing startups and agencies.',
+			},
+			{
+				name: 'buttonText',
+				label: 'Button Label',
+				type: 'string',
+				default: 'Get Started Now',
+			},
+			{
+				name: 'featured',
+				label: 'Featured Highlight',
+				type: 'boolean',
+				default: true,
+			},
+			{
+				name: 'features',
+				label: 'Features (comma separated)',
+				type: 'textarea',
+				default: 'Unlimited projects,Nuxt 4 code export,Priority support,Custom themes',
+			},
+		],
+	},
+	{
+		type: 'testimonial-card',
+		name: 'Testimonial Card',
+		category: 'compound',
+		icon: 'lucide:message-square-quote',
+		description: 'Customer review and quote card with avatar',
+		isContainer: false,
+		defaultProps: {
+			quote: 'Nuxt UI Builder cut our landing page development time from days to minutes. The generated Vue code is remarkably clean!',
+			author: 'Sarah Jenkins',
+			role: 'VP of Product at TechFlow',
+			avatarUrl: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150',
+			rating: 5,
+		},
+		defaultStyles: {
+			padding: 'p-6',
+			width: 'w-full',
+		},
+		propsSchema: [
+			{
+				name: 'quote',
+				label: 'Quote Text',
+				type: 'textarea',
+				default: 'Nuxt UI Builder cut our landing page development time from days to minutes.',
+			},
+			{
+				name: 'author',
+				label: 'Author Name',
+				type: 'string',
+				default: 'Sarah Jenkins',
+			},
+			{
+				name: 'role',
+				label: 'Author Role / Company',
+				type: 'string',
+				default: 'VP of Product at TechFlow',
+			},
+			{
+				name: 'avatarUrl',
+				label: 'Avatar URL',
+				type: 'string',
+				default: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150',
+			},
+		],
+	},
+	{
+		type: 'footer-section',
+		name: 'Footer Section',
+		category: 'compound',
+		icon: 'lucide:panel-bottom',
+		description: 'Modern multi-column website footer with branding and links',
+		isContainer: false,
+		defaultProps: {
+			brandName: 'NuxtUI Builder',
+			tagline: 'Visual UI builder for the Vue and Nuxt ecosystem.',
+			copyright: '© 2026 NuxtUI Builder. All rights reserved.',
+		},
+		defaultStyles: {
+			padding: 'py-12 px-6',
+			width: 'w-full',
+		},
+		propsSchema: [
+			{
+				name: 'brandName',
+				label: 'Brand Name',
+				type: 'string',
+				default: 'NuxtUI Builder',
+			},
+			{
+				name: 'tagline',
+				label: 'Tagline',
+				type: 'string',
+				default: 'Visual UI builder for the Vue and Nuxt ecosystem.',
+			},
+			{
+				name: 'copyright',
+				label: 'Copyright Notice',
+				type: 'string',
+				default: '© 2026 NuxtUI Builder. All rights reserved.',
+			},
+		],
+	},
+]

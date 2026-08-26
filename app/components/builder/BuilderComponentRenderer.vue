@@ -1,8 +1,4 @@
 <script setup lang="ts">
-import type { BuilderElement } from '~/types/builder'
-import { useBuilder } from '~/composables/useBuilder'
-import { COMPONENT_REGISTRY } from '~/composables/useComponentRegistry'
-
 const props = defineProps<{
 	element: BuilderElement
 	parentId?: string | null
@@ -21,17 +17,15 @@ const {
 	moveElement,
 	addElement,
 	moveElementTo,
-	findElementAndParent
 } = useBuilder()
 
 const isMobile = computed(() => viewport.value === 'mobile')
-const isTablet = computed(() => viewport.value === 'tablet')
 
 const isSelected = computed(() => selectedElementId.value === props.element.id)
 const isHovered = computed(() => hoveredElementId.value === props.element.id && !isSelected.value && !previewMode.value)
 
 const isContainer = computed(() => {
-	const reg = COMPONENT_REGISTRY.find((c) => c.type === props.element.type)
+	const reg = COMPONENT_REGISTRY.find(c => c.type === props.element.type)
 	return !!reg?.isContainer
 })
 
@@ -65,7 +59,7 @@ const handleDragStart = (e: DragEvent) => {
 			isExisting: true,
 			id: props.element.id,
 			parentId: props.parentId,
-			index: props.index
+			index: props.index,
 		}))
 		e.dataTransfer.effectAllowed = 'move'
 	}
@@ -99,18 +93,22 @@ const handleDrop = (e: DragEvent) => {
 			if (payload.id === props.element.id) return
 			if (isContainer.value) {
 				moveElementTo(payload.id, props.element.id, props.element.children?.length || 0)
-			} else {
+			}
+			else {
 				moveElementTo(payload.id, props.parentId || null, props.index + 1)
 			}
-		} else if (payload.isNew && payload.type) {
+		}
+		else if (payload.isNew && payload.type) {
 			// New element added from sidebar
 			if (isContainer.value) {
 				addElement(payload.type, props.element.id)
-			} else {
+			}
+			else {
 				addElement(payload.type, props.parentId || null, props.index + 1)
 			}
 		}
-	} catch (err) {
+	}
+	catch (err) {
 		console.error('Drop error', err)
 	}
 }
@@ -132,9 +130,14 @@ const styleClasses = computed(() => {
 
 	if (s.display === 'flex') {
 		classes.push('flex')
-		if (s.flexDirection === 'col') classes.push('flex-col')
-		if (s.flexDirection === 'col-reverse') classes.push('flex-col-reverse')
-		if (s.flexDirection === 'row-reverse') classes.push('flex-row-reverse')
+		if (isMobile.value && s.flexDirection !== 'col' && s.flexDirection !== 'col-reverse') {
+			classes.push('flex-col')
+		}
+		else {
+			if (s.flexDirection === 'col') classes.push('flex-col')
+			if (s.flexDirection === 'col-reverse') classes.push('flex-col-reverse')
+			if (s.flexDirection === 'row-reverse') classes.push('flex-row-reverse')
+		}
 		if (s.alignItems === 'center') classes.push('items-center')
 		if (s.alignItems === 'start') classes.push('items-start')
 		if (s.alignItems === 'end') classes.push('items-end')
@@ -142,9 +145,18 @@ const styleClasses = computed(() => {
 		if (s.justifyContent === 'between') classes.push('justify-between')
 		if (s.justifyContent === 'start') classes.push('justify-start')
 		if (s.justifyContent === 'end') classes.push('justify-end')
-	} else if (s.display === 'grid') {
+	}
+	else if (s.display === 'grid' || props.element.type === 'grid' || props.element.type === 'page-grid' || props.element.type === 'page-columns') {
 		classes.push('grid')
-		if (s.gridCols) classes.push(s.gridCols)
+		if (isMobile.value) {
+			classes.push('grid-cols-1')
+		}
+		else if (s.gridCols) {
+			classes.push(s.gridCols)
+		}
+		else {
+			classes.push('grid-cols-1 sm:grid-cols-2 lg:grid-cols-3')
+		}
 	}
 
 	if (s.gap) classes.push(s.gap)
@@ -164,8 +176,89 @@ const styleClasses = computed(() => {
 
 const splitFeatures = computed(() => {
 	if (!props.element.props.features) return []
-	return String(props.element.props.features).split(',').map((f) => f.trim()).filter(Boolean)
+	return String(props.element.props.features).split(',').map(f => f.trim()).filter(Boolean)
 })
+
+const parseBreadcrumbItems = (itemsStr?: string) => {
+	if (!itemsStr) return []
+	return String(itemsStr)
+		.split(',')
+		.map((item) => {
+			const parts = item.trim().split(':')
+			return {
+				label: parts[0]?.trim() || '',
+				to: parts[1]?.trim() || undefined,
+				icon: parts[2]?.trim() || undefined,
+			}
+		})
+		.filter(i => i.label)
+}
+
+const parseNavMenuItems = (itemsStr?: string) => {
+	if (!itemsStr) return []
+	return String(itemsStr)
+		.split(',')
+		.map((item) => {
+			const parts = item.trim().split(':')
+			const label = parts[0]?.trim() || ''
+			const icon = parts.length > 1 ? parts.slice(1).join(':').trim() : undefined
+			return {
+				label,
+				icon,
+			}
+		})
+		.filter(i => i.label)
+}
+
+const parseStepperItems = (itemsStr?: string) => {
+	if (!itemsStr) return []
+	return String(itemsStr)
+		.split(',')
+		.map((item) => {
+			const parts = item.trim().split(':')
+			return {
+				title: parts[0]?.trim() || '',
+				icon: parts[1]?.trim() || undefined,
+				description: parts[2]?.trim() || undefined,
+			}
+		})
+		.filter(i => i.title)
+}
+
+const parseTabsItems = (itemsStr?: string) => {
+	if (!itemsStr) return []
+	return String(itemsStr)
+		.split(',')
+		.map((item) => {
+			const parts = item.trim().split(':')
+			const label = parts[0]?.trim() || ''
+			const icon = parts.length > 1 ? parts.slice(1).join(':').trim() : undefined
+			return {
+				label,
+				icon,
+				slot: label.toLowerCase().replace(/\s+/g, '-'),
+			}
+		})
+		.filter(i => i.label)
+}
+
+const parseFooterColumns = (colsStr?: string) => {
+	if (!colsStr) return []
+	return String(colsStr)
+		.split('|')
+		.map((col) => {
+			const [colTitle, linksStr] = col.split(':')
+			const children = (linksStr || '')
+				.split(',')
+				.map(l => ({ label: l.trim() }))
+				.filter(l => l.label)
+			return {
+				label: colTitle?.trim() || 'Column',
+				children,
+			}
+		})
+		.filter(c => c.label)
+}
 </script>
 
 <template>
@@ -176,7 +269,7 @@ const splitFeatures = computed(() => {
 			!previewMode ? 'cursor-pointer' : '',
 			isSelected && !previewMode ? 'builder-element-selected ring-2 ring-primary ring-offset-2 ring-offset-neutral-900 rounded-md z-10' : '',
 			isHovered ? 'builder-element-hover rounded-md' : '',
-			isDragOver ? 'builder-drop-target' : ''
+			isDragOver ? 'builder-drop-target' : '',
 		]"
 		:draggable="!previewMode"
 		@click="handleClick"
@@ -194,7 +287,10 @@ const splitFeatures = computed(() => {
 			@click.stop
 		>
 			<span class="font-semibold text-primary-400 capitalize mr-1 flex items-center gap-1">
-				<UIcon name="lucide:layers" class="w-3.5 h-3.5" />
+				<UIcon
+					name="lucide:layers"
+					class="w-3.5 h-3.5"
+				/>
 				{{ element.type }}
 			</span>
 
@@ -204,7 +300,10 @@ const splitFeatures = computed(() => {
 				class="p-1 hover:bg-neutral-800 rounded text-neutral-300 hover:text-white"
 				@click="selectParent"
 			>
-				<UIcon name="lucide:corner-left-up" class="w-3.5 h-3.5" />
+				<UIcon
+					name="lucide:corner-left-up"
+					class="w-3.5 h-3.5"
+				/>
 			</button>
 
 			<div class="h-3 w-px bg-neutral-700 mx-0.5" />
@@ -214,7 +313,10 @@ const splitFeatures = computed(() => {
 				class="p-1 px-1.5 hover:bg-neutral-800 rounded text-primary-400 hover:text-primary-300 flex items-center gap-1 font-medium text-[11px]"
 				@click="insertBelow('container')"
 			>
-				<UIcon name="lucide:plus" class="w-3.5 h-3.5" />
+				<UIcon
+					name="lucide:plus"
+					class="w-3.5 h-3.5"
+				/>
 				<span>Add Below</span>
 			</button>
 
@@ -225,7 +327,10 @@ const splitFeatures = computed(() => {
 				class="p-1 hover:bg-neutral-800 rounded text-neutral-300 hover:text-white"
 				@click="moveElement(element.id, 'up')"
 			>
-				<UIcon name="lucide:chevron-up" class="w-3.5 h-3.5" />
+				<UIcon
+					name="lucide:chevron-up"
+					class="w-3.5 h-3.5"
+				/>
 			</button>
 
 			<button
@@ -233,7 +338,10 @@ const splitFeatures = computed(() => {
 				class="p-1 hover:bg-neutral-800 rounded text-neutral-300 hover:text-white"
 				@click="moveElement(element.id, 'down')"
 			>
-				<UIcon name="lucide:chevron-down" class="w-3.5 h-3.5" />
+				<UIcon
+					name="lucide:chevron-down"
+					class="w-3.5 h-3.5"
+				/>
 			</button>
 
 			<button
@@ -241,7 +349,10 @@ const splitFeatures = computed(() => {
 				class="p-1 hover:bg-neutral-800 rounded text-neutral-300 hover:text-white"
 				@click="duplicateElement(element.id)"
 			>
-				<UIcon name="lucide:copy" class="w-3.5 h-3.5" />
+				<UIcon
+					name="lucide:copy"
+					class="w-3.5 h-3.5"
+				/>
 			</button>
 
 			<button
@@ -249,15 +360,45 @@ const splitFeatures = computed(() => {
 				class="p-1 hover:bg-red-500/20 text-red-400 hover:text-red-300 rounded"
 				@click="removeElement(element.id)"
 			>
-				<UIcon name="lucide:trash-2" class="w-3.5 h-3.5" />
+				<UIcon
+					name="lucide:trash-2"
+					class="w-3.5 h-3.5"
+				/>
 			</button>
 		</div>
 
 		<!-- ==================== RENDER COMPONENT TYPES ==================== -->
 
+		<!-- APP WRAPPER -->
+		<div
+			v-if="element.type === 'app'"
+			:dir="element.props.dir || 'ltr'"
+			:class="['w-full transition-all min-h-[80px]', styleClasses]"
+		>
+			<template v-if="element.children && element.children.length > 0">
+				<BuilderComponentRenderer
+					v-for="(child, cIdx) in element.children"
+					:key="child.id"
+					:element="child"
+					:parent-id="element.id"
+					:index="cIdx"
+				/>
+			</template>
+			<div
+				v-else-if="!previewMode"
+				class="border-2 border-dashed border-neutral-300 dark:border-neutral-700 rounded-lg p-6 text-center text-xs text-neutral-400 flex flex-col items-center justify-center gap-1 min-h-[90px] bg-neutral-50/50 dark:bg-neutral-900/30"
+			>
+				<UIcon
+					name="lucide:app-window"
+					class="w-5 h-5 text-neutral-400"
+				/>
+				<span>Drop Header, Main, and Footer inside UApp</span>
+			</div>
+		</div>
+
 		<!-- CONTAINER -->
 		<div
-			v-if="element.type === 'container'"
+			v-else-if="element.type === 'container'"
 			:class="['w-full transition-all min-h-[60px]', styleClasses]"
 		>
 			<template v-if="element.children && element.children.length > 0">
@@ -273,10 +414,153 @@ const splitFeatures = computed(() => {
 				v-else-if="!previewMode"
 				class="border-2 border-dashed border-neutral-300 dark:border-neutral-700 rounded-lg p-6 text-center text-xs text-neutral-400 flex flex-col items-center justify-center gap-1 min-h-[90px] bg-neutral-50/50 dark:bg-neutral-900/30"
 			>
-				<UIcon name="lucide:plus-circle" class="w-5 h-5 text-neutral-400" />
-				<span>Drop components into this Container</span>
+				<UIcon
+					name="lucide:box-select"
+					class="w-5 h-5 text-neutral-400"
+				/>
+				<span>Drop components into this UContainer</span>
 			</div>
 		</div>
+
+		<!-- HEADER -->
+		<header
+			v-else-if="element.type === 'header'"
+			:class="['w-full border-b border-neutral-200 dark:border-neutral-800 bg-white/95 dark:bg-neutral-900/95 backdrop-blur sticky top-0 z-20 transition-all', styleClasses]"
+		>
+			<div class="max-w-7xl mx-auto flex items-center justify-between gap-2 px-3 sm:px-6 py-2.5">
+				<!-- Left side: Toggle button (if toggleSide === 'left') & Title -->
+				<div class="flex items-center gap-2 shrink-0 min-w-0">
+					<UButton
+						v-if="(element.props.toggle !== false) && element.props.toggleSide === 'left'"
+						size="xs"
+						color="neutral"
+						variant="ghost"
+						icon="lucide:menu"
+						:class="!isMobile ? 'md:hidden' : ''"
+					/>
+					<span class="font-bold text-sm sm:text-base tracking-tight text-neutral-900 dark:text-white flex items-center gap-1.5 whitespace-nowrap">
+						<UIcon
+							name="lucide:sparkles"
+							class="w-4 h-4 sm:w-5 sm:h-5 text-primary-500 shrink-0"
+						/>
+						<span class="truncate max-w-[120px] sm:max-w-none">{{ element.props.title || 'Nuxt UI' }}</span>
+					</span>
+				</div>
+
+				<!-- Center navigation menu (Hidden on mobile / isMobile) -->
+				<div
+					v-if="!isMobile"
+					class="hidden md:flex items-center gap-6 text-sm text-neutral-600 dark:text-neutral-300"
+				>
+					<template v-if="element.children && element.children.length > 0">
+						<BuilderComponentRenderer
+							v-for="(child, cIdx) in element.children"
+							:key="child.id"
+							:element="child"
+							:parent-id="element.id"
+							:index="cIdx"
+						/>
+					</template>
+					<template v-else>
+						<span class="hover:text-primary cursor-pointer">Docs</span>
+						<span class="hover:text-primary cursor-pointer">Components</span>
+						<span class="hover:text-primary cursor-pointer">Releases</span>
+					</template>
+				</div>
+
+				<!-- Right side: Actions and Toggle button (default right) -->
+				<div class="flex items-center gap-1.5 shrink-0">
+					<UButton
+						v-if="!isMobile"
+						size="xs"
+						color="neutral"
+						variant="ghost"
+						icon="lucide:github"
+						class="hidden sm:inline-flex"
+					/>
+					<UButton
+						size="xs"
+						color="primary"
+						:label="isMobile ? 'Start' : 'Get Started'"
+					/>
+					<UButton
+						v-if="(element.props.toggle !== false) && element.props.toggleSide !== 'left'"
+						size="xs"
+						color="neutral"
+						variant="ghost"
+						icon="lucide:menu"
+						:class="!isMobile ? 'md:hidden' : ''"
+					/>
+				</div>
+			</div>
+		</header>
+
+		<!-- MAIN -->
+		<main
+			v-else-if="element.type === 'main'"
+			:class="['w-full min-h-[120px] transition-all', styleClasses]"
+		>
+			<template v-if="element.children && element.children.length > 0">
+				<BuilderComponentRenderer
+					v-for="(child, cIdx) in element.children"
+					:key="child.id"
+					:element="child"
+					:parent-id="element.id"
+					:index="cIdx"
+				/>
+			</template>
+			<div
+				v-else-if="!previewMode"
+				class="border-2 border-dashed border-neutral-300 dark:border-neutral-700 rounded-lg p-8 text-center text-xs text-neutral-400 flex flex-col items-center justify-center gap-1 min-h-[120px]"
+			>
+				<UIcon
+					name="lucide:layout"
+					class="w-6 h-6 text-neutral-400"
+				/>
+				<span>UMain: Primary page content container</span>
+			</div>
+		</main>
+
+		<!-- FOOTER -->
+		<footer
+			v-else-if="element.type === 'footer'"
+			:class="['w-full border-t border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 py-8 px-4 sm:px-6 transition-all', styleClasses]"
+		>
+			<div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-neutral-500 dark:text-neutral-400">
+				<div>
+					<p>{{ element.props.copyright || 'Copyright © 2026. All rights reserved.' }}</p>
+				</div>
+				<div class="flex items-center gap-4">
+					<template v-if="element.children && element.children.length > 0">
+						<BuilderComponentRenderer
+							v-for="(child, cIdx) in element.children"
+							:key="child.id"
+							:element="child"
+							:parent-id="element.id"
+							:index="cIdx"
+						/>
+					</template>
+					<template v-else>
+						<span class="hover:text-primary cursor-pointer">Privacy Policy</span>
+						<span class="hover:text-primary cursor-pointer">Terms of Service</span>
+					</template>
+				</div>
+				<div class="flex items-center gap-2">
+					<UButton
+						size="xs"
+						color="neutral"
+						variant="ghost"
+						icon="lucide:twitter"
+					/>
+					<UButton
+						size="xs"
+						color="neutral"
+						variant="ghost"
+						icon="lucide:github"
+					/>
+				</div>
+			</div>
+		</footer>
 
 		<!-- GRID -->
 		<div
@@ -296,7 +580,10 @@ const splitFeatures = computed(() => {
 				v-else-if="!previewMode"
 				class="col-span-full border-2 border-dashed border-neutral-300 dark:border-neutral-700 rounded-lg p-6 text-center text-xs text-neutral-400 flex flex-col items-center justify-center gap-1 min-h-[90px]"
 			>
-				<UIcon name="lucide:grid" class="w-5 h-5 text-neutral-400" />
+				<UIcon
+					name="lucide:grid"
+					class="w-5 h-5 text-neutral-400"
+				/>
 				<span>Drop components into this Grid</span>
 			</div>
 		</div>
@@ -326,11 +613,17 @@ const splitFeatures = computed(() => {
 		<!-- UCARD -->
 		<UCard
 			v-else-if="element.type === 'card'"
+			:title="element.props.title || undefined"
+			:description="element.props.description || undefined"
 			:variant="element.props.variant || 'outline'"
+			:as="element.props.as || 'div'"
 			:class="styleClasses"
 		>
-			<template v-if="element.props.showHeader" #header>
-				<h3 class="font-semibold text-lg">{{ element.props.headerText || 'Card Title' }}</h3>
+			<template
+				v-if="element.props.showHeader && element.props.headerText"
+				#header
+			>
+				<h3 class="font-semibold text-lg">{{ element.props.headerText }}</h3>
 			</template>
 
 			<div class="space-y-4">
@@ -344,14 +637,17 @@ const splitFeatures = computed(() => {
 					/>
 				</template>
 				<div
-					v-else-if="!previewMode"
+					v-else-if="!previewMode && !element.props.title && !element.props.description && (!element.children || element.children.length === 0)"
 					class="border-2 border-dashed border-neutral-300 dark:border-neutral-700 rounded p-4 text-center text-xs text-neutral-400"
 				>
 					<span>Drop elements into Card</span>
 				</div>
 			</div>
 
-			<template v-if="element.props.showFooter && element.props.footerText" #footer>
+			<template
+				v-if="element.props.showFooter && element.props.footerText"
+				#footer
+			>
 				<p class="text-xs text-neutral-400">{{ element.props.footerText }}</p>
 			</template>
 		</UCard>
@@ -376,7 +672,7 @@ const splitFeatures = computed(() => {
 				element.props.level === 'h3' ? 'text-2xl font-semibold' : '',
 				!element.props.level || element.props.level === 'h4' ? 'text-xl font-medium' : '',
 				element.props.gradient ? 'bg-clip-text text-transparent bg-gradient-to-r from-primary-500 via-indigo-500 to-purple-600' : 'text-neutral-900 dark:text-white',
-				styleClasses
+				styleClasses,
 			]"
 		>
 			{{ element.props.text || 'Heading Title' }}
@@ -391,7 +687,7 @@ const splitFeatures = computed(() => {
 				element.props.color === 'primary' ? 'text-primary-600 dark:text-primary-400' : '',
 				!element.props.color || element.props.color === 'default' ? 'text-neutral-700 dark:text-neutral-200' : '',
 				'leading-relaxed break-words',
-				styleClasses
+				styleClasses,
 			]"
 		>
 			{{ element.props.text || 'Paragraph text content' }}
@@ -402,7 +698,7 @@ const splitFeatures = computed(() => {
 			v-else-if="element.type === 'lead'"
 			:class="[
 				'text-xl font-medium text-neutral-800 dark:text-neutral-200 leading-relaxed break-words',
-				styleClasses
+				styleClasses,
 			]"
 		>
 			{{ element.props.text || 'Lead text introduction content.' }}
@@ -413,12 +709,18 @@ const splitFeatures = computed(() => {
 			v-else-if="element.type === 'blockquote'"
 			:class="[
 				'relative pl-5 py-2 border-l-4 border-primary-500 text-left my-4 italic text-neutral-700 dark:text-neutral-300 bg-neutral-50/50 dark:bg-neutral-900/30 rounded-r-lg',
-				styleClasses
+				styleClasses,
 			]"
 		>
 			<p class="text-base mb-2">"{{ element.props.quote || 'Quote text' }}"</p>
-			<footer v-if="element.props.author" class="text-xs font-semibold not-italic text-neutral-500 dark:text-neutral-400">
-				— {{ element.props.author }} <span v-if="element.props.role" class="opacity-75">({{ element.props.role }})</span>
+			<footer
+				v-if="element.props.author"
+				class="text-xs font-semibold not-italic text-neutral-500 dark:text-neutral-400"
+			>
+				by {{ element.props.author }} <span
+					v-if="element.props.role"
+					class="opacity-75"
+				>({{ element.props.role }})</span>
 			</footer>
 		</blockquote>
 
@@ -427,31 +729,58 @@ const splitFeatures = computed(() => {
 			v-else-if="element.type === 'list'"
 			:class="['text-left my-3', styleClasses]"
 		>
-			<ul v-if="element.props.type === 'unordered'" class="space-y-2 list-disc list-inside text-sm text-neutral-700 dark:text-neutral-300">
-				<li v-for="(item, iIdx) in (element.props.items || '').split(',').map((s: string) => s.trim()).filter(Boolean)" :key="iIdx" class="break-words">
+			<ul
+				v-if="element.props.type === 'unordered'"
+				class="space-y-2 list-disc list-inside text-sm text-neutral-700 dark:text-neutral-300"
+			>
+				<li
+					v-for="(item, iIdx) in (element.props.items || '').split(',').map((s: string) => s.trim()).filter(Boolean)"
+					:key="iIdx"
+					class="break-words"
+				>
 					{{ item }}
 				</li>
 			</ul>
-			<ol v-else-if="element.props.type === 'ordered'" class="space-y-2 list-decimal list-inside text-sm text-neutral-700 dark:text-neutral-300">
-				<li v-for="(item, iIdx) in (element.props.items || '').split(',').map((s: string) => s.trim()).filter(Boolean)" :key="iIdx" class="break-words">
+			<ol
+				v-else-if="element.props.type === 'ordered'"
+				class="space-y-2 list-decimal list-inside text-sm text-neutral-700 dark:text-neutral-300"
+			>
+				<li
+					v-for="(item, iIdx) in (element.props.items || '').split(',').map((s: string) => s.trim()).filter(Boolean)"
+					:key="iIdx"
+					class="break-words"
+				>
 					{{ item }}
 				</li>
 			</ol>
-			<ul v-else class="space-y-2.5 text-sm text-neutral-700 dark:text-neutral-300">
-				<li v-for="(item, iIdx) in (element.props.items || '').split(',').map((s: string) => s.trim()).filter(Boolean)" :key="iIdx" class="flex items-start gap-2 break-words">
-					<UIcon :name="element.props.icon || 'lucide:check-circle-2'" class="w-4 h-4 text-primary shrink-0 mt-0.5" />
+			<ul
+				v-else
+				class="space-y-2.5 text-sm text-neutral-700 dark:text-neutral-300"
+			>
+				<li
+					v-for="(item, iIdx) in (element.props.items || '').split(',').map((s: string) => s.trim()).filter(Boolean)"
+					:key="iIdx"
+					class="flex items-start gap-2 break-words"
+				>
+					<UIcon
+						:name="element.props.icon || 'lucide:check-circle-2'"
+						class="w-4 h-4 text-primary shrink-0 mt-0.5"
+					/>
 					<span>{{ item }}</span>
 				</li>
 			</ul>
 		</div>
 
-		<!-- TABLE -->
+		<!-- TABLE DOC -->
 		<div
-			v-else-if="element.type === 'table'"
+			v-else-if="element.type === 'table' || element.type === 'table-doc'"
 			:class="['border border-neutral-200 dark:border-neutral-800 rounded-xl overflow-x-auto shadow-sm my-4 text-left text-xs max-w-full', styleClasses]"
 		>
 			<table class="w-full">
-				<caption v-if="element.props.caption" class="p-2 text-[11px] text-neutral-400 text-left bg-neutral-50 dark:bg-neutral-900 border-b border-neutral-200 dark:border-neutral-800 font-medium">
+				<caption
+					v-if="element.props.caption"
+					class="p-2 text-[11px] text-neutral-400 text-left bg-neutral-50 dark:bg-neutral-900 border-b border-neutral-200 dark:border-neutral-800 font-medium"
+				>
 					{{ element.props.caption }}
 				</caption>
 				<thead class="bg-neutral-50 dark:bg-neutral-900 border-b border-neutral-200 dark:border-neutral-800">
@@ -485,9 +814,16 @@ const splitFeatures = computed(() => {
 			:class="['my-4 text-left max-w-full', styleClasses]"
 		>
 			<div class="rounded-xl overflow-hidden shadow-lg border border-neutral-200 dark:border-neutral-800">
-				<img :src="element.props.src" :alt="element.props.alt" class="w-full h-auto object-cover max-h-[400px]" />
+				<img
+					:src="element.props.src"
+					:alt="element.props.alt"
+					class="w-full h-auto object-cover max-h-[400px]"
+				/>
 			</div>
-			<figcaption v-if="element.props.caption" class="text-xs text-neutral-500 mt-2 text-center italic">
+			<figcaption
+				v-if="element.props.caption"
+				class="text-xs text-neutral-500 mt-2 text-center italic"
+			>
 				{{ element.props.caption }}
 			</figcaption>
 		</figure>
@@ -507,10 +843,16 @@ const splitFeatures = computed(() => {
 		>
 			<div class="h-8 px-4 bg-neutral-900 border-b border-neutral-800 flex items-center justify-between text-[11px] text-neutral-400 select-none">
 				<span class="flex items-center gap-1.5">
-					<UIcon name="lucide:file-code" class="w-3.5 h-3.5 text-primary" />
+					<UIcon
+						name="lucide:file-code"
+						class="w-3.5 h-3.5 text-primary"
+					/>
 					<span>{{ element.props.filename || element.props.language || 'code' }}</span>
 				</span>
-				<UIcon name="lucide:copy" class="w-3.5 h-3.5 hover:text-white cursor-pointer" />
+				<UIcon
+					name="lucide:copy"
+					class="w-3.5 h-3.5 hover:text-white cursor-pointer"
+				/>
 			</div>
 			<pre class="p-4 overflow-x-auto select-text leading-relaxed"><code>{{ element.props.code || '' }}</code></pre>
 		</div>
@@ -526,7 +868,10 @@ const splitFeatures = computed(() => {
 					<span class="px-2 py-0.5 text-neutral-400">npm</span>
 					<span class="px-2 py-0.5 text-neutral-400">bun</span>
 				</div>
-				<UIcon name="lucide:copy" class="w-3.5 h-3.5 text-neutral-400 hover:text-white cursor-pointer" />
+				<UIcon
+					name="lucide:copy"
+					class="w-3.5 h-3.5 text-neutral-400 hover:text-white cursor-pointer"
+				/>
 			</div>
 			<pre class="p-4 overflow-x-auto select-text"><code>{{ element.props.pnpm || element.props.npm || 'pnpm add @nuxt/ui' }}</code></pre>
 		</div>
@@ -538,10 +883,16 @@ const splitFeatures = computed(() => {
 		>
 			<div class="h-9 px-4 bg-neutral-900 border-b border-neutral-800 flex items-center justify-between text-xs text-neutral-300 cursor-pointer select-none">
 				<span class="flex items-center gap-2">
-					<UIcon name="lucide:chevron-down" class="w-4 h-4 text-primary" />
+					<UIcon
+						name="lucide:chevron-down"
+						class="w-4 h-4 text-primary"
+					/>
 					<span class="font-sans font-medium">{{ element.props.title || 'View Code' }}</span>
 				</span>
-				<UIcon name="lucide:copy" class="w-3.5 h-3.5 text-neutral-400 hover:text-white" />
+				<UIcon
+					name="lucide:copy"
+					class="w-3.5 h-3.5 text-neutral-400 hover:text-white"
+				/>
 			</div>
 			<pre class="p-4 overflow-x-auto select-text leading-relaxed"><code>{{ element.props.code || '' }}</code></pre>
 		</div>
@@ -552,11 +903,18 @@ const splitFeatures = computed(() => {
 			:class="['rounded-xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 overflow-hidden text-left my-4 shadow-sm max-w-full', styleClasses]"
 		>
 			<div class="p-6 flex items-center justify-center bg-neutral-50/60 dark:bg-neutral-950/60 border-b border-neutral-200 dark:border-neutral-800">
-				<UButton color="primary" icon="lucide:sparkles" label="Interactive Action" />
+				<UButton
+					color="primary"
+					icon="lucide:sparkles"
+					label="Interactive Action"
+				/>
 			</div>
 			<div class="p-3 bg-neutral-950 text-neutral-100 font-mono text-xs flex items-center justify-between">
 				<span>{{ element.props.code || '<UButton color="primary" label="Action" />' }}</span>
-				<UIcon name="lucide:copy" class="w-3.5 h-3.5 text-neutral-400 hover:text-white cursor-pointer" />
+				<UIcon
+					name="lucide:copy"
+					class="w-3.5 h-3.5 text-neutral-400 hover:text-white cursor-pointer"
+				/>
 			</div>
 		</div>
 
@@ -566,7 +924,10 @@ const splitFeatures = computed(() => {
 			:class="['rounded-xl border border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-900/60 p-4 text-left font-mono text-xs my-4 shadow-sm max-w-full', styleClasses]"
 		>
 			<div class="flex items-center gap-2 mb-3 pb-2 border-b border-neutral-200 dark:border-neutral-800 font-sans font-bold text-neutral-800 dark:text-neutral-200">
-				<UIcon name="lucide:folder-tree" class="w-4 h-4 text-primary" />
+				<UIcon
+					name="lucide:folder-tree"
+					class="w-4 h-4 text-primary"
+				/>
 				<span>{{ element.props.title || 'Project Structure' }}</span>
 			</div>
 			<pre class="overflow-x-auto text-neutral-700 dark:text-neutral-300 leading-relaxed select-text"><code>{{ element.props.tree || 'app/\n├── pages/\n└── app.vue' }}</code></pre>
@@ -581,7 +942,10 @@ const splitFeatures = computed(() => {
 				<span class="text-primary font-bold">$</span>
 				<span class="select-text whitespace-nowrap">{{ element.props.command || 'npx nuxi init' }}</span>
 			</div>
-			<UIcon name="lucide:copy" class="w-4 h-4 text-neutral-400 hover:text-white cursor-pointer shrink-0" />
+			<UIcon
+				name="lucide:copy"
+				class="w-4 h-4 text-neutral-400 hover:text-white cursor-pointer shrink-0"
+			/>
 		</div>
 
 		<!-- CALLOUT -->
@@ -589,14 +953,17 @@ const splitFeatures = computed(() => {
 			v-else-if="element.type === 'callout'"
 			:class="[
 				'p-4 rounded-xl border text-left my-4 flex items-start gap-3 shadow-sm max-w-full',
-				element.props.type === 'tip' ? 'bg-primary-50/50 dark:bg-primary-950/30 border-primary-500/30 text-primary-950 dark:text-primary-100' :
-				element.props.type === 'warning' ? 'bg-amber-50/50 dark:bg-amber-950/30 border-amber-500/30 text-amber-950 dark:text-amber-100' :
-				element.props.type === 'caution' ? 'bg-red-50/50 dark:bg-red-950/30 border-red-500/30 text-red-950 dark:text-red-100' :
-				'bg-neutral-50 dark:bg-neutral-900 border-neutral-200 dark:border-neutral-800 text-neutral-900 dark:text-white',
-				styleClasses
+				element.props.type === 'tip' ? 'bg-primary-50/50 dark:bg-primary-950/30 border-primary-500/30 text-primary-950 dark:text-primary-100'
+				: element.props.type === 'warning' ? 'bg-amber-50/50 dark:bg-amber-950/30 border-amber-500/30 text-amber-950 dark:text-amber-100'
+					: element.props.type === 'caution' ? 'bg-red-50/50 dark:bg-red-950/30 border-red-500/30 text-red-950 dark:text-red-100'
+						: 'bg-neutral-50 dark:bg-neutral-900 border-neutral-200 dark:border-neutral-800 text-neutral-900 dark:text-white',
+				styleClasses,
 			]"
 		>
-			<UIcon :name="element.props.icon || 'lucide:info'" class="w-5 h-5 shrink-0 mt-0.5 text-primary" />
+			<UIcon
+				:name="element.props.icon || 'lucide:info'"
+				class="w-5 h-5 shrink-0 mt-0.5 text-primary"
+			/>
 			<div class="flex-1">
 				<h4 class="text-sm font-bold mb-1 break-words">{{ element.props.title || 'Note' }}</h4>
 				<p class="text-xs opacity-90 leading-relaxed break-words">{{ element.props.description || '' }}</p>
@@ -608,9 +975,9 @@ const splitFeatures = computed(() => {
 			v-else-if="element.type === 'card-group'"
 			:class="[
 				'grid gap-4 my-4 max-w-full',
-				element.props.columns === '3' ? 'grid-cols-1 md:grid-cols-3' :
-				element.props.columns === '4' ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-4' : 'grid-cols-1 md:grid-cols-2',
-				styleClasses
+				element.props.columns === '3' ? 'grid-cols-1 md:grid-cols-3'
+				: element.props.columns === '4' ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-4' : 'grid-cols-1 md:grid-cols-2',
+				styleClasses,
 			]"
 		>
 			<template v-if="element.children && element.children.length > 0">
@@ -637,7 +1004,10 @@ const splitFeatures = computed(() => {
 		>
 			<div class="p-3.5 bg-neutral-50 dark:bg-neutral-900 flex items-center justify-between font-medium text-xs text-neutral-900 dark:text-white cursor-pointer select-none">
 				<span>{{ element.props.title || 'Expand details' }}</span>
-				<UIcon name="lucide:chevron-down" class="w-4 h-4 text-neutral-400" />
+				<UIcon
+					name="lucide:chevron-down"
+					class="w-4 h-4 text-neutral-400"
+				/>
 			</div>
 			<div class="p-4 space-y-3 bg-white dark:bg-neutral-950 border-t border-neutral-200 dark:border-neutral-800">
 				<template v-if="element.children && element.children.length > 0">
@@ -649,7 +1019,12 @@ const splitFeatures = computed(() => {
 						:index="cIdx"
 					/>
 				</template>
-				<p v-else class="text-xs text-neutral-500">Collapsible content panel.</p>
+				<p
+					v-else
+					class="text-xs text-neutral-500"
+				>
+					Collapsible content panel.
+				</p>
 			</div>
 		</div>
 
@@ -661,7 +1036,13 @@ const splitFeatures = computed(() => {
 			<div class="flex items-center gap-2 mb-1">
 				<span class="font-mono font-bold text-primary">{{ element.props.name || 'prop' }}</span>
 				<span class="font-mono text-[10px] text-neutral-400 bg-neutral-100 dark:bg-neutral-800 px-1.5 py-0.5 rounded">{{ element.props.type || 'string' }}</span>
-				<UBadge v-if="element.props.required" color="error" variant="subtle" size="xs" label="Required" />
+				<UBadge
+					v-if="element.props.required"
+					color="error"
+					variant="subtle"
+					size="xs"
+					label="Required"
+				/>
 			</div>
 			<p class="text-neutral-600 dark:text-neutral-400 leading-relaxed">{{ element.props.description || '' }}</p>
 		</div>
@@ -708,30 +1089,6 @@ const splitFeatures = computed(() => {
 			</div>
 		</div>
 
-		<!-- TABS CONTAINER -->
-		<div
-			v-else-if="element.type === 'tabs'"
-			:class="['border border-neutral-200 dark:border-neutral-800 rounded-xl overflow-hidden my-4 text-left max-w-full', styleClasses]"
-		>
-			<div class="flex border-b border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-900 px-3 pt-2 gap-4 text-xs font-medium select-none">
-				<span class="pb-2 border-b-2 border-primary text-primary font-semibold cursor-pointer">{{ element.props.tab1 || 'Overview' }}</span>
-				<span class="pb-2 text-neutral-400 hover:text-neutral-700 cursor-pointer">{{ element.props.tab2 || 'Usage' }}</span>
-				<span v-if="element.props.tab3" class="pb-2 text-neutral-400 hover:text-neutral-700 cursor-pointer">{{ element.props.tab3 }}</span>
-			</div>
-			<div class="p-4 space-y-3 bg-white dark:bg-neutral-950">
-				<template v-if="element.children && element.children.length > 0">
-					<BuilderComponentRenderer
-						v-for="(child, cIdx) in element.children"
-						:key="child.id"
-						:element="child"
-						:parent-id="element.id"
-						:index="cIdx"
-					/>
-				</template>
-				<p v-else class="text-xs text-neutral-500">Active tab content area.</p>
-			</div>
-		</div>
-
 		<!-- ACCORDION -->
 		<div
 			v-else-if="element.type === 'accordion'"
@@ -744,7 +1101,10 @@ const splitFeatures = computed(() => {
 			>
 				<div class="flex items-center justify-between font-bold text-xs text-neutral-900 dark:text-white cursor-pointer mb-1.5">
 					<span>{{ item.split(':')[0] || item }}</span>
-					<UIcon name="lucide:chevron-down" class="w-4 h-4 text-neutral-400" />
+					<UIcon
+						name="lucide:chevron-down"
+						class="w-4 h-4 text-neutral-400"
+					/>
 				</div>
 				<p class="text-xs text-neutral-500 dark:text-neutral-400 leading-relaxed">{{ item.split(':')[1] || 'Expandable panel description content.' }}</p>
 			</div>
@@ -820,18 +1180,27 @@ const splitFeatures = computed(() => {
 			v-else-if="element.type === 'banner'"
 			:class="[
 				'px-4 py-2.5 rounded-xl border flex items-center justify-between text-xs font-medium shadow-sm my-2 max-w-full',
-				element.props.color === 'primary' ? 'bg-primary-500/10 border-primary-500/30 text-primary-900 dark:text-primary-200' :
-				element.props.color === 'success' ? 'bg-green-500/10 border-green-500/30 text-green-900 dark:text-green-200' :
-				'bg-neutral-100 dark:bg-neutral-800 border-neutral-200 dark:border-neutral-700 text-neutral-800 dark:text-neutral-200',
-				styleClasses
+				element.props.color === 'primary' ? 'bg-primary-500/10 border-primary-500/30 text-primary-900 dark:text-primary-200'
+				: element.props.color === 'success' ? 'bg-green-500/10 border-green-500/30 text-green-900 dark:text-green-200'
+					: 'bg-neutral-100 dark:bg-neutral-800 border-neutral-200 dark:border-neutral-700 text-neutral-800 dark:text-neutral-200',
+				styleClasses,
 			]"
 		>
 			<div class="flex items-center gap-2 overflow-hidden">
-				<UIcon :name="element.props.icon || 'lucide:sparkles'" class="w-4 h-4 shrink-0 text-primary" />
+				<UIcon
+					:name="element.props.icon || 'lucide:sparkles'"
+					class="w-4 h-4 shrink-0 text-primary"
+				/>
 				<span class="truncate">{{ element.props.title || 'Announcement banner message' }}</span>
 			</div>
-			<button v-if="element.props.close" class="p-1 hover:opacity-75 rounded shrink-0">
-				<UIcon name="lucide:x" class="w-3.5 h-3.5" />
+			<button
+				v-if="element.props.close"
+				class="p-1 hover:opacity-75 rounded shrink-0"
+			>
+				<UIcon
+					name="lucide:x"
+					class="w-3.5 h-3.5"
+				/>
 			</button>
 		</div>
 
@@ -843,8 +1212,14 @@ const splitFeatures = computed(() => {
 			<div class="flex items-center justify-between font-bold mb-3">
 				<span class="text-neutral-900 dark:text-white">August 2026</span>
 				<div class="flex items-center gap-1 text-neutral-400">
-					<UIcon name="lucide:chevron-left" class="w-4 h-4 cursor-pointer hover:text-white" />
-					<UIcon name="lucide:chevron-right" class="w-4 h-4 cursor-pointer hover:text-white" />
+					<UIcon
+						name="lucide:chevron-left"
+						class="w-4 h-4 cursor-pointer hover:text-white"
+					/>
+					<UIcon
+						name="lucide:chevron-right"
+						class="w-4 h-4 cursor-pointer hover:text-white"
+					/>
 				</div>
 			</div>
 			<div class="grid grid-cols-7 gap-1 text-center font-medium text-neutral-400 mb-1">
@@ -871,7 +1246,11 @@ const splitFeatures = computed(() => {
 			:position="element.props.position || 'top-right'"
 			:class="styleClasses"
 		>
-			<UButton icon="lucide:bell" color="neutral" variant="subtle" />
+			<UButton
+				icon="lucide:bell"
+				color="neutral"
+				variant="subtle"
+			/>
 		</UChip>
 
 		<!-- UICON -->
@@ -895,7 +1274,11 @@ const splitFeatures = computed(() => {
 					<span>{{ it.split(':')[0] || it }}</span>
 					<span class="font-mono text-primary">{{ it.split(':')[1] || '50' }}%</span>
 				</div>
-				<UProgress :model-value="Number(it.split(':')[1] || 50)" :color="element.props.color || 'primary'" size="sm" />
+				<UProgress
+					:model-value="Number(it.split(':')[1] || 50)"
+					:color="element.props.color || 'primary'"
+					size="sm"
+				/>
 			</div>
 		</div>
 
@@ -904,15 +1287,24 @@ const splitFeatures = computed(() => {
 			v-else-if="element.type === 'skeleton'"
 			:class="['my-2 max-w-full', styleClasses]"
 		>
-			<div v-if="element.props.shape === 'circle'" class="w-12 h-12 rounded-full bg-neutral-200 dark:bg-neutral-800 animate-pulse" />
-			<div v-else-if="element.props.shape === 'avatar-text'" class="flex items-center gap-3">
+			<div
+				v-if="element.props.shape === 'circle'"
+				class="w-12 h-12 rounded-full bg-neutral-200 dark:bg-neutral-800 animate-pulse"
+			/>
+			<div
+				v-else-if="element.props.shape === 'avatar-text'"
+				class="flex items-center gap-3"
+			>
 				<div class="w-10 h-10 rounded-full bg-neutral-200 dark:bg-neutral-800 animate-pulse shrink-0" />
 				<div class="space-y-2 flex-1">
 					<div class="h-3.5 bg-neutral-200 dark:bg-neutral-800 rounded w-2/3 animate-pulse" />
 					<div class="h-2.5 bg-neutral-200 dark:bg-neutral-800 rounded w-1/2 animate-pulse" />
 				</div>
 			</div>
-			<div v-else :class="[element.props.height || 'h-6', element.props.width || 'w-full', 'rounded-lg bg-neutral-200 dark:bg-neutral-800 animate-pulse']" />
+			<div
+				v-else
+				:class="[element.props.height || 'h-6', element.props.width || 'w-full', 'rounded-lg bg-neutral-200 dark:bg-neutral-800 animate-pulse']"
+			/>
 		</div>
 
 		<!-- UFORM CONTAINER -->
@@ -921,7 +1313,10 @@ const splitFeatures = computed(() => {
 			:class="['p-5 rounded-2xl border border-neutral-200 dark:border-neutral-800 bg-white/70 dark:bg-neutral-900/60 shadow-sm text-left my-4 space-y-4 max-w-full', styleClasses]"
 			@submit.prevent
 		>
-			<div v-if="element.props.title" class="border-b border-neutral-200 dark:border-neutral-800 pb-3">
+			<div
+				v-if="element.props.title"
+				class="border-b border-neutral-200 dark:border-neutral-800 pb-3"
+			>
 				<h3 class="font-bold text-sm text-neutral-900 dark:text-white">{{ element.props.title }}</h3>
 			</div>
 			<template v-if="element.children && element.children.length > 0">
@@ -940,7 +1335,12 @@ const splitFeatures = computed(() => {
 				<span>Drop form inputs & fields here</span>
 			</div>
 			<div class="pt-2">
-				<UButton type="button" :label="element.props.submitText || 'Save Changes'" color="primary" block />
+				<UButton
+					type="button"
+					:label="element.props.submitText || 'Save Changes'"
+					color="primary"
+					block
+				/>
 			</div>
 		</form>
 
@@ -952,7 +1352,10 @@ const splitFeatures = computed(() => {
 			<div class="flex items-center justify-between">
 				<label class="font-medium text-xs text-neutral-800 dark:text-neutral-200">
 					{{ element.props.label || 'Field Label' }}
-					<span v-if="element.props.required" class="text-red-500 font-bold ml-0.5">*</span>
+					<span
+						v-if="element.props.required"
+						class="text-red-500 font-bold ml-0.5"
+					>*</span>
 				</label>
 			</div>
 			<template v-if="element.children && element.children.length > 0">
@@ -964,9 +1367,23 @@ const splitFeatures = computed(() => {
 					:index="cIdx"
 				/>
 			</template>
-			<UInput v-else placeholder="Enter text..." color="primary" />
-			<p v-if="element.props.description" class="text-[11px] text-neutral-500 dark:text-neutral-400">{{ element.props.description }}</p>
-			<p v-if="element.props.error" class="text-[11px] text-red-500 font-medium">{{ element.props.error }}</p>
+			<UInput
+				v-else
+				placeholder="Enter text..."
+				color="primary"
+			/>
+			<p
+				v-if="element.props.description"
+				class="text-[11px] text-neutral-500 dark:text-neutral-400"
+			>
+				{{ element.props.description }}
+			</p>
+			<p
+				v-if="element.props.error"
+				class="text-[11px] text-red-500 font-medium"
+			>
+				{{ element.props.error }}
+			</p>
 		</div>
 
 		<!-- UINPUT -->
@@ -1014,7 +1431,11 @@ const splitFeatures = computed(() => {
 			v-else-if="element.type === 'input-menu'"
 			:class="['relative text-left my-2 w-full', styleClasses]"
 		>
-			<UInput :placeholder="element.props.placeholder || 'Search options...'" icon="lucide:search" trailing-icon="lucide:chevron-down" />
+			<UInput
+				:placeholder="element.props.placeholder || 'Search options...'"
+				icon="lucide:search"
+				trailing-icon="lucide:chevron-down"
+			/>
 		</div>
 
 		<!-- UINPUT TAGS -->
@@ -1030,7 +1451,11 @@ const splitFeatures = computed(() => {
 				variant="subtle"
 				size="xs"
 			/>
-			<input type="text" :placeholder="element.props.placeholder || 'Add tag...'" class="flex-1 bg-transparent border-none text-xs outline-none min-w-[80px] p-1 text-neutral-700 dark:text-neutral-200" />
+			<input
+				type="text"
+				:placeholder="element.props.placeholder || 'Add tag...'"
+				class="flex-1 bg-transparent border-none text-xs outline-none min-w-[80px] p-1 text-neutral-700 dark:text-neutral-200"
+			/>
 		</div>
 
 		<!-- UINPUT RATING -->
@@ -1044,7 +1469,7 @@ const splitFeatures = computed(() => {
 				name="lucide:star"
 				:class="[
 					'w-5 h-5 cursor-pointer',
-					star <= (element.props.value || 4) ? 'text-amber-400 fill-amber-400' : 'text-neutral-300 dark:text-neutral-700'
+					star <= (element.props.value || 4) ? 'text-amber-400 fill-amber-400' : 'text-neutral-300 dark:text-neutral-700',
 				]"
 			/>
 		</div>
@@ -1069,7 +1494,10 @@ const splitFeatures = computed(() => {
 			v-else-if="element.type === 'color-picker'"
 			:class="['flex items-center gap-3 p-2 rounded-xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 w-fit my-2', styleClasses]"
 		>
-			<div class="w-8 h-8 rounded-lg border shadow-inner" :style="{ backgroundColor: element.props.value || '#10b981' }" />
+			<div
+				class="w-8 h-8 rounded-lg border shadow-inner"
+				:style="{ backgroundColor: element.props.value || '#10b981' }"
+			/>
 			<span class="font-mono text-xs font-semibold uppercase">{{ element.props.value || '#10b981' }}</span>
 		</div>
 
@@ -1079,7 +1507,10 @@ const splitFeatures = computed(() => {
 			:class="['border-2 border-dashed border-neutral-300 dark:border-neutral-700 hover:border-primary-500/60 rounded-2xl p-6 text-center text-xs flex flex-col items-center justify-center gap-2 bg-neutral-50/50 dark:bg-neutral-900/30 cursor-pointer my-3 w-full', styleClasses]"
 		>
 			<div class="p-3 rounded-full bg-primary-50 dark:bg-primary-950/40 text-primary">
-				<UIcon :name="element.props.icon || 'lucide:upload-cloud'" class="w-6 h-6" />
+				<UIcon
+					:name="element.props.icon || 'lucide:upload-cloud'"
+					class="w-6 h-6"
+				/>
 			</div>
 			<div class="space-y-0.5">
 				<p class="font-medium text-neutral-800 dark:text-neutral-200">{{ element.props.label || 'Click or drag files here to upload' }}</p>
@@ -1103,7 +1534,10 @@ const splitFeatures = computed(() => {
 		>
 			<div class="flex items-center justify-between p-2.5 rounded-lg border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 text-xs text-neutral-700 dark:text-neutral-200">
 				<span>{{ element.props.placeholder || 'Select option...' }}</span>
-				<UIcon name="lucide:chevron-down" class="w-4 h-4 text-neutral-400" />
+				<UIcon
+					name="lucide:chevron-down"
+					class="w-4 h-4 text-neutral-400"
+				/>
 			</div>
 		</div>
 
@@ -1114,10 +1548,16 @@ const splitFeatures = computed(() => {
 		>
 			<div class="flex items-center justify-between p-2.5 rounded-lg border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 text-xs text-neutral-700 dark:text-neutral-200">
 				<span class="flex items-center gap-2">
-					<UAvatar src="https://avatars.githubusercontent.com/u/739984?v=4" size="xs" />
+					<UAvatar
+						src="https://avatars.githubusercontent.com/u/739984?v=4"
+						size="xs"
+					/>
 					<span>Alexandre Rochon</span>
 				</span>
-				<UIcon name="lucide:chevrons-up-down" class="w-4 h-4 text-neutral-400" />
+				<UIcon
+					name="lucide:chevrons-up-down"
+					class="w-4 h-4 text-neutral-400"
+				/>
 			</div>
 		</div>
 
@@ -1132,7 +1572,11 @@ const splitFeatures = computed(() => {
 				class="p-2.5 flex items-center justify-between hover:bg-neutral-50 dark:hover:bg-neutral-800 cursor-pointer"
 			>
 				<span>{{ item }}</span>
-				<UIcon v-if="lIdx === 0" name="lucide:check" class="w-4 h-4 text-primary" />
+				<UIcon
+					v-if="lIdx === 0"
+					name="lucide:check"
+					class="w-4 h-4 text-primary"
+				/>
 			</div>
 		</div>
 
@@ -1142,7 +1586,7 @@ const splitFeatures = computed(() => {
 			:class="[
 				'my-2.5 text-left',
 				element.props.orientation === 'horizontal' ? 'flex flex-wrap gap-4' : 'space-y-2',
-				styleClasses
+				styleClasses,
 			]"
 		>
 			<label
@@ -1150,7 +1594,12 @@ const splitFeatures = computed(() => {
 				:key="rIdx"
 				class="flex items-center gap-2 text-xs font-medium text-neutral-700 dark:text-neutral-300 cursor-pointer"
 			>
-				<input type="radio" :name="`radio-${element.id}`" :checked="rIdx === 0" class="accent-primary" />
+				<input
+					type="radio"
+					:name="`radio-${element.id}`"
+					:checked="rIdx === 0"
+					class="accent-primary"
+				/>
 				<span>{{ item }}</span>
 			</label>
 		</div>
@@ -1161,7 +1610,7 @@ const splitFeatures = computed(() => {
 			:class="[
 				'my-2.5 text-left',
 				element.props.orientation === 'horizontal' ? 'flex flex-wrap gap-4' : 'space-y-2',
-				styleClasses
+				styleClasses,
 			]"
 		>
 			<label
@@ -1169,7 +1618,11 @@ const splitFeatures = computed(() => {
 				:key="cIdx"
 				class="flex items-center gap-2 text-xs font-medium text-neutral-700 dark:text-neutral-300 cursor-pointer"
 			>
-				<input type="checkbox" :checked="cIdx === 0" class="accent-primary rounded" />
+				<input
+					type="checkbox"
+					:checked="cIdx === 0"
+					class="accent-primary rounded"
+				/>
 				<span>{{ item }}</span>
 			</label>
 		</div>
@@ -1228,14 +1681,32 @@ const splitFeatures = computed(() => {
 			v-else-if="element.type === 'carousel'"
 			:class="['relative rounded-2xl overflow-hidden border border-neutral-200 dark:border-neutral-800 my-4 shadow-md max-w-full', styleClasses]"
 		>
-			<img :src="(element.props.items || '').split(',')[0] || 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800'" class="w-full h-48 object-cover" />
-			<button v-if="element.props.arrows" class="absolute left-2 top-1/2 -translate-y-1/2 p-1.5 rounded-full bg-black/50 text-white hover:bg-black/70">
-				<UIcon name="lucide:chevron-left" class="w-4 h-4" />
+			<img
+				:src="(element.props.items || '').split(',')[0] || 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800'"
+				class="w-full h-48 object-cover"
+			/>
+			<button
+				v-if="element.props.arrows"
+				class="absolute left-2 top-1/2 -translate-y-1/2 p-1.5 rounded-full bg-black/50 text-white hover:bg-black/70"
+			>
+				<UIcon
+					name="lucide:chevron-left"
+					class="w-4 h-4"
+				/>
 			</button>
-			<button v-if="element.props.arrows" class="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 rounded-full bg-black/50 text-white hover:bg-black/70">
-				<UIcon name="lucide:chevron-right" class="w-4 h-4" />
+			<button
+				v-if="element.props.arrows"
+				class="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 rounded-full bg-black/50 text-white hover:bg-black/70"
+			>
+				<UIcon
+					name="lucide:chevron-right"
+					class="w-4 h-4"
+				/>
 			</button>
-			<div v-if="element.props.dots" class="absolute bottom-2 left-1/2 -translate-x-1/2 flex items-center gap-1.5">
+			<div
+				v-if="element.props.dots"
+				class="absolute bottom-2 left-1/2 -translate-x-1/2 flex items-center gap-1.5"
+			>
 				<div class="w-2 h-2 rounded-full bg-white" />
 				<div class="w-2 h-2 rounded-full bg-white/50" />
 				<div class="w-2 h-2 rounded-full bg-white/50" />
@@ -1248,13 +1719,21 @@ const splitFeatures = computed(() => {
 			:class="['p-8 rounded-2xl border border-dashed border-neutral-300 dark:border-neutral-700 text-center flex flex-col items-center justify-center gap-3 my-4 bg-neutral-50/50 dark:bg-neutral-900/30 max-w-full', styleClasses]"
 		>
 			<div class="p-3 rounded-full bg-neutral-100 dark:bg-neutral-800 text-neutral-400">
-				<UIcon :name="element.props.icon || 'lucide:folder-plus'" class="w-8 h-8" />
+				<UIcon
+					:name="element.props.icon || 'lucide:folder-plus'"
+					class="w-8 h-8"
+				/>
 			</div>
 			<div class="space-y-1">
 				<h4 class="font-bold text-sm text-neutral-900 dark:text-white">{{ element.props.title || 'No Data' }}</h4>
 				<p class="text-xs text-neutral-500 dark:text-neutral-400 max-w-xs">{{ element.props.description || '' }}</p>
 			</div>
-			<UButton v-if="element.props.actionText" :label="element.props.actionText" color="primary" size="sm" />
+			<UButton
+				v-if="element.props.actionText"
+				:label="element.props.actionText"
+				color="primary"
+				size="sm"
+			/>
 		</div>
 
 		<!-- UMARQUEE -->
@@ -1268,7 +1747,10 @@ const splitFeatures = computed(() => {
 					:key="mIdx"
 					class="font-semibold text-xs text-neutral-500 uppercase tracking-widest flex items-center gap-2"
 				>
-					<UIcon name="lucide:sparkles" class="w-3.5 h-3.5 text-primary" />
+					<UIcon
+						name="lucide:sparkles"
+						class="w-3.5 h-3.5 text-primary"
+					/>
 					{{ it }}
 				</span>
 			</div>
@@ -1288,7 +1770,10 @@ const splitFeatures = computed(() => {
 					:index="cIdx"
 				/>
 			</template>
-			<div v-else class="space-y-3 text-xs text-neutral-500">
+			<div
+				v-else
+				class="space-y-3 text-xs text-neutral-500"
+			>
 				<p>ScrollArea allows smooth scrolling for tall content within restricted height.</p>
 				<p>Line 1 of scrollable content.</p>
 				<p>Line 2 of scrollable content.</p>
@@ -1320,13 +1805,31 @@ const splitFeatures = computed(() => {
 			:class="['p-4 rounded-xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 text-left text-xs my-3 shadow-sm max-w-full', styleClasses]"
 		>
 			<div class="font-bold mb-2 flex items-center gap-1.5 text-neutral-800 dark:text-neutral-200">
-				<UIcon name="lucide:folder" class="w-4 h-4 text-primary" />
+				<UIcon
+					name="lucide:folder"
+					class="w-4 h-4 text-primary"
+				/>
 				<span>{{ element.props.title || 'Tree Navigator' }}</span>
 			</div>
 			<div class="pl-4 space-y-1.5 border-l border-neutral-200 dark:border-neutral-800 font-mono text-[11px] text-neutral-600 dark:text-neutral-400">
-				<div class="flex items-center gap-1.5"><UIcon name="lucide:file-text" class="w-3.5 h-3.5" /><span>Getting Started</span></div>
-				<div class="flex items-center gap-1.5"><UIcon name="lucide:file-text" class="w-3.5 h-3.5" /><span>Installation</span></div>
-				<div class="flex items-center gap-1.5"><UIcon name="lucide:file-text" class="w-3.5 h-3.5" /><span>Configuration</span></div>
+				<div class="flex items-center gap-1.5">
+					<UIcon
+						name="lucide:file-text"
+						class="w-3.5 h-3.5"
+					/><span>Getting Started</span>
+				</div>
+				<div class="flex items-center gap-1.5">
+					<UIcon
+						name="lucide:file-text"
+						class="w-3.5 h-3.5"
+					/><span>Installation</span>
+				</div>
+				<div class="flex items-center gap-1.5">
+					<UIcon
+						name="lucide:file-text"
+						class="w-3.5 h-3.5"
+					/><span>Configuration</span>
+				</div>
 			</div>
 		</div>
 
@@ -1335,13 +1838,120 @@ const splitFeatures = computed(() => {
 			v-else-if="element.type === 'user'"
 			:class="['p-3 rounded-xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 flex items-center gap-3 text-left my-2 shadow-sm max-w-full', styleClasses]"
 		>
-			<UAvatar :src="element.props.avatar || 'https://avatars.githubusercontent.com/u/739984?v=4'" size="md" />
+			<UAvatar
+				:src="element.props.avatar || 'https://avatars.githubusercontent.com/u/739984?v=4'"
+				size="md"
+			/>
 			<div class="flex-1 overflow-hidden">
 				<h4 class="font-bold text-xs text-neutral-900 dark:text-white truncate">{{ element.props.name || 'User Name' }}</h4>
 				<p class="text-[11px] text-neutral-500 truncate">{{ element.props.description || 'user@example.com' }}</p>
 			</div>
-			<UIcon name="lucide:external-link" class="w-4 h-4 text-neutral-400 hover:text-white cursor-pointer" />
+			<UIcon
+				name="lucide:external-link"
+				class="w-4 h-4 text-neutral-400 hover:text-white cursor-pointer"
+			/>
 		</div>
+
+		<!-- ================= NAVIGATION COMPONENTS ================= -->
+
+		<!-- UBREADCRUMB -->
+		<UBreadcrumb
+			v-else-if="element.type === 'breadcrumb'"
+			:items="parseBreadcrumbItems(element.props.items)"
+			:separator-icon="element.props.separatorIcon || 'lucide:chevron-right'"
+			:color="element.props.color || 'primary'"
+			:class="styleClasses"
+		/>
+
+		<!-- UFOOTER COLUMNS -->
+		<div
+			v-else-if="element.type === 'footer-columns'"
+			:class="['grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 text-left my-4 w-full', styleClasses]"
+		>
+			<div
+				v-for="(col, colIdx) in parseFooterColumns(element.props.columns)"
+				:key="colIdx"
+				class="space-y-3"
+			>
+				<h4 class="text-xs font-bold uppercase tracking-wider text-neutral-900 dark:text-white">{{ col.label }}</h4>
+				<ul class="space-y-2 text-xs text-neutral-500 dark:text-neutral-400">
+					<li
+						v-for="(lnk, lIdx) in col.children"
+						:key="lIdx"
+						class="hover:text-primary transition-colors cursor-pointer"
+					>
+						{{ lnk.label }}
+					</li>
+				</ul>
+			</div>
+		</div>
+
+		<!-- UNAVIGATION MENU -->
+		<UNavigationMenu
+			v-else-if="element.type === 'navigation-menu'"
+			:items="parseNavMenuItems(element.props.items)"
+			:orientation="element.props.orientation || 'horizontal'"
+			:variant="element.props.variant || 'pill'"
+			:color="element.props.color || 'primary'"
+			:highlight="element.props.highlight !== false"
+			:highlight-color="element.props.highlightColor || 'primary'"
+			:collapsed="element.props.collapsed || false"
+			:trailing-icon="element.props.trailingIcon || 'lucide:chevron-down'"
+			:arrow="element.props.arrow || false"
+			:class="styleClasses"
+		/>
+
+		<!-- UPAGINATION -->
+		<UPagination
+			v-else-if="element.type === 'pagination'"
+			:page="element.props.page || 1"
+			:total="element.props.total || 100"
+			:items-per-page="element.props.itemsPerPage || 10"
+			:sibling-count="element.props.siblingCount || 1"
+			:show-edges="element.props.showEdges !== false"
+			:color="element.props.color || 'primary'"
+			:variant="element.props.variant || 'outline'"
+			:active-color="element.props.activeColor || 'primary'"
+			:active-variant="element.props.activeVariant || 'solid'"
+			:size="element.props.size || 'md'"
+			:disabled="element.props.disabled || false"
+			:class="styleClasses"
+		/>
+
+		<!-- USTEPPER -->
+		<UStepper
+			v-else-if="element.type === 'stepper'"
+			:items="parseStepperItems(element.props.items)"
+			:model-value="element.props.modelValue || 1"
+			:orientation="element.props.orientation || 'horizontal'"
+			:color="element.props.color || 'primary'"
+			:size="element.props.size || 'md'"
+			:disabled="element.props.disabled || false"
+			:linear="element.props.linear || false"
+			:class="styleClasses"
+		/>
+
+		<!-- UTABS -->
+		<UTabs
+			v-else-if="element.type === 'tabs'"
+			:items="parseTabsItems(element.props.items)"
+			:orientation="element.props.orientation || 'horizontal'"
+			:variant="element.props.variant || 'pill'"
+			:color="element.props.color || 'primary'"
+			:size="element.props.size || 'md'"
+			:content="element.props.content !== false"
+			:class="styleClasses"
+		>
+			<template
+				v-for="tab in parseTabsItems(element.props.items)"
+				:key="tab.slot"
+				#[tab.slot]
+			>
+				<div class="p-4 rounded-xl border border-neutral-200 dark:border-neutral-800 bg-neutral-50/50 dark:bg-neutral-900/30 text-xs text-neutral-500">
+					Content panel for {{ tab.label }}
+				</div>
+			</template>
+		</UTabs>
 
 		<!-- STAT CARD -->
 		<UCard
@@ -1351,7 +1961,10 @@ const splitFeatures = computed(() => {
 			<div class="flex items-center justify-between">
 				<span class="text-sm font-medium text-neutral-500">{{ element.props.title || 'Metric' }}</span>
 				<div class="p-2 rounded-lg bg-primary-50 dark:bg-primary-950/40">
-					<UIcon :name="element.props.icon || 'lucide:trending-up'" class="w-5 h-5 text-primary" />
+					<UIcon
+						:name="element.props.icon || 'lucide:trending-up'"
+						class="w-5 h-5 text-primary"
+					/>
 				</div>
 			</div>
 			<div class="mt-2 flex items-baseline gap-2">
@@ -1368,30 +1981,30 @@ const splitFeatures = computed(() => {
 
 		<!-- UPageHero SECTION -->
 		<section
-			v-else-if="element.type === 'hero-section'"
+			v-else-if="element.type === 'page-hero' || element.type === 'hero-section'"
 			:class="[
 				'relative overflow-hidden',
 				isMobile ? 'py-8 px-4' : 'py-16 px-6 lg:py-24',
-				styleClasses
+				styleClasses,
 			]"
 		>
 			<div
 				class="max-w-7xl mx-auto flex flex-col"
 				:class="[
-					isMobile ? 'gap-6 text-center items-center' :
-					(element.props.orientation === 'horizontal'
+					isMobile ? 'gap-6 text-center items-center'
+					: (element.props.orientation === 'horizontal'
 						? (element.props.reverse ? 'lg:flex-row-reverse lg:items-center lg:justify-between gap-10' : 'lg:flex-row lg:items-center lg:justify-between gap-10')
-						: (element.props.reverse ? 'flex-col-reverse items-center text-center gap-10' : 'items-center text-center gap-10'))
+						: (element.props.reverse ? 'flex-col-reverse items-center text-center gap-10' : 'items-center text-center gap-10')),
 				]"
 			>
 				<!-- Main Text Content & Headline & Links -->
 				<div
 					class="flex flex-col w-full"
 					:class="[
-						isMobile ? 'gap-3.5 items-center text-center' :
-						(element.props.orientation === 'horizontal'
+						isMobile ? 'gap-3.5 items-center text-center'
+						: (element.props.orientation === 'horizontal'
 							? 'lg:max-w-xl text-left items-start gap-5'
-							: 'max-w-3xl items-center text-center mx-auto gap-5')
+							: 'max-w-3xl items-center text-center mx-auto gap-5'),
 					]"
 				>
 					<!-- Headline Slot / Badge -->
@@ -1409,7 +2022,7 @@ const splitFeatures = computed(() => {
 					<h1
 						:class="[
 							'font-extrabold tracking-tight text-neutral-900 dark:text-white break-words max-w-full',
-							isMobile ? 'text-2xl leading-tight' : 'text-4xl sm:text-6xl leading-[1.1]'
+							isMobile ? 'text-2xl leading-tight' : 'text-4xl sm:text-6xl leading-[1.1]',
 						]"
 					>
 						{{ element.props.title || 'Ultimate Vue UI Library' }}
@@ -1419,7 +2032,7 @@ const splitFeatures = computed(() => {
 					<p
 						:class="[
 							'text-neutral-600 dark:text-neutral-300 leading-relaxed break-words max-w-full',
-							isMobile ? 'text-sm px-1' : 'text-lg sm:text-xl'
+							isMobile ? 'text-sm px-1' : 'text-lg sm:text-xl',
 						]"
 					>
 						{{ element.props.description || element.props.subtitle || 'A Nuxt/Vue-integrated UI library providing a rich set of fully-styled, accessible components.' }}
@@ -1429,7 +2042,10 @@ const splitFeatures = computed(() => {
 					<div
 						:class="[
 							'w-full pt-2',
-							isMobile ? 'flex flex-col gap-2.5 px-2' : 'flex flex-wrap items-center gap-3.5'
+							isMobile ? 'flex flex-col gap-2.5 px-2'
+							: (element.props.orientation === 'horizontal'
+								? 'flex flex-wrap items-center justify-start gap-3.5'
+								: 'flex flex-wrap items-center justify-center gap-3.5'),
 						]"
 					>
 						<UButton
@@ -1485,7 +2101,10 @@ const splitFeatures = computed(() => {
 						v-else-if="!previewMode"
 						class="border-2 border-dashed border-neutral-300 dark:border-neutral-700/80 rounded-xl p-8 text-center text-xs text-neutral-400 flex flex-col items-center justify-center gap-2 bg-neutral-50/50 dark:bg-neutral-900/30"
 					>
-						<UIcon name="lucide:image-plus" class="w-6 h-6 text-neutral-400" />
+						<UIcon
+							name="lucide:image-plus"
+							class="w-6 h-6 text-neutral-400"
+						/>
 						<span>Drop an illustration, screenshot card, or components into the Hero Default Slot</span>
 					</div>
 				</div>
@@ -1498,7 +2117,10 @@ const splitFeatures = computed(() => {
 			:class="styleClasses"
 		>
 			<div class="p-2.5 w-12 h-12 rounded-xl bg-primary-50 dark:bg-primary-950/60 flex items-center justify-center mb-4 ring-1 ring-primary/20">
-				<UIcon :name="element.props.icon || 'lucide:sparkles'" class="w-6 h-6 text-primary" />
+				<UIcon
+					:name="element.props.icon || 'lucide:sparkles'"
+					class="w-6 h-6 text-primary"
+				/>
 			</div>
 			<h3 class="text-lg font-bold text-neutral-900 dark:text-white mb-2">{{ element.props.title || 'Feature Title' }}</h3>
 			<p class="text-sm text-neutral-500 dark:text-neutral-400 leading-relaxed">{{ element.props.description || '' }}</p>
@@ -1510,7 +2132,7 @@ const splitFeatures = computed(() => {
 			:class="[
 				'relative flex flex-col justify-between h-full transition-all',
 				element.props.featured ? 'ring-2 ring-primary shadow-xl shadow-primary/10' : '',
-				styleClasses
+				styleClasses,
 			]"
 		>
 			<div>
@@ -1534,7 +2156,10 @@ const splitFeatures = computed(() => {
 						:key="fIdx"
 						class="flex items-center gap-2 text-sm text-neutral-600 dark:text-neutral-300"
 					>
-						<UIcon name="lucide:check" class="w-4 h-4 text-primary shrink-0" />
+						<UIcon
+							name="lucide:check"
+							class="w-4 h-4 text-primary shrink-0"
+						/>
 						<span>{{ feat }}</span>
 					</li>
 				</ul>
@@ -1554,13 +2179,22 @@ const splitFeatures = computed(() => {
 			:class="styleClasses"
 		>
 			<div class="flex items-center gap-1 text-amber-400 mb-4">
-				<UIcon v-for="i in 5" :key="i" name="lucide:star" class="w-4 h-4 fill-current" />
+				<UIcon
+					v-for="i in 5"
+					:key="i"
+					name="lucide:star"
+					class="w-4 h-4 fill-current"
+				/>
 			</div>
 			<p class="text-sm italic text-neutral-700 dark:text-neutral-200 mb-6 leading-relaxed">
 				"{{ element.props.quote || '' }}"
 			</p>
 			<div class="flex items-center gap-3">
-				<UAvatar :src="element.props.avatarUrl" :alt="element.props.author" size="md" />
+				<UAvatar
+					:src="element.props.avatarUrl"
+					:alt="element.props.author"
+					size="md"
+				/>
 				<div>
 					<h4 class="text-sm font-semibold text-neutral-900 dark:text-white">{{ element.props.author || 'Author' }}</h4>
 					<p class="text-xs text-neutral-400">{{ element.props.role || '' }}</p>
@@ -1591,18 +2225,41 @@ const splitFeatures = computed(() => {
 		>
 			<div class="text-center mb-6">
 				<div class="inline-flex p-3 rounded-2xl bg-primary-50 dark:bg-primary-950/60 text-primary mb-3">
-					<UIcon :name="element.props.icon || 'lucide:lock'" class="w-6 h-6" />
+					<UIcon
+						:name="element.props.icon || 'lucide:lock'"
+						class="w-6 h-6"
+					/>
 				</div>
 				<h2 class="text-xl font-bold text-neutral-900 dark:text-white">{{ element.props.title || 'Welcome back' }}</h2>
 				<p class="text-xs text-neutral-500 mt-1">{{ element.props.description || '' }}</p>
 			</div>
 
-			<div v-if="element.props.showProviders" class="grid grid-cols-2 gap-2 mb-4">
-				<UButton color="neutral" variant="outline" size="sm" icon="lucide:globe" label="Google" block />
-				<UButton color="neutral" variant="outline" size="sm" icon="lucide:github" label="GitHub" block />
+			<div
+				v-if="element.props.showProviders"
+				class="grid grid-cols-2 gap-2 mb-4"
+			>
+				<UButton
+					color="neutral"
+					variant="outline"
+					size="sm"
+					icon="lucide:globe"
+					label="Google"
+					block
+				/>
+				<UButton
+					color="neutral"
+					variant="outline"
+					size="sm"
+					icon="lucide:github"
+					label="GitHub"
+					block
+				/>
 			</div>
 
-			<div v-if="element.props.showProviders" class="relative my-4">
+			<div
+				v-if="element.props.showProviders"
+				class="relative my-4"
+			>
 				<div class="absolute inset-0 flex items-center"><span class="w-full border-t border-neutral-200 dark:border-neutral-800" /></div>
 				<div class="relative flex justify-center text-[10px] uppercase"><span class="bg-white dark:bg-neutral-900 px-2 text-neutral-400">or continue with</span></div>
 			</div>
@@ -1610,13 +2267,28 @@ const splitFeatures = computed(() => {
 			<div class="space-y-3">
 				<div>
 					<label class="block text-xs font-medium text-neutral-700 dark:text-neutral-300 mb-1">Email address</label>
-					<UInput placeholder="you@example.com" icon="lucide:mail" class="w-full" />
+					<UInput
+						placeholder="you@example.com"
+						icon="lucide:mail"
+						class="w-full"
+					/>
 				</div>
 				<div>
 					<label class="block text-xs font-medium text-neutral-700 dark:text-neutral-300 mb-1">Password</label>
-					<UInput type="password" placeholder="••••••••" icon="lucide:key" class="w-full" />
+					<UInput
+						type="password"
+						placeholder="••••••••"
+						icon="lucide:key"
+						class="w-full"
+					/>
 				</div>
-				<UButton block color="primary" size="lg" :label="element.props.submitBtnText || 'Continue with Email'" class="mt-4" />
+				<UButton
+					block
+					color="primary"
+					size="lg"
+					:label="element.props.submitBtnText || 'Continue with Email'"
+					class="mt-4"
+				/>
 			</div>
 		</UCard>
 
@@ -1626,7 +2298,7 @@ const splitFeatures = computed(() => {
 			:class="[
 				'overflow-hidden group hover:shadow-xl transition-all duration-300',
 				element.props.orientation === 'horizontal' ? 'flex flex-col md:flex-row' : '',
-				styleClasses
+				styleClasses,
 			]"
 		>
 			<div
@@ -1642,7 +2314,13 @@ const splitFeatures = computed(() => {
 			<div class="flex flex-col justify-between flex-1">
 				<div>
 					<div class="flex items-center gap-2 mb-3">
-						<UBadge v-if="element.props.badge" color="primary" variant="subtle" size="xs" :label="element.props.badge" />
+						<UBadge
+							v-if="element.props.badge"
+							color="primary"
+							variant="subtle"
+							size="xs"
+							:label="element.props.badge"
+						/>
 						<span class="text-xs text-neutral-400">{{ element.props.date || 'Recent' }}</span>
 					</div>
 					<h3 class="text-lg font-bold text-neutral-900 dark:text-white group-hover:text-primary transition-colors mb-2">
@@ -1653,7 +2331,11 @@ const splitFeatures = computed(() => {
 					</p>
 				</div>
 				<div class="flex items-center gap-2.5 mt-4 pt-3 border-t border-neutral-100 dark:border-neutral-800/60">
-					<UAvatar :src="element.props.authorAvatar" :alt="element.props.authorName" size="xs" />
+					<UAvatar
+						:src="element.props.authorAvatar"
+						:alt="element.props.authorName"
+						size="xs"
+					/>
 					<div class="text-left">
 						<h4 class="text-xs font-semibold text-neutral-900 dark:text-white">{{ element.props.authorName || 'Author' }}</h4>
 						<p class="text-[10px] text-neutral-400">{{ element.props.authorRole || '' }}</p>
@@ -1668,7 +2350,7 @@ const splitFeatures = computed(() => {
 			:class="[
 				'grid gap-6',
 				element.props.orientation === 'horizontal' ? 'grid-cols-1' : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3',
-				styleClasses
+				styleClasses,
 			]"
 		>
 			<template v-if="element.children && element.children.length > 0">
@@ -1684,7 +2366,10 @@ const splitFeatures = computed(() => {
 				v-else-if="!previewMode"
 				class="col-span-full border-2 border-dashed border-neutral-300 dark:border-neutral-700/80 rounded-xl p-8 text-center text-xs text-neutral-400 flex flex-col items-center justify-center gap-2"
 			>
-				<UIcon name="lucide:newspaper" class="w-6 h-6 text-neutral-400" />
+				<UIcon
+					name="lucide:newspaper"
+					class="w-6 h-6 text-neutral-400"
+				/>
 				<span>Drop UBlogPost cards here</span>
 			</div>
 		</div>
@@ -1699,13 +2384,22 @@ const splitFeatures = computed(() => {
 			</div>
 			<div class="flex items-center gap-2.5 mb-1.5">
 				<span class="font-mono text-sm font-bold text-neutral-900 dark:text-white">{{ element.props.version || 'v1.0.0' }}</span>
-				<UBadge v-if="element.props.badge" color="primary" variant="subtle" size="xs" :label="element.props.badge" />
+				<UBadge
+					v-if="element.props.badge"
+					color="primary"
+					variant="subtle"
+					size="xs"
+					:label="element.props.badge"
+				/>
 				<span class="text-xs text-neutral-400">{{ element.props.date || '' }}</span>
 			</div>
 			<h3 class="text-base font-bold text-neutral-900 dark:text-white mb-2">{{ element.props.title || 'Version Release Title' }}</h3>
 			<p class="text-xs text-neutral-600 dark:text-neutral-300 mb-4 leading-relaxed">{{ element.props.description || '' }}</p>
-			
-			<div v-if="element.children && element.children.length > 0" class="space-y-3">
+
+			<div
+				v-if="element.children && element.children.length > 0"
+				class="space-y-3"
+			>
 				<BuilderComponentRenderer
 					v-for="(child, cIdx) in element.children"
 					:key="child.id"
@@ -1734,7 +2428,10 @@ const splitFeatures = computed(() => {
 				v-else-if="!previewMode"
 				class="border-2 border-dashed border-neutral-300 dark:border-neutral-700/80 rounded-xl p-8 text-center text-xs text-neutral-400 flex flex-col items-center justify-center gap-2"
 			>
-				<UIcon name="lucide:git-commit" class="w-6 h-6 text-neutral-400" />
+				<UIcon
+					name="lucide:git-commit"
+					class="w-6 h-6 text-neutral-400"
+				/>
 				<span>Drop UChangelogVersion entries into this timeline</span>
 			</div>
 		</div>
@@ -1757,7 +2454,10 @@ const splitFeatures = computed(() => {
 				v-else-if="!previewMode"
 				class="border-2 border-dashed border-neutral-300 dark:border-neutral-700/80 rounded-xl p-8 text-center text-xs text-neutral-400 flex flex-col items-center justify-center gap-2"
 			>
-				<UIcon name="lucide:app-window" class="w-6 h-6 text-neutral-400" />
+				<UIcon
+					name="lucide:app-window"
+					class="w-6 h-6 text-neutral-400"
+				/>
 				<span>UPage Root Layout: Drop UPageHeader, UPageBody, or sections inside</span>
 			</div>
 		</div>
@@ -1768,17 +2468,27 @@ const splitFeatures = computed(() => {
 			:class="[
 				'border-b border-neutral-200 dark:border-neutral-800 text-left',
 				isMobile ? 'pb-4 px-1' : 'pb-8',
-				styleClasses
+				styleClasses,
 			]"
 		>
 			<div class="flex items-center gap-2 mb-2">
-				<UBadge v-if="element.props.headline" color="primary" variant="subtle" :size="isMobile ? 'xs' : 'sm'" :label="element.props.headline" />
-				<UIcon v-if="element.props.icon" :name="element.props.icon" :class="isMobile ? 'w-4 h-4 text-primary' : 'w-5 h-5 text-primary'" />
+				<UBadge
+					v-if="element.props.headline"
+					color="primary"
+					variant="subtle"
+					:size="isMobile ? 'xs' : 'sm'"
+					:label="element.props.headline"
+				/>
+				<UIcon
+					v-if="element.props.icon"
+					:name="element.props.icon"
+					:class="isMobile ? 'w-4 h-4 text-primary' : 'w-5 h-5 text-primary'"
+				/>
 			</div>
 			<h1
 				:class="[
 					'font-extrabold text-neutral-900 dark:text-white tracking-tight break-words max-w-full mb-2',
-					isMobile ? 'text-2xl' : 'text-3xl sm:text-4xl mb-3'
+					isMobile ? 'text-2xl' : 'text-3xl sm:text-4xl mb-3',
 				]"
 			>
 				{{ element.props.title || 'Page Title' }}
@@ -1786,7 +2496,7 @@ const splitFeatures = computed(() => {
 			<p
 				:class="[
 					'text-neutral-600 dark:text-neutral-300 max-w-3xl leading-relaxed break-words',
-					isMobile ? 'text-xs mb-4' : 'text-base mb-6'
+					isMobile ? 'text-xs mb-4' : 'text-base mb-6',
 				]"
 			>
 				{{ element.props.description || '' }}
@@ -1795,11 +2505,24 @@ const splitFeatures = computed(() => {
 				v-if="element.props.primaryBtnText || element.props.secondaryBtnText"
 				:class="[
 					'w-full',
-					isMobile ? 'flex flex-col gap-2' : 'flex items-center gap-3'
+					isMobile ? 'flex flex-col gap-2' : 'flex items-center gap-3',
 				]"
 			>
-				<UButton v-if="element.props.primaryBtnText" color="primary" :size="isMobile ? 'sm' : 'md'" :block="isMobile" :label="element.props.primaryBtnText" />
-				<UButton v-if="element.props.secondaryBtnText" color="neutral" variant="outline" :size="isMobile ? 'sm' : 'md'" :block="isMobile" :label="element.props.secondaryBtnText" />
+				<UButton
+					v-if="element.props.primaryBtnText"
+					color="primary"
+					:size="isMobile ? 'sm' : 'md'"
+					:block="isMobile"
+					:label="element.props.primaryBtnText"
+				/>
+				<UButton
+					v-if="element.props.secondaryBtnText"
+					color="neutral"
+					variant="outline"
+					:size="isMobile ? 'sm' : 'md'"
+					:block="isMobile"
+					:label="element.props.secondaryBtnText"
+				/>
 			</div>
 		</div>
 
@@ -1809,7 +2532,7 @@ const splitFeatures = computed(() => {
 			:class="[
 				'w-full max-w-full overflow-hidden',
 				element.props.prose ? 'prose dark:prose-invert max-w-none' : '',
-				styleClasses
+				styleClasses,
 			]"
 		>
 			<template v-if="element.children && element.children.length > 0">
@@ -1825,7 +2548,10 @@ const splitFeatures = computed(() => {
 				v-else-if="!previewMode"
 				class="border-2 border-dashed border-neutral-300 dark:border-neutral-700/80 rounded-xl p-8 text-center text-xs text-neutral-400 flex flex-col items-center justify-center gap-2"
 			>
-				<UIcon name="lucide:align-left" class="w-6 h-6 text-neutral-400" />
+				<UIcon
+					name="lucide:align-left"
+					class="w-6 h-6 text-neutral-400"
+				/>
 				<span>UPageBody: Drop documentation or content components here</span>
 			</div>
 		</div>
@@ -1861,7 +2587,10 @@ const splitFeatures = computed(() => {
 			:class="['border-l border-neutral-200 dark:border-neutral-800 pl-4 text-left', styleClasses]"
 		>
 			<h4 class="text-xs font-bold text-neutral-900 dark:text-white mb-3 flex items-center gap-1.5">
-				<UIcon name="lucide:list-tree" class="w-3.5 h-3.5 text-primary" />
+				<UIcon
+					name="lucide:list-tree"
+					class="w-3.5 h-3.5 text-primary"
+				/>
 				<span>{{ element.props.title || 'On this page' }}</span>
 			</h4>
 			<ul class="space-y-2 text-xs">
@@ -1880,10 +2609,10 @@ const splitFeatures = computed(() => {
 			v-else-if="element.type === 'page-grid'"
 			:class="[
 				'grid',
-				isMobile ? 'grid-cols-1 gap-4' :
-				(element.props.columns === '2' ? 'grid-cols-1 md:grid-cols-2 gap-6' :
-				element.props.columns === '4' ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6' : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'),
-				styleClasses
+				isMobile ? 'grid-cols-1 gap-4'
+				: (element.props.columns === '2' ? 'grid-cols-1 md:grid-cols-2 gap-6'
+					: element.props.columns === '4' ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6' : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'),
+				styleClasses,
 			]"
 		>
 			<template v-if="element.children && element.children.length > 0">
@@ -1899,7 +2628,10 @@ const splitFeatures = computed(() => {
 				v-else-if="!previewMode"
 				class="col-span-full border-2 border-dashed border-neutral-300 dark:border-neutral-700/80 rounded-xl p-8 text-center text-xs text-neutral-400 flex flex-col items-center justify-center gap-2"
 			>
-				<UIcon name="lucide:layout-grid" class="w-6 h-6 text-neutral-400" />
+				<UIcon
+					name="lucide:layout-grid"
+					class="w-6 h-6 text-neutral-400"
+				/>
 				<span>UPageGrid: Drop cards or feature items here</span>
 			</div>
 		</div>
@@ -1909,7 +2641,7 @@ const splitFeatures = computed(() => {
 			v-else-if="element.type === 'page-columns'"
 			:class="[
 				isMobile ? 'columns-1 gap-4 space-y-4' : 'columns-1 md:columns-2 lg:columns-3 gap-6 space-y-6',
-				styleClasses
+				styleClasses,
 			]"
 		>
 			<template v-if="element.children && element.children.length > 0">
@@ -1925,7 +2657,10 @@ const splitFeatures = computed(() => {
 				v-else-if="!previewMode"
 				class="border-2 border-dashed border-neutral-300 dark:border-neutral-700/80 rounded-xl p-8 text-center text-xs text-neutral-400 flex flex-col items-center justify-center gap-2"
 			>
-				<UIcon name="lucide:columns-3" class="w-6 h-6 text-neutral-400" />
+				<UIcon
+					name="lucide:columns-3"
+					class="w-6 h-6 text-neutral-400"
+				/>
 				<span>UPageColumns: Drop staggered cards or testimonials</span>
 			</div>
 		</div>
@@ -1937,7 +2672,7 @@ const splitFeatures = computed(() => {
 			:class="[
 				'group relative hover:shadow-xl transition-all duration-300 max-w-full',
 				element.props.highlight ? 'ring-1 ring-primary-500/30' : '',
-				styleClasses
+				styleClasses,
 			]"
 		>
 			<div
@@ -1948,7 +2683,10 @@ const splitFeatures = computed(() => {
 					v-if="element.props.icon"
 					class="w-12 h-12 rounded-xl bg-primary-50 dark:bg-primary-950/60 flex items-center justify-center text-primary shrink-0 ring-1 ring-primary/20"
 				>
-					<UIcon :name="element.props.icon" class="w-6 h-6" />
+					<UIcon
+						:name="element.props.icon"
+						class="w-6 h-6"
+					/>
 				</div>
 				<div class="flex-1 text-left">
 					<h3 class="text-base font-bold text-neutral-900 dark:text-white group-hover:text-primary transition-colors mb-1.5 break-words">
@@ -1957,7 +2695,10 @@ const splitFeatures = computed(() => {
 					<p class="text-xs text-neutral-500 dark:text-neutral-400 leading-relaxed break-words">
 						{{ element.props.description || '' }}
 					</p>
-					<div v-if="element.children && element.children.length > 0" class="mt-4">
+					<div
+						v-if="element.children && element.children.length > 0"
+						class="mt-4"
+					>
 						<BuilderComponentRenderer
 							v-for="(child, cIdx) in element.children"
 							:key="child.id"
@@ -1976,11 +2717,14 @@ const splitFeatures = computed(() => {
 			:class="[
 				'flex gap-3 text-left max-w-full',
 				element.props.orientation === 'vertical' || isMobile ? 'flex-col items-start' : 'items-start',
-				styleClasses
+				styleClasses,
 			]"
 		>
 			<div class="p-2 rounded-lg bg-primary-50 dark:bg-primary-950/60 text-primary shrink-0 ring-1 ring-primary/20">
-				<UIcon :name="element.props.icon || 'lucide:sparkles'" class="w-5 h-5" />
+				<UIcon
+					:name="element.props.icon || 'lucide:sparkles'"
+					class="w-5 h-5"
+				/>
 			</div>
 			<div class="max-w-full">
 				<h4 class="text-sm font-bold text-neutral-900 dark:text-white mb-1 break-words">{{ element.props.title || 'Feature' }}</h4>
@@ -1994,31 +2738,41 @@ const splitFeatures = computed(() => {
 			:class="[
 				'relative',
 				isMobile ? 'py-8 px-4' : 'py-16 px-6 lg:py-24',
-				styleClasses
+				styleClasses,
 			]"
 		>
 			<div
 				class="max-w-7xl mx-auto flex flex-col"
 				:class="[
-					isMobile ? 'gap-6 text-center items-center' :
-					(element.props.orientation === 'horizontal'
+					isMobile ? 'gap-6 text-center items-center'
+					: (element.props.orientation === 'horizontal'
 						? (element.props.reverse ? 'lg:flex-row-reverse lg:items-center gap-10' : 'lg:flex-row lg:items-center gap-10')
-						: 'text-center items-center gap-10')
+						: 'text-center items-center gap-10'),
 				]"
 			>
 				<div
 					class="flex flex-col w-full"
 					:class="[
-						isMobile ? 'gap-3.5 items-center text-center' :
-						(element.props.orientation === 'horizontal' ? 'lg:max-w-xl text-left items-start gap-4' : 'max-w-3xl mx-auto items-center text-center gap-4')
+						isMobile ? 'gap-3.5 items-center text-center'
+						: (element.props.orientation === 'horizontal' ? 'lg:max-w-xl text-left items-start gap-4' : 'max-w-3xl mx-auto items-center text-center gap-4'),
 					]"
 				>
-					<UBadge v-if="element.props.headline" color="primary" variant="subtle" :size="isMobile ? 'xs' : 'md'" :label="element.props.headline" />
-					<UIcon v-if="element.props.icon" :name="element.props.icon" :class="isMobile ? 'w-6 h-6 text-primary' : 'w-8 h-8 text-primary'" />
+					<UBadge
+						v-if="element.props.headline"
+						color="primary"
+						variant="subtle"
+						:size="isMobile ? 'xs' : 'md'"
+						:label="element.props.headline"
+					/>
+					<UIcon
+						v-if="element.props.icon"
+						:name="element.props.icon"
+						:class="isMobile ? 'w-6 h-6 text-primary' : 'w-8 h-8 text-primary'"
+					/>
 					<h2
 						:class="[
 							'font-extrabold text-neutral-900 dark:text-white tracking-tight leading-tight break-words max-w-full',
-							isMobile ? 'text-2xl' : 'text-3xl sm:text-5xl'
+							isMobile ? 'text-2xl' : 'text-3xl sm:text-5xl',
 						]"
 					>
 						{{ element.props.title || 'Section Title' }}
@@ -2026,7 +2780,7 @@ const splitFeatures = computed(() => {
 					<p
 						:class="[
 							'text-neutral-600 dark:text-neutral-300 leading-relaxed break-words max-w-full',
-							isMobile ? 'text-sm' : 'text-base'
+							isMobile ? 'text-sm' : 'text-base',
 						]"
 					>
 						{{ element.props.description || '' }}
@@ -2035,11 +2789,27 @@ const splitFeatures = computed(() => {
 						v-if="element.props.primaryBtnText || element.props.secondaryBtnText"
 						:class="[
 							'w-full pt-1',
-							isMobile ? 'flex flex-col gap-2' : 'flex flex-wrap items-center gap-3 pt-2'
+							isMobile ? 'flex flex-col gap-2'
+							: (element.props.orientation === 'horizontal'
+								? 'flex flex-wrap items-center justify-start gap-3 pt-2'
+								: 'flex flex-wrap items-center justify-center gap-3 pt-2'),
 						]"
 					>
-						<UButton v-if="element.props.primaryBtnText" color="primary" :size="isMobile ? 'md' : 'lg'" :block="isMobile" :label="element.props.primaryBtnText" />
-						<UButton v-if="element.props.secondaryBtnText" color="neutral" variant="outline" :size="isMobile ? 'md' : 'lg'" :block="isMobile" :label="element.props.secondaryBtnText" />
+						<UButton
+							v-if="element.props.primaryBtnText"
+							color="primary"
+							:size="isMobile ? 'md' : 'lg'"
+							:block="isMobile"
+							:label="element.props.primaryBtnText"
+						/>
+						<UButton
+							v-if="element.props.secondaryBtnText"
+							color="neutral"
+							variant="outline"
+							:size="isMobile ? 'md' : 'lg'"
+							:block="isMobile"
+							:label="element.props.secondaryBtnText"
+						/>
 					</div>
 				</div>
 
@@ -2063,13 +2833,20 @@ const splitFeatures = computed(() => {
 						v-else-if="element.props.showIllustration"
 						class="rounded-xl overflow-hidden shadow-2xl border border-neutral-200 dark:border-neutral-800"
 					>
-						<img :src="element.props.imageUrl" alt="Section Illustration" class="w-full h-auto object-cover" />
+						<img
+							:src="element.props.imageUrl"
+							alt="Section Illustration"
+							class="w-full h-auto object-cover"
+						/>
 					</div>
 					<div
 						v-else-if="!previewMode"
 						class="border-2 border-dashed border-neutral-300 dark:border-neutral-700/80 rounded-xl p-8 text-center text-xs text-neutral-400 flex flex-col items-center justify-center gap-2"
 					>
-						<UIcon name="lucide:layout-panel-top" class="w-6 h-6 text-neutral-400" />
+						<UIcon
+							name="lucide:layout-panel-top"
+							class="w-6 h-6 text-neutral-400"
+						/>
 						<span>UPageSection Default Slot: Drop Cards, Grids or Content</span>
 					</div>
 				</div>
@@ -2083,15 +2860,21 @@ const splitFeatures = computed(() => {
 				'relative overflow-hidden text-center max-w-full',
 				isMobile ? 'py-8 px-4 rounded-2xl my-3' : 'py-16 px-6 rounded-3xl my-6',
 				element.props.variant === 'solid' ? 'bg-primary text-inverted' : 'bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800',
-				styleClasses
+				styleClasses,
 			]"
 		>
 			<div class="max-w-3xl mx-auto flex flex-col items-center gap-4">
-				<UBadge v-if="element.props.headline" color="primary" variant="subtle" :size="isMobile ? 'xs' : 'sm'" :label="element.props.headline" />
+				<UBadge
+					v-if="element.props.headline"
+					color="primary"
+					variant="subtle"
+					:size="isMobile ? 'xs' : 'sm'"
+					:label="element.props.headline"
+				/>
 				<h2
 					:class="[
 						'font-extrabold tracking-tight break-words max-w-full',
-						isMobile ? 'text-2xl' : 'text-3xl sm:text-5xl'
+						isMobile ? 'text-2xl' : 'text-3xl sm:text-5xl',
 					]"
 				>
 					{{ element.props.title || 'CTA Title' }}
@@ -2099,7 +2882,7 @@ const splitFeatures = computed(() => {
 				<p
 					:class="[
 						'text-neutral-500 dark:text-neutral-400 max-w-xl break-words',
-						isMobile ? 'text-sm' : 'text-base'
+						isMobile ? 'text-sm' : 'text-base',
 					]"
 				>
 					{{ element.props.description || '' }}
@@ -2107,13 +2890,29 @@ const splitFeatures = computed(() => {
 				<div
 					:class="[
 						'w-full pt-1',
-						isMobile ? 'flex flex-col gap-2' : 'flex flex-wrap items-center justify-center gap-3 pt-2'
+						isMobile ? 'flex flex-col gap-2' : 'flex flex-wrap items-center justify-center gap-3 pt-2',
 					]"
 				>
-					<UButton v-if="element.props.primaryBtnText" color="primary" :size="isMobile ? 'md' : 'xl'" :block="isMobile" :label="element.props.primaryBtnText" />
-					<UButton v-if="element.props.secondaryBtnText" color="neutral" variant="outline" :size="isMobile ? 'md' : 'xl'" :block="isMobile" :label="element.props.secondaryBtnText" />
+					<UButton
+						v-if="element.props.primaryBtnText"
+						color="primary"
+						:size="isMobile ? 'md' : 'xl'"
+						:block="isMobile"
+						:label="element.props.primaryBtnText"
+					/>
+					<UButton
+						v-if="element.props.secondaryBtnText"
+						color="neutral"
+						variant="outline"
+						:size="isMobile ? 'md' : 'xl'"
+						:block="isMobile"
+						:label="element.props.secondaryBtnText"
+					/>
 				</div>
-				<div v-if="element.children && element.children.length > 0" class="mt-6 w-full">
+				<div
+					v-if="element.children && element.children.length > 0"
+					class="mt-6 w-full"
+				>
 					<BuilderComponentRenderer
 						v-for="(child, cIdx) in element.children"
 						:key="child.id"
@@ -2131,7 +2930,7 @@ const splitFeatures = computed(() => {
 			:class="[
 				'text-center border-y border-neutral-100 dark:border-neutral-900',
 				isMobile ? 'py-6 px-3' : 'py-12 px-6',
-				styleClasses
+				styleClasses,
 			]"
 		>
 			<p class="text-xs font-semibold text-neutral-400 uppercase tracking-widest mb-4 sm:mb-8">{{ element.props.title || 'Trusted by leaders' }}</p>
@@ -2144,7 +2943,10 @@ const splitFeatures = computed(() => {
 					:key="lIdx"
 					class="font-extrabold tracking-tight text-neutral-700 dark:text-neutral-300 flex items-center gap-1.5"
 				>
-					<UIcon name="lucide:sparkles" class="w-3.5 h-3.5 text-primary" />
+					<UIcon
+						name="lucide:sparkles"
+						class="w-3.5 h-3.5 text-primary"
+					/>
 					<span>{{ logo }}</span>
 				</div>
 			</div>
@@ -2156,13 +2958,13 @@ const splitFeatures = computed(() => {
 			:class="[
 				'text-left max-w-4xl mx-auto space-y-4',
 				isMobile ? 'py-6 px-2' : 'py-10',
-				styleClasses
+				styleClasses,
 			]"
 		>
 			<h3
 				:class="[
 					'font-bold text-neutral-900 dark:text-white break-words',
-					isMobile ? 'text-xl' : 'text-2xl'
+					isMobile ? 'text-xl' : 'text-2xl',
 				]"
 			>
 				{{ element.props.title || 'Frequently Asked Questions' }}
@@ -2199,7 +3001,10 @@ const splitFeatures = computed(() => {
 					:key="lIdx"
 					class="flex items-center gap-2 text-neutral-700 dark:text-neutral-300 hover:text-primary cursor-pointer transition-colors break-words"
 				>
-					<UIcon name="lucide:external-link" class="w-3.5 h-3.5 text-primary shrink-0" />
+					<UIcon
+						name="lucide:external-link"
+						class="w-3.5 h-3.5 text-primary shrink-0"
+					/>
 					<span>{{ link }}</span>
 				</li>
 			</ul>
@@ -2211,13 +3016,19 @@ const splitFeatures = computed(() => {
 			:class="[
 				'relative flex flex-col justify-between h-full transition-all text-left max-w-full',
 				element.props.highlight ? 'ring-2 ring-primary shadow-2xl shadow-primary/10' : '',
-				styleClasses
+				styleClasses,
 			]"
 		>
 			<div>
 				<div class="flex items-center justify-between mb-3">
 					<h3 class="text-xl font-bold text-neutral-900 dark:text-white break-words">{{ element.props.title || 'Plan' }}</h3>
-					<UBadge v-if="element.props.badge" color="primary" variant="subtle" size="sm" :label="element.props.badge" />
+					<UBadge
+						v-if="element.props.badge"
+						color="primary"
+						variant="subtle"
+						size="sm"
+						:label="element.props.badge"
+					/>
 				</div>
 				<p class="text-xs text-neutral-500 mb-6 leading-relaxed break-words">{{ element.props.description || '' }}</p>
 				<div class="flex items-baseline gap-1 mb-6">
@@ -2230,7 +3041,10 @@ const splitFeatures = computed(() => {
 						:key="fIdx"
 						class="flex items-center gap-2 text-xs sm:text-sm text-neutral-600 dark:text-neutral-300 break-words"
 					>
-						<UIcon name="lucide:check" class="w-4 h-4 text-primary shrink-0" />
+						<UIcon
+							name="lucide:check"
+							class="w-4 h-4 text-primary shrink-0"
+						/>
 						<span>{{ feat }}</span>
 					</li>
 				</ul>
@@ -2250,7 +3064,7 @@ const splitFeatures = computed(() => {
 			:class="[
 				'grid max-w-7xl mx-auto items-stretch',
 				isMobile ? 'grid-cols-1 gap-4 py-6 px-2' : 'grid-cols-1 md:grid-cols-3 gap-8 py-12',
-				styleClasses
+				styleClasses,
 			]"
 		>
 			<template v-if="element.children && element.children.length > 0">
@@ -2266,7 +3080,10 @@ const splitFeatures = computed(() => {
 				v-else-if="!previewMode"
 				class="col-span-full border-2 border-dashed border-neutral-300 dark:border-neutral-700/80 rounded-xl p-8 text-center text-xs text-neutral-400 flex flex-col items-center justify-center gap-2"
 			>
-				<UIcon name="lucide:table-properties" class="w-6 h-6 text-neutral-400" />
+				<UIcon
+					name="lucide:table-properties"
+					class="w-6 h-6 text-neutral-400"
+				/>
 				<span>UPricingPlans: Drop UPricingPlan cards into this multi-column grid</span>
 			</div>
 		</div>
@@ -2277,14 +3094,14 @@ const splitFeatures = computed(() => {
 			:class="[
 				'max-w-6xl mx-auto text-left space-y-6 max-w-full overflow-hidden',
 				isMobile ? 'py-6 px-2' : 'py-12',
-				styleClasses
+				styleClasses,
 			]"
 		>
 			<div class="text-center max-w-2xl mx-auto mb-8">
 				<h2
 					:class="[
 						'font-extrabold text-neutral-900 dark:text-white break-words',
-						isMobile ? 'text-2xl' : 'text-3xl'
+						isMobile ? 'text-2xl' : 'text-3xl',
 					]"
 				>
 					{{ element.props.title || 'Compare Features' }}
@@ -2304,21 +3121,56 @@ const splitFeatures = computed(() => {
 					<tbody class="divide-y divide-neutral-200 dark:divide-neutral-800">
 						<tr>
 							<td class="p-3 sm:p-4 font-medium">Visual Builder Canvas</td>
-							<td class="p-3 sm:p-4 text-center"><UIcon name="lucide:check" class="w-4 h-4 text-primary inline" /></td>
-							<td class="p-3 sm:p-4 text-center"><UIcon name="lucide:check" class="w-4 h-4 text-primary inline" /></td>
-							<td class="p-3 sm:p-4 text-center"><UIcon name="lucide:check" class="w-4 h-4 text-primary inline" /></td>
+							<td class="p-3 sm:p-4 text-center">
+								<UIcon
+									name="lucide:check"
+									class="w-4 h-4 text-primary inline"
+								/>
+							</td>
+							<td class="p-3 sm:p-4 text-center">
+								<UIcon
+									name="lucide:check"
+									class="w-4 h-4 text-primary inline"
+								/>
+							</td>
+							<td class="p-3 sm:p-4 text-center">
+								<UIcon
+									name="lucide:check"
+									class="w-4 h-4 text-primary inline"
+								/>
+							</td>
 						</tr>
 						<tr>
 							<td class="p-3 sm:p-4 font-medium">Vue 4 SFC & MDC Export</td>
 							<td class="p-3 sm:p-4 text-center text-neutral-400">-</td>
-							<td class="p-3 sm:p-4 text-center"><UIcon name="lucide:check" class="w-4 h-4 text-primary inline" /></td>
-							<td class="p-3 sm:p-4 text-center"><UIcon name="lucide:check" class="w-4 h-4 text-primary inline" /></td>
+							<td class="p-3 sm:p-4 text-center">
+								<UIcon
+									name="lucide:check"
+									class="w-4 h-4 text-primary inline"
+								/>
+							</td>
+							<td class="p-3 sm:p-4 text-center">
+								<UIcon
+									name="lucide:check"
+									class="w-4 h-4 text-primary inline"
+								/>
+							</td>
 						</tr>
 						<tr>
 							<td class="p-3 sm:p-4 font-medium">Custom Theme Engine</td>
 							<td class="p-3 sm:p-4 text-center text-neutral-400">-</td>
-							<td class="p-3 sm:p-4 text-center"><UIcon name="lucide:check" class="w-4 h-4 text-primary inline" /></td>
-							<td class="p-3 sm:p-4 text-center"><UIcon name="lucide:check" class="w-4 h-4 text-primary inline" /></td>
+							<td class="p-3 sm:p-4 text-center">
+								<UIcon
+									name="lucide:check"
+									class="w-4 h-4 text-primary inline"
+								/>
+							</td>
+							<td class="p-3 sm:p-4 text-center">
+								<UIcon
+									name="lucide:check"
+									class="w-4 h-4 text-primary inline"
+								/>
+							</td>
 						</tr>
 					</tbody>
 				</table>

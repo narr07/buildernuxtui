@@ -1,17 +1,13 @@
 <script setup lang="ts">
-import { useBuilder } from '~/composables/useBuilder'
-
 const {
 	elements,
-	selectedElementId,
 	viewport,
-	zoom,
 	previewMode,
 	showGrid,
 	selectElement,
 	addElement,
 	moveElementTo,
-	loadTemplate
+	loadTemplate,
 } = useBuilder()
 
 const isCanvasDragOver = ref(false)
@@ -31,7 +27,7 @@ const viewportClass = computed(() => {
 	}
 })
 
-const handleCanvasClick = (e: MouseEvent) => {
+const handleCanvasClick = () => {
 	if (previewMode.value) return
 	selectElement(null)
 }
@@ -58,10 +54,12 @@ const handleCanvasDrop = (e: DragEvent) => {
 		const payload = JSON.parse(rawData)
 		if (payload.isExisting) {
 			moveElementTo(payload.id, null, elements.value.length)
-		} else if (payload.isNew && payload.type) {
+		}
+		else if (payload.isNew && payload.type) {
 			addElement(payload.type, null)
 		}
-	} catch (err) {
+	}
+	catch (err) {
 		console.error('Canvas root drop error', err)
 	}
 }
@@ -79,10 +77,12 @@ const handleBottomDrop = (e: DragEvent) => {
 		const payload = JSON.parse(rawData)
 		if (payload.isExisting) {
 			moveElementTo(payload.id, null, elements.value.length)
-		} else if (payload.isNew && payload.type) {
+		}
+		else if (payload.isNew && payload.type) {
 			addElement(payload.type, null)
 		}
-	} catch (err) {
+	}
+	catch (err) {
 		console.error('Bottom drop error', err)
 	}
 }
@@ -93,7 +93,7 @@ const handleBottomDrop = (e: DragEvent) => {
 		class="flex-1 w-full h-full overflow-y-auto overflow-x-hidden relative bg-neutral-100/90 dark:bg-neutral-950 flex flex-col items-center select-none"
 		:class="[
 			showGrid && !previewMode ? 'builder-canvas-grid' : '',
-			previewMode ? 'p-0' : 'p-4 md:p-8 pb-48'
+			previewMode ? 'p-0' : 'p-4 md:p-8 pb-48',
 		]"
 		@click="handleCanvasClick"
 		@dragover="handleCanvasDragOver"
@@ -105,7 +105,7 @@ const handleBottomDrop = (e: DragEvent) => {
 			class="bg-white dark:bg-neutral-900 transition-all duration-200 flex flex-col relative shrink-0"
 			:class="[
 				viewportClass,
-				isCanvasDragOver ? 'ring-2 ring-primary-500 ring-offset-2' : ''
+				isCanvasDragOver ? 'ring-2 ring-primary-500 ring-offset-2' : '',
 			]"
 			@click.stop
 		>
@@ -124,7 +124,7 @@ const handleBottomDrop = (e: DragEvent) => {
 			</div>
 
 			<!-- Canvas Elements List -->
-			<div class="flex-1 flex flex-col min-h-[500px]">
+			<div class="flex-1 flex flex-col min-h-125">
 				<template v-if="elements.length > 0">
 					<BuilderComponentRenderer
 						v-for="(el, idx) in elements"
@@ -146,7 +146,10 @@ const handleBottomDrop = (e: DragEvent) => {
 						@drop="handleBottomDrop"
 					>
 						<div class="flex items-center gap-2 text-xs font-semibold text-neutral-600 dark:text-neutral-300">
-							<UIcon name="lucide:plus-circle" class="w-4 h-4 text-primary-500" />
+							<UIcon
+								name="lucide:plus-circle"
+								class="w-4 h-4 text-primary-500"
+							/>
 							<span>Drag components here to add at the bottom</span>
 						</div>
 
@@ -209,7 +212,10 @@ const handleBottomDrop = (e: DragEvent) => {
 					class="flex-1 flex flex-col items-center justify-center p-12 text-center"
 				>
 					<div class="w-16 h-16 rounded-2xl bg-primary-50 dark:bg-primary-950/60 flex items-center justify-center text-primary-500 mb-4 ring-1 ring-primary/20">
-						<UIcon name="lucide:layout" class="w-8 h-8" />
+						<UIcon
+							name="lucide:layout"
+							class="w-8 h-8"
+						/>
 					</div>
 					<h3 class="text-base font-bold text-neutral-900 dark:text-white">Your Canvas is Ready</h3>
 					<p class="text-xs text-neutral-500 dark:text-neutral-400 max-w-sm mt-1 mb-6 leading-relaxed">

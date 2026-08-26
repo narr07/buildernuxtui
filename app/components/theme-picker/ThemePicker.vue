@@ -1,7 +1,4 @@
 <script setup lang="ts">
-import ThemePickerButton from './ThemePickerButton.vue'
-import { useTheme } from '~/composables/useTheme'
-
 const colorMode = useColorMode()
 const open = ref(false)
 
@@ -28,7 +25,7 @@ const {
 	configLabel,
 	exportCSS,
 	exportConfig,
-	resetTheme
+	resetTheme,
 } = useTheme()
 </script>
 
@@ -53,7 +50,10 @@ const {
 			<fieldset>
 				<legend class="text-[11px] leading-none font-semibold mb-2 select-none flex items-center gap-1 text-neutral-900 dark:text-white">
 					Primary
-					<UIcon name="lucide:help-circle" class="w-3 h-3 text-neutral-400" />
+					<UIcon
+						name="lucide:help-circle"
+						class="w-3 h-3 text-neutral-400"
+					/>
 				</legend>
 
 				<div class="grid grid-cols-3 gap-1 -mx-2">
@@ -82,7 +82,10 @@ const {
 			<fieldset>
 				<legend class="text-[11px] leading-none font-semibold mb-2 select-none flex items-center gap-1 text-neutral-900 dark:text-white">
 					Neutral
-					<UIcon name="lucide:help-circle" class="w-3 h-3 text-neutral-400" />
+					<UIcon
+						name="lucide:help-circle"
+						class="w-3 h-3 text-neutral-400"
+					/>
 				</legend>
 
 				<div class="grid grid-cols-3 gap-1 -mx-2">
@@ -101,7 +104,10 @@ const {
 			<fieldset>
 				<legend class="text-[11px] leading-none font-semibold mb-2 select-none flex items-center gap-1 text-neutral-900 dark:text-white">
 					Radius
-					<UIcon name="lucide:help-circle" class="w-3 h-3 text-neutral-400" />
+					<UIcon
+						name="lucide:help-circle"
+						class="w-3 h-3 text-neutral-400"
+					/>
 				</legend>
 
 				<div class="grid grid-cols-5 gap-1 -mx-2">
@@ -120,7 +126,10 @@ const {
 			<fieldset>
 				<legend class="text-[11px] leading-none font-semibold mb-2 select-none flex items-center gap-1 text-neutral-900 dark:text-white">
 					Font
-					<UIcon name="lucide:help-circle" class="w-3 h-3 text-neutral-400" />
+					<UIcon
+						name="lucide:help-circle"
+						class="w-3 h-3 text-neutral-400"
+					/>
 				</legend>
 
 				<div class="-mx-2">
@@ -128,7 +137,11 @@ const {
 						v-model="font"
 						class="w-full h-8 px-2.5 text-[11px] rounded-sm border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 text-neutral-900 dark:text-white focus:ring-1 focus:ring-primary-500"
 					>
-						<option v-for="f in fonts" :key="f" :value="f">
+						<option
+							v-for="f in fonts"
+							:key="f"
+							:value="f"
+						>
 							{{ f }}
 						</option>
 					</select>
@@ -139,7 +152,10 @@ const {
 			<fieldset>
 				<legend class="text-[11px] leading-none font-semibold mb-2 select-none flex items-center gap-1 text-neutral-900 dark:text-white">
 					Icons
-					<UIcon name="lucide:help-circle" class="w-3 h-3 text-neutral-400" />
+					<UIcon
+						name="lucide:help-circle"
+						class="w-3 h-3 text-neutral-400"
+					/>
 				</legend>
 
 				<div class="-mx-2">
@@ -147,7 +163,11 @@ const {
 						v-model="icon"
 						class="w-full h-8 px-2.5 text-[11px] rounded-sm border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 text-neutral-900 dark:text-white capitalize focus:ring-1 focus:ring-primary-500"
 					>
-						<option v-for="ic in icons" :key="ic.value" :value="ic.value">
+						<option
+							v-for="ic in icons"
+							:key="ic.value"
+							:value="ic.value"
+						>
 							{{ ic.label }}
 						</option>
 					</select>
@@ -158,7 +178,10 @@ const {
 			<fieldset>
 				<legend class="text-[11px] leading-none font-semibold mb-2 select-none flex items-center gap-1 text-neutral-900 dark:text-white">
 					Color Mode
-					<UIcon name="lucide:help-circle" class="w-3 h-3 text-neutral-400" />
+					<UIcon
+						name="lucide:help-circle"
+						class="w-3 h-3 text-neutral-400"
+					/>
 				</legend>
 
 				<div class="grid grid-cols-3 gap-1 -mx-2">

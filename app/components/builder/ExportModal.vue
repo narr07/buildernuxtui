@@ -1,8 +1,5 @@
 <script setup lang="ts">
-import { useBuilder } from '~/composables/useBuilder'
-import { useCodeGenerator } from '~/composables/useCodeGenerator'
-
-const props = defineProps<{
+defineProps<{
 	modelValue: boolean
 }>()
 
@@ -32,7 +29,8 @@ const copyCodeToClipboard = async () => {
 		setTimeout(() => {
 			copiedCode.value = false
 		}, 2000)
-	} catch (e) {
+	}
+	catch (e) {
 		console.error('Failed to copy', e)
 	}
 }
@@ -44,7 +42,8 @@ const copyMdcToClipboard = async () => {
 		setTimeout(() => {
 			copiedMdc.value = false
 		}, 2000)
-	} catch (e) {
+	}
+	catch (e) {
 		console.error('Failed to copy', e)
 	}
 }
@@ -86,7 +85,10 @@ const downloadMdcFile = () => {
 						:class="activeTab === 'code' ? 'border-primary-500 text-primary-600 dark:text-primary-400' : 'border-transparent text-neutral-500 hover:text-neutral-900 dark:hover:text-white'"
 						@click="activeTab = 'code'"
 					>
-						<UIcon name="lucide:file-code-2" class="w-4 h-4" />
+						<UIcon
+							name="lucide:file-code-2"
+							class="w-4 h-4"
+						/>
 						<span>Vue SFC (.vue)</span>
 					</button>
 
@@ -95,13 +97,19 @@ const downloadMdcFile = () => {
 						:class="activeTab === 'mdc' ? 'border-primary-500 text-primary-600 dark:text-primary-400' : 'border-transparent text-neutral-500 hover:text-neutral-900 dark:hover:text-white'"
 						@click="activeTab = 'mdc'"
 					>
-						<UIcon name="lucide:file-text" class="w-4 h-4" />
+						<UIcon
+							name="lucide:file-text"
+							class="w-4 h-4"
+						/>
 						<span>Nuxt Content (.md)</span>
 					</button>
 				</div>
 
 				<!-- ================= TAB 1: VUE SFC CODE ================= -->
-				<div v-if="activeTab === 'code'" class="space-y-3">
+				<div
+					v-if="activeTab === 'code'"
+					class="space-y-3"
+				>
 					<div class="flex items-center justify-between">
 						<span class="text-xs text-neutral-500">Save as <code>pages/index.vue</code> or in <code>app/components/</code></span>
 						<div class="flex items-center gap-2">
@@ -129,7 +137,10 @@ const downloadMdcFile = () => {
 				</div>
 
 				<!-- ================= TAB 2: NUXT CONTENT (.md / MDC) ================= -->
-				<div v-else-if="activeTab === 'mdc'" class="space-y-3">
+				<div
+					v-else-if="activeTab === 'mdc'"
+					class="space-y-3"
+				>
 					<div class="flex items-center justify-between">
 						<span class="text-xs text-neutral-500">Save as <code>content/index.md</code> for <code>@nuxt/content</code></span>
 						<div class="flex items-center gap-2">

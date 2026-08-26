@@ -19,12 +19,12 @@ export const TEMPLATE_PRESETS: TemplatePreset[] = [
 					secondaryBtnText: 'View Examples',
 					primaryBtnIcon: 'lucide:sparkles',
 					secondaryBtnIcon: 'lucide:external-link',
-					align: 'center'
+					align: 'center',
 				},
 				styles: {
 					padding: 'py-20 px-6',
-					width: 'w-full'
-				}
+					width: 'w-full',
+				},
 			},
 			{
 				id: 'el-stat-container',
@@ -33,20 +33,20 @@ export const TEMPLATE_PRESETS: TemplatePreset[] = [
 				styles: {
 					maxWidth: 'max-w-7xl',
 					padding: 'py-8 px-6',
-					margin: 'mx-auto'
+					margin: 'mx-auto',
 				},
 				children: [
 					{
 						id: 'el-stat-grid',
 						type: 'grid',
 						props: {
-							gridCols: 'grid-cols-1 md:grid-cols-3'
+							gridCols: 'grid-cols-1 md:grid-cols-3',
 						},
 						styles: {
 							display: 'grid',
 							gridCols: 'grid-cols-1 md:grid-cols-3',
 							gap: 'gap-6',
-							width: 'w-full'
+							width: 'w-full',
 						},
 						children: [
 							{
@@ -57,12 +57,12 @@ export const TEMPLATE_PRESETS: TemplatePreset[] = [
 									value: '120,000+',
 									change: '+32.4% this month',
 									changeType: 'positive',
-									icon: 'lucide:users'
+									icon: 'lucide:users',
 								},
 								styles: {
 									padding: 'p-6',
-									width: 'w-full'
-								}
+									width: 'w-full',
+								},
 							},
 							{
 								id: 'el-stat-2',
@@ -72,12 +72,12 @@ export const TEMPLATE_PRESETS: TemplatePreset[] = [
 									value: '4.8 Million',
 									change: '+99.9% uptime',
 									changeType: 'positive',
-									icon: 'lucide:cpu'
+									icon: 'lucide:cpu',
 								},
 								styles: {
 									padding: 'p-6',
-									width: 'w-full'
-								}
+									width: 'w-full',
+								},
 							},
 							{
 								id: 'el-stat-3',
@@ -87,16 +87,16 @@ export const TEMPLATE_PRESETS: TemplatePreset[] = [
 									value: '95,400',
 									change: 'Zero config needed',
 									changeType: 'positive',
-									icon: 'lucide:cloud-upload'
+									icon: 'lucide:cloud-upload',
 								},
 								styles: {
 									padding: 'p-6',
-									width: 'w-full'
-								}
-							}
-						]
-					}
-				]
+									width: 'w-full',
+								},
+							},
+						],
+					},
+				],
 			},
 			{
 				id: 'el-feat-container',
@@ -105,7 +105,7 @@ export const TEMPLATE_PRESETS: TemplatePreset[] = [
 				styles: {
 					maxWidth: 'max-w-7xl',
 					padding: 'py-12 px-6',
-					margin: 'mx-auto'
+					margin: 'mx-auto',
 				},
 				children: [
 					{
@@ -114,12 +114,12 @@ export const TEMPLATE_PRESETS: TemplatePreset[] = [
 						props: {
 							text: 'Engineered for Exceptional Developer Experience',
 							level: 'h2',
-							gradient: true
+							gradient: true,
 						},
 						styles: {
 							textAlign: 'center',
-							margin: 'mb-4'
-						}
+							margin: 'mb-4',
+						},
 					},
 					{
 						id: 'el-feat-sub',
@@ -127,24 +127,24 @@ export const TEMPLATE_PRESETS: TemplatePreset[] = [
 						props: {
 							text: 'Everything you need to craft responsive, accessible and blazing fast interfaces with Vue 3 and Tailwind CSS v4.',
 							size: 'text-lg',
-							color: 'muted'
+							color: 'muted',
 						},
 						styles: {
 							textAlign: 'center',
-							margin: 'mb-10 max-w-2xl mx-auto'
-						}
+							margin: 'mb-10 max-w-2xl mx-auto',
+						},
 					},
 					{
 						id: 'el-feat-grid',
 						type: 'grid',
 						props: {
-							gridCols: 'grid-cols-1 md:grid-cols-3'
+							gridCols: 'grid-cols-1 md:grid-cols-3',
 						},
 						styles: {
 							display: 'grid',
 							gridCols: 'grid-cols-1 md:grid-cols-3',
 							gap: 'gap-6',
-							width: 'w-full'
+							width: 'w-full',
 						},
 						children: [
 							{
@@ -153,9 +153,9 @@ export const TEMPLATE_PRESETS: TemplatePreset[] = [
 								props: {
 									title: 'Tailwind CSS v4 Engine',
 									description: 'Zero runtime overhead with ultra-fast compilation and custom CSS variable tokens.',
-									icon: 'lucide:zap'
+									icon: 'lucide:zap',
 								},
-								styles: { padding: 'p-6', width: 'w-full' }
+								styles: { padding: 'p-6', width: 'w-full' },
 							},
 							{
 								id: 'el-feat-2',
@@ -163,9 +163,9 @@ export const TEMPLATE_PRESETS: TemplatePreset[] = [
 								props: {
 									title: 'Reka UI Headless Core',
 									description: 'Fully WAI-ARIA accessible primitives with keyboard navigation and screen-reader support out of the box.',
-									icon: 'lucide:shield-check'
+									icon: 'lucide:shield-check',
 								},
-								styles: { padding: 'p-6', width: 'w-full' }
+								styles: { padding: 'p-6', width: 'w-full' },
 							},
 							{
 								id: 'el-feat-3',
@@ -173,13 +173,13 @@ export const TEMPLATE_PRESETS: TemplatePreset[] = [
 								props: {
 									title: 'Production Vue SFC Export',
 									description: 'Export clean, readable Vue Single File Components with TypeScript types ready to paste into your Nuxt project.',
-									icon: 'lucide:code-2'
+									icon: 'lucide:code-2',
 								},
-								styles: { padding: 'p-6', width: 'w-full' }
-							}
-						]
-					}
-				]
+								styles: { padding: 'p-6', width: 'w-full' },
+							},
+						],
+					},
+				],
 			},
 			{
 				id: 'el-pricing-container',
@@ -188,7 +188,7 @@ export const TEMPLATE_PRESETS: TemplatePreset[] = [
 				styles: {
 					maxWidth: 'max-w-7xl',
 					padding: 'py-16 px-6',
-					margin: 'mx-auto'
+					margin: 'mx-auto',
 				},
 				children: [
 					{
@@ -197,25 +197,25 @@ export const TEMPLATE_PRESETS: TemplatePreset[] = [
 						props: {
 							text: 'Flexible Pricing for Every Scale',
 							level: 'h2',
-							gradient: false
+							gradient: false,
 						},
 						styles: {
 							textAlign: 'center',
-							margin: 'mb-4'
-						}
+							margin: 'mb-4',
+						},
 					},
 					{
 						id: 'el-pricing-grid',
 						type: 'grid',
 						props: {
-							gridCols: 'grid-cols-1 md:grid-cols-3'
+							gridCols: 'grid-cols-1 md:grid-cols-3',
 						},
 						styles: {
 							display: 'grid',
 							gridCols: 'grid-cols-1 md:grid-cols-3',
 							gap: 'gap-6',
 							width: 'w-full',
-							margin: 'mt-8'
+							margin: 'mt-8',
 						},
 						children: [
 							{
@@ -229,9 +229,9 @@ export const TEMPLATE_PRESETS: TemplatePreset[] = [
 									description: 'Perfect for exploring and building personal side projects.',
 									buttonText: 'Start for Free',
 									featured: false,
-									features: '3 Active Projects,Standard Nuxt UI components,Community Discord,Basic code export'
+									features: '3 Active Projects,Standard Nuxt UI components,Community Discord,Basic code export',
 								},
-								styles: { padding: 'p-6', width: 'w-full' }
+								styles: { padding: 'p-6', width: 'w-full' },
 							},
 							{
 								id: 'el-price-pro',
@@ -244,9 +244,9 @@ export const TEMPLATE_PRESETS: TemplatePreset[] = [
 									description: 'Designed for freelance developers and high-velocity product teams.',
 									buttonText: 'Upgrade to Pro',
 									featured: true,
-									features: 'Unlimited projects,Nuxt 4 code & JSON export,All prebuilt sections,Custom theme designer,Priority GitHub support'
+									features: 'Unlimited projects,Nuxt 4 code & JSON export,All prebuilt sections,Custom theme designer,Priority GitHub support',
 								},
-								styles: { padding: 'p-6', width: 'w-full' }
+								styles: { padding: 'p-6', width: 'w-full' },
 							},
 							{
 								id: 'el-price-team',
@@ -259,13 +259,13 @@ export const TEMPLATE_PRESETS: TemplatePreset[] = [
 									description: 'For organizations needing dedicated infrastructure and SLA support.',
 									buttonText: 'Contact Sales',
 									featured: false,
-									features: 'Unlimited team members,Dedicated design system sync,Custom component registry,SSO & audit logs,Dedicated account manager'
+									features: 'Unlimited team members,Dedicated design system sync,Custom component registry,SSO & audit logs,Dedicated account manager',
 								},
-								styles: { padding: 'p-6', width: 'w-full' }
-							}
-						]
-					}
-				]
+								styles: { padding: 'p-6', width: 'w-full' },
+							},
+						],
+					},
+				],
 			},
 			{
 				id: 'el-footer-1',
@@ -273,14 +273,14 @@ export const TEMPLATE_PRESETS: TemplatePreset[] = [
 				props: {
 					brandName: 'NuxtUI Builder',
 					tagline: 'Visual UI builder for Vue 3 and the modern Nuxt ecosystem.',
-					copyright: '© 2026 NuxtUI Studio. Built with Nuxt 4 & @nuxt/ui.'
+					copyright: '© 2026 NuxtUI Studio. Built with Nuxt 4 & @nuxt/ui.',
 				},
 				styles: {
 					padding: 'py-12 px-6',
-					width: 'w-full'
-				}
-			}
-		]
+					width: 'w-full',
+				},
+			},
+		],
 	},
 	{
 		id: 'pricing-page',
@@ -300,12 +300,12 @@ export const TEMPLATE_PRESETS: TemplatePreset[] = [
 					secondaryBtnText: 'Compare Plans',
 					primaryBtnIcon: 'lucide:arrow-right',
 					secondaryBtnIcon: 'lucide:list-ordered',
-					align: 'center'
+					align: 'center',
 				},
 				styles: {
 					padding: 'py-16 px-6',
-					width: 'w-full'
-				}
+					width: 'w-full',
+				},
 			},
 			{
 				id: 'el-testi-container',
@@ -314,20 +314,20 @@ export const TEMPLATE_PRESETS: TemplatePreset[] = [
 				styles: {
 					maxWidth: 'max-w-7xl',
 					padding: 'py-8 px-6',
-					margin: 'mx-auto'
+					margin: 'mx-auto',
 				},
 				children: [
 					{
 						id: 'el-testi-grid',
 						type: 'grid',
 						props: {
-							gridCols: 'grid-cols-1 md:grid-cols-2'
+							gridCols: 'grid-cols-1 md:grid-cols-2',
 						},
 						styles: {
 							display: 'grid',
 							gridCols: 'grid-cols-1 md:grid-cols-2',
 							gap: 'gap-6',
-							width: 'w-full'
+							width: 'w-full',
 						},
 						children: [
 							{
@@ -337,9 +337,9 @@ export const TEMPLATE_PRESETS: TemplatePreset[] = [
 									quote: 'The Nuxt UI builder saved us hundreds of engineering hours. We designed our entire dashboard mockup and exported clean Vue code directly!',
 									author: 'Alex Rivera',
 									role: 'Lead Architect @ DevStudio',
-									avatarUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150'
+									avatarUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150',
 								},
-								styles: { padding: 'p-6', width: 'w-full' }
+								styles: { padding: 'p-6', width: 'w-full' },
 							},
 							{
 								id: 'el-testi-2',
@@ -348,15 +348,15 @@ export const TEMPLATE_PRESETS: TemplatePreset[] = [
 									quote: 'Nuxt 4 + Nuxt UI v4 feels so intuitive. Having a visual builder with real-time properties and instant Vue code generation is game-changing.',
 									author: 'Marcus Chen',
 									role: 'Founder @ StackPulse',
-									avatarUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150'
+									avatarUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150',
 								},
-								styles: { padding: 'p-6', width: 'w-full' }
-							}
-						]
-					}
-				]
-			}
-		]
+								styles: { padding: 'p-6', width: 'w-full' },
+							},
+						],
+					},
+				],
+			},
+		],
 	},
 	{
 		id: 'dashboard-preview',
@@ -372,7 +372,7 @@ export const TEMPLATE_PRESETS: TemplatePreset[] = [
 				styles: {
 					maxWidth: 'max-w-7xl',
 					padding: 'p-6',
-					margin: 'mx-auto'
+					margin: 'mx-auto',
 				},
 				children: [
 					{
@@ -383,25 +383,25 @@ export const TEMPLATE_PRESETS: TemplatePreset[] = [
 							description: 'All 24 worker nodes are operating at 99.98% efficiency with zero reported latency spikes.',
 							icon: 'lucide:check-circle-2',
 							color: 'success',
-							variant: 'subtle'
+							variant: 'subtle',
 						},
 						styles: {
 							margin: 'mb-6',
-							width: 'w-full'
-						}
+							width: 'w-full',
+						},
 					},
 					{
 						id: 'el-dash-stat-grid',
 						type: 'grid',
 						props: {
-							gridCols: 'grid-cols-1 md:grid-cols-3'
+							gridCols: 'grid-cols-1 md:grid-cols-3',
 						},
 						styles: {
 							display: 'grid',
 							gridCols: 'grid-cols-1 md:grid-cols-3',
 							gap: 'gap-6',
 							width: 'w-full',
-							margin: 'mb-8'
+							margin: 'mb-8',
 						},
 						children: [
 							{
@@ -412,9 +412,9 @@ export const TEMPLATE_PRESETS: TemplatePreset[] = [
 									value: '$84,230',
 									change: '+14.5% vs last month',
 									changeType: 'positive',
-									icon: 'lucide:dollar-sign'
+									icon: 'lucide:dollar-sign',
 								},
-								styles: { padding: 'p-5', width: 'w-full' }
+								styles: { padding: 'p-5', width: 'w-full' },
 							},
 							{
 								id: 'el-d-stat-2',
@@ -424,9 +424,9 @@ export const TEMPLATE_PRESETS: TemplatePreset[] = [
 									value: '12.4M reqs',
 									change: '+5.2% average load',
 									changeType: 'positive',
-									icon: 'lucide:activity'
+									icon: 'lucide:activity',
 								},
-								styles: { padding: 'p-5', width: 'w-full' }
+								styles: { padding: 'p-5', width: 'w-full' },
 							},
 							{
 								id: 'el-d-stat-3',
@@ -436,23 +436,23 @@ export const TEMPLATE_PRESETS: TemplatePreset[] = [
 									value: '4.82%',
 									change: '+0.6% improvement',
 									changeType: 'positive',
-									icon: 'lucide:target'
+									icon: 'lucide:target',
 								},
-								styles: { padding: 'p-5', width: 'w-full' }
-							}
-						]
+								styles: { padding: 'p-5', width: 'w-full' },
+							},
+						],
 					},
 					{
 						id: 'el-dash-card-grid',
 						type: 'grid',
 						props: {
-							gridCols: 'grid-cols-1 md:grid-cols-2'
+							gridCols: 'grid-cols-1 md:grid-cols-2',
 						},
 						styles: {
 							display: 'grid',
 							gridCols: 'grid-cols-1 md:grid-cols-2',
 							gap: 'gap-6',
-							width: 'w-full'
+							width: 'w-full',
 						},
 						children: [
 							{
@@ -461,7 +461,7 @@ export const TEMPLATE_PRESETS: TemplatePreset[] = [
 								props: {
 									headerText: 'Quick Configuration',
 									showHeader: true,
-									variant: 'outline'
+									variant: 'outline',
 								},
 								styles: { padding: 'p-6', width: 'w-full' },
 								children: [
@@ -472,18 +472,18 @@ export const TEMPLATE_PRESETS: TemplatePreset[] = [
 											label: 'Automatic CDN Caching',
 											description: 'Cache static assets at global edge locations',
 											checked: true,
-											color: 'primary'
+											color: 'primary',
 										},
-										styles: { margin: 'mb-4' }
+										styles: { margin: 'mb-4' },
 									},
 									{
 										id: 'el-d-slider-1',
 										type: 'slider',
 										props: {
 											value: 80,
-											color: 'primary'
+											color: 'primary',
 										},
-										styles: { margin: 'mb-4', width: 'w-full' }
+										styles: { margin: 'mb-4', width: 'w-full' },
 									},
 									{
 										id: 'el-d-btn-1',
@@ -492,11 +492,11 @@ export const TEMPLATE_PRESETS: TemplatePreset[] = [
 											label: 'Save Configuration',
 											color: 'primary',
 											variant: 'solid',
-											icon: 'lucide:save'
+											icon: 'lucide:save',
 										},
-										styles: { margin: 'mt-4' }
-									}
-								]
+										styles: { margin: 'mt-4' },
+									},
+								],
 							},
 							{
 								id: 'el-d-card-2',
@@ -504,7 +504,7 @@ export const TEMPLATE_PRESETS: TemplatePreset[] = [
 								props: {
 									headerText: 'Live Bandwidth Usage',
 									showHeader: true,
-									variant: 'outline'
+									variant: 'outline',
 								},
 								styles: { padding: 'p-6', width: 'w-full' },
 								children: [
@@ -514,9 +514,9 @@ export const TEMPLATE_PRESETS: TemplatePreset[] = [
 										props: {
 											value: 78,
 											status: true,
-											color: 'primary'
+											color: 'primary',
 										},
-										styles: { margin: 'mb-6', width: 'w-full' }
+										styles: { margin: 'mb-6', width: 'w-full' },
 									},
 									{
 										id: 'el-d-para-1',
@@ -524,9 +524,9 @@ export const TEMPLATE_PRESETS: TemplatePreset[] = [
 										props: {
 											text: '780 GB of 1000 GB used this billing period. Next reset in 6 days.',
 											size: 'text-sm',
-											color: 'muted'
+											color: 'muted',
 										},
-										styles: { margin: 'mb-4' }
+										styles: { margin: 'mb-4' },
 									},
 									{
 										id: 'el-d-btn-2',
@@ -535,16 +535,16 @@ export const TEMPLATE_PRESETS: TemplatePreset[] = [
 											label: 'Upgrade Capacity',
 											color: 'neutral',
 											variant: 'outline',
-											icon: 'lucide:arrow-up-right'
+											icon: 'lucide:arrow-up-right',
 										},
-										styles: {}
-									}
-								]
-							}
-						]
-					}
-				]
-			}
-		]
-	}
+										styles: {},
+									},
+								],
+							},
+						],
+					},
+				],
+			},
+		],
+	},
 ]

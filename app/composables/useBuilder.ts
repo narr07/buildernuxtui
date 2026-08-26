@@ -30,7 +30,7 @@ export const useBuilder = () => {
 
 	// Initialize default template if empty
 	onMounted(() => {
-		if (process.client) {
+		if (import.meta.client) {
 			const saved = localStorage.getItem(STORAGE_KEY)
 			if (saved) {
 				try {
@@ -40,7 +40,8 @@ export const useBuilder = () => {
 						pushHistorySnapshot()
 						return
 					}
-				} catch (e) {
+				}
+				catch (e) {
 					console.error('Failed to parse saved state', e)
 				}
 			}
@@ -53,17 +54,18 @@ export const useBuilder = () => {
 	})
 
 	// Watch changes to persist in localStorage
-	if (process.client) {
+	if (import.meta.client) {
 		watch(
 			elements,
 			(val) => {
 				try {
 					localStorage.setItem(STORAGE_KEY, JSON.stringify(val))
-				} catch (e) {
+				}
+				catch (e) {
 					console.error('Failed to save to localStorage', e)
 				}
 			},
-			{ deep: true }
+			{ deep: true },
 		)
 	}
 
@@ -114,8 +116,8 @@ export const useBuilder = () => {
 	const findElementAndParent = (
 		id: string,
 		list: BuilderElement[] = elements.value,
-		parent: BuilderElement | null = null
-	): { element: BuilderElement; parent: BuilderElement | null; index: number; list: BuilderElement[] } | null => {
+		parent: BuilderElement | null = null,
+	): { element: BuilderElement, parent: BuilderElement | null, index: number, list: BuilderElement[] } | null => {
 		for (let i = 0; i < list.length; i++) {
 			const el = list[i]
 			if (el.id === id) {
@@ -143,7 +145,7 @@ export const useBuilder = () => {
 	}
 
 	const createElement = (type: string): BuilderElement => {
-		const reg = COMPONENT_REGISTRY.find((c) => c.type === type)
+		const reg = COMPONENT_REGISTRY.find(c => c.type === type)
 		const id = `el-${type}-${Math.random().toString(36).substring(2, 9)}`
 
 		return {
@@ -151,7 +153,7 @@ export const useBuilder = () => {
 			type,
 			props: JSON.parse(JSON.stringify(reg?.defaultProps || {})),
 			styles: JSON.parse(JSON.stringify(reg?.defaultStyles || {})),
-			children: reg?.isContainer ? (reg?.defaultChildren ? JSON.parse(JSON.stringify(reg.defaultChildren)) : []) : undefined
+			children: reg?.isContainer ? (reg?.defaultChildren ? JSON.parse(JSON.stringify(reg.defaultChildren)) : []) : undefined,
 		}
 	}
 
@@ -161,19 +163,23 @@ export const useBuilder = () => {
 		if (!parentId) {
 			if (targetIndex !== undefined) {
 				elements.value.splice(targetIndex, 0, newEl)
-			} else {
+			}
+			else {
 				elements.value.push(newEl)
 			}
-		} else {
+		}
+		else {
 			const parent = findElement(parentId)
 			if (parent) {
 				if (!parent.children) parent.children = []
 				if (targetIndex !== undefined) {
 					parent.children.splice(targetIndex, 0, newEl)
-				} else {
+				}
+				else {
 					parent.children.push(newEl)
 				}
-			} else {
+			}
+			else {
 				elements.value.push(newEl)
 			}
 		}
@@ -232,7 +238,7 @@ export const useBuilder = () => {
 			if (!targetId) return false
 			if (root.id === targetId) return true
 			if (root.children) {
-				return root.children.some((c) => targetIsChild(targetId, c))
+				return root.children.some(c => targetIsChild(targetId, c))
 			}
 			return false
 		}
@@ -249,13 +255,15 @@ export const useBuilder = () => {
 		if (!targetParentId) {
 			const safeIndex = Math.min(Math.max(0, targetIndex), elements.value.length)
 			elements.value.splice(safeIndex, 0, moved)
-		} else {
+		}
+		else {
 			const targetParent = findElement(targetParentId)
 			if (targetParent) {
 				if (!targetParent.children) targetParent.children = []
 				const safeIndex = Math.min(Math.max(0, targetIndex), targetParent.children.length)
 				targetParent.children.splice(safeIndex, 0, moved)
-			} else {
+			}
+			else {
 				elements.value.push(moved)
 			}
 		}
@@ -281,7 +289,7 @@ export const useBuilder = () => {
 	}
 
 	const loadTemplate = (templateId: string) => {
-		const preset = TEMPLATE_PRESETS.find((t) => t.id === templateId)
+		const preset = TEMPLATE_PRESETS.find(t => t.id === templateId)
 		if (preset) {
 			elements.value = JSON.parse(JSON.stringify(preset.elements))
 			selectedElementId.value = null
@@ -304,7 +312,8 @@ export const useBuilder = () => {
 				pushHistorySnapshot()
 				return true
 			}
-		} catch (e) {
+		}
+		catch (e) {
 			console.error('Invalid JSON import', e)
 			return false
 		}
@@ -348,6 +357,6 @@ export const useBuilder = () => {
 		clearCanvas,
 		importFromJSON,
 		exportToJSON,
-		pushHistorySnapshot
+		pushHistorySnapshot,
 	}
 }

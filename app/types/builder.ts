@@ -1,11 +1,12 @@
-export type ComponentCategory = 
-	| 'layout'
-	| 'page'
-	| 'typography'
-	| 'element'
-	| 'form'
-	| 'data'
-	| 'compound'
+export type ComponentCategory
+	= | 'layout'
+		| 'navigation'
+		| 'page'
+		| 'typography'
+		| 'element'
+		| 'form'
+		| 'data'
+		| 'compound'
 
 export interface ComponentPropDefinition {
 	name: string

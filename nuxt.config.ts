@@ -1,16 +1,16 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
-	compatibilityDate: '2025-01-15',
-	devtools: { enabled: false },
 	modules: [
 		'@nuxt/ui',
 		'@nuxt/icon',
-		'@vueuse/nuxt'
+		'@vueuse/nuxt',
+		'@nuxt/eslint',
 	],
+	devtools: { enabled: false },
 	app: {
 		head: {
 			htmlAttrs: {
-				lang: 'en'
+				lang: 'en',
 			},
 			title: 'Builder Nuxt UI - Visual Builder for Nuxt 4 & Nuxt UI',
 			meta: [
@@ -25,7 +25,7 @@ export default defineNuxtConfig({
 				{ name: 'twitter:description', content: 'Visual Drag & Drop Page Builder for Nuxt UI and Nuxt Content' },
 				{ name: 'twitter:image', content: 'https://buildernuxtui.permadi.dev/icon-512.png' },
 				{ name: 'theme-color', content: '#ffffff', media: '(prefers-color-scheme: light)' },
-				{ name: 'theme-color', content: '#0f172a', media: '(prefers-color-scheme: dark)' }
+				{ name: 'theme-color', content: '#0f172a', media: '(prefers-color-scheme: dark)' },
 			],
 			link: [
 				{ rel: 'canonical', href: 'https://buildernuxtui.permadi.dev/' },
@@ -33,17 +33,27 @@ export default defineNuxtConfig({
 				{ rel: 'icon', type: 'image/png', sizes: '96x96', href: '/favicon-96x96.png' },
 				{ rel: 'icon', href: '/favicon.ico' },
 				{ rel: 'apple-touch-icon', href: '/apple-touch-icon.png' },
-				{ rel: 'manifest', href: '/site.webmanifest' }
-			]
-		}
+				{ rel: 'manifest', href: '/site.webmanifest' },
+			],
+		},
 	},
 	css: ['~/assets/css/main.css'],
 	future: {
-		compatibilityVersion: 4
+		compatibilityVersion: 4,
+	},
+	compatibilityDate: '2025-01-15',
+	eslint: {
+		config: {
+			stylistic: {
+				indent: 'tab',
+				quotes: 'single',
+				semi: false,
+			},
+		},
 	},
 	icon: {
 		serverBundle: {
-			collections: ['lucide']
-		}
-	}
+			collections: ['lucide'],
+		},
+	},
 })
