@@ -279,6 +279,228 @@ export const useCodeGenerator = () => {
 				return `${indent}<footer class="border-t border-neutral-200 dark:border-neutral-800 py-12 px-6">\n${childIndent}<div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-6">\n${childIndent}\t<div class="text-center sm:text-left">\n${childIndent}\t\t<h4 class="text-lg font-bold text-primary">${el.props.brandName || 'Brand'}</h4>\n${childIndent}\t\t<p class="text-xs text-neutral-500 mt-1">${el.props.tagline || ''}</p>\n${childIndent}\t</div>\n${childIndent}\t<p class="text-xs text-neutral-400">${el.props.copyright || '© 2026'}</p>\n${childIndent}</div>\n${indent}</footer>`
 			}
 
+			// ================= PAGE & PRO COMPONENTS =================
+			case 'auth-form': {
+				const titleAttr = el.props.title ? ` title="${el.props.title}"` : ''
+				const descAttr = el.props.description ? ` description="${el.props.description}"` : ''
+				const iconAttr = el.props.icon ? ` icon="${el.props.icon}"` : ''
+				const providersAttr = el.props.showProviders ? ` :providers="[\n${childIndent}\t{ label: 'Google', icon: 'i-lucide-globe' },\n${childIndent}\t{ label: 'GitHub', icon: 'i-lucide-github' }\n${childIndent}]"` : ''
+				const fieldsAttr = ` :fields="[\n${childIndent}\t{ name: 'email', type: 'email', label: 'Email', placeholder: 'you@example.com', required: true },\n${childIndent}\t{ name: 'password', type: 'password', label: 'Password', placeholder: '••••••••', required: true }\n${childIndent}]"`
+				const submitAttr = ` :submit-button="{ label: '${el.props.submitBtnText || 'Continue'}' }"`
+				return `${indent}<UAuthForm${titleAttr}${descAttr}${iconAttr}${providersAttr}${fieldsAttr}${submitAttr}${classAttr} />`
+			}
+
+			case 'blog-post': {
+				const titleAttr = el.props.title ? ` title="${el.props.title}"` : ''
+				const descAttr = el.props.description ? ` description="${el.props.description}"` : ''
+				const dateAttr = el.props.date ? ` date="${el.props.date}"` : ''
+				const badgeAttr = el.props.badge ? ` :badge="{ label: '${el.props.badge}', color: 'primary' }"` : ''
+				const imageAttr = el.props.image ? ` :image="{ src: '${el.props.image}', alt: '${el.props.title || 'Blog'}' }"` : ''
+				const authorsAttr = ` :authors="[{ name: '${el.props.authorName || 'Author'}', avatar: { src: '${el.props.authorAvatar || ''}' } }]"`
+				const orientAttr = el.props.orientation && el.props.orientation !== 'vertical' ? ` orientation="${el.props.orientation}"` : ''
+				return `${indent}<UBlogPost${titleAttr}${descAttr}${dateAttr}${badgeAttr}${imageAttr}${authorsAttr}${orientAttr}${classAttr} />`
+			}
+
+			case 'blog-posts': {
+				const orientAttr = el.props.orientation && el.props.orientation !== 'vertical' ? ` orientation="${el.props.orientation}"` : ''
+				const childrenCode = el.children && el.children.length > 0
+					? el.children.map((c) => renderElementCode(c, depth + 1)).join('\n')
+					: `${childIndent}<!-- Drop UBlogPost cards here -->`
+				return `${indent}<UBlogPosts${orientAttr}${classAttr}>\n${childrenCode}\n${indent}</UBlogPosts>`
+			}
+
+			case 'changelog-version': {
+				const versionAttr = el.props.version ? ` version="${el.props.version}"` : ''
+				const dateAttr = el.props.date ? ` date="${el.props.date}"` : ''
+				const titleAttr = el.props.title ? ` title="${el.props.title}"` : ''
+				const descAttr = el.props.description ? ` description="${el.props.description}"` : ''
+				const badgeAttr = el.props.badge ? ` :badge="{ label: '${el.props.badge}' }"` : ''
+				let inner = ''
+				if (el.children && el.children.length > 0) {
+					inner = '\n' + el.children.map((c) => renderElementCode(c, depth + 1)).join('\n') + `\n${indent}`
+				}
+				if (inner) {
+					return `${indent}<UChangelogVersion${versionAttr}${dateAttr}${titleAttr}${descAttr}${badgeAttr}${classAttr}>${inner}</UChangelogVersion>`
+				} else {
+					return `${indent}<UChangelogVersion${versionAttr}${dateAttr}${titleAttr}${descAttr}${badgeAttr}${classAttr} />`
+				}
+			}
+
+			case 'changelog-versions': {
+				const childrenCode = el.children && el.children.length > 0
+					? el.children.map((c) => renderElementCode(c, depth + 1)).join('\n')
+					: `${childIndent}<!-- Drop UChangelogVersion entries here -->`
+				return `${indent}<UChangelogVersions${classAttr}>\n${childrenCode}\n${indent}</UChangelogVersions>`
+			}
+
+			case 'page': {
+				const childrenCode = el.children && el.children.length > 0
+					? el.children.map((c) => renderElementCode(c, depth + 1)).join('\n')
+					: `${childIndent}<!-- Page content -->`
+				return `${indent}<UPage${classAttr}>\n${childrenCode}\n${indent}</UPage>`
+			}
+
+			case 'page-header': {
+				const headlineAttr = el.props.headline ? ` headline="${el.props.headline}"` : ''
+				const titleAttr = el.props.title ? ` title="${el.props.title}"` : ''
+				const descAttr = el.props.description ? ` description="${el.props.description}"` : ''
+				const iconAttr = el.props.icon ? ` icon="${el.props.icon}"` : ''
+				const links = []
+				if (el.props.primaryBtnText) links.push(`{ label: '${el.props.primaryBtnText}', color: 'primary' }`)
+				if (el.props.secondaryBtnText) links.push(`{ label: '${el.props.secondaryBtnText}', color: 'neutral', variant: 'outline' }`)
+				const linksAttr = links.length > 0 ? ` :links="[${links.join(', ')}]"` : ''
+				return `${indent}<UPageHeader${headlineAttr}${titleAttr}${descAttr}${iconAttr}${linksAttr}${classAttr} />`
+			}
+
+			case 'page-body': {
+				const proseAttr = el.props.prose ? ' :prose="true"' : ''
+				const childrenCode = el.children && el.children.length > 0
+					? el.children.map((c) => renderElementCode(c, depth + 1)).join('\n')
+					: `${childIndent}<!-- Page body content -->`
+				return `${indent}<UPageBody${proseAttr}${classAttr}>\n${childrenCode}\n${indent}</UPageBody>`
+			}
+
+			case 'page-aside': {
+				const childrenCode = el.children && el.children.length > 0
+					? el.children.map((c) => renderElementCode(c, depth + 1)).join('\n')
+					: `${childIndent}<!-- Aside links -->`
+				return `${indent}<UPageAside${classAttr}>\n${childrenCode}\n${indent}</UPageAside>`
+			}
+
+			case 'page-anchors': {
+				const titleAttr = el.props.title ? ` title="${el.props.title}"` : ''
+				const linksArr = (el.props.links || '').split(',').map((s: string) => `{ label: '${s.trim()}', to: '#${s.trim().toLowerCase().replace(/\\s+/g, '-')}' }`)
+				const linksAttr = linksArr.length > 0 ? ` :links="[${linksArr.join(', ')}]"` : ''
+				return `${indent}<UPageAnchors${titleAttr}${linksAttr}${classAttr} />`
+			}
+
+			case 'page-grid': {
+				const childrenCode = el.children && el.children.length > 0
+					? el.children.map((c) => renderElementCode(c, depth + 1)).join('\n')
+					: `${childIndent}<!-- Page grid items -->`
+				return `${indent}<UPageGrid${classAttr}>\n${childrenCode}\n${indent}</UPageGrid>`
+			}
+
+			case 'page-columns': {
+				const childrenCode = el.children && el.children.length > 0
+					? el.children.map((c) => renderElementCode(c, depth + 1)).join('\n')
+					: `${childIndent}<!-- Page columns items -->`
+				return `${indent}<UPageColumns${classAttr}>\n${childrenCode}\n${indent}</UPageColumns>`
+			}
+
+			case 'page-card': {
+				const titleAttr = el.props.title ? ` title="${el.props.title}"` : ''
+				const descAttr = el.props.description ? ` description="${el.props.description}"` : ''
+				const iconAttr = el.props.icon ? ` icon="${el.props.icon}"` : ''
+				const variantAttr = el.props.variant ? ` variant="${el.props.variant}"` : ''
+				const highlightAttr = el.props.highlight ? ' :highlight="true"' : ''
+				const orientAttr = el.props.orientation && el.props.orientation !== 'vertical' ? ` orientation="${el.props.orientation}"` : ''
+				let inner = ''
+				if (el.children && el.children.length > 0) {
+					inner = '\n' + el.children.map((c) => renderElementCode(c, depth + 1)).join('\n') + `\n${indent}`
+				}
+				if (inner) {
+					return `${indent}<UPageCard${titleAttr}${descAttr}${iconAttr}${variantAttr}${highlightAttr}${orientAttr}${classAttr}>${inner}</UPageCard>`
+				} else {
+					return `${indent}<UPageCard${titleAttr}${descAttr}${iconAttr}${variantAttr}${highlightAttr}${orientAttr}${classAttr} />`
+				}
+			}
+
+			case 'page-feature': {
+				const titleAttr = el.props.title ? ` title="${el.props.title}"` : ''
+				const descAttr = el.props.description ? ` description="${el.props.description}"` : ''
+				const iconAttr = el.props.icon ? ` icon="${el.props.icon}"` : ''
+				const orientAttr = el.props.orientation && el.props.orientation !== 'horizontal' ? ` orientation="${el.props.orientation}"` : ''
+				return `${indent}<UPageFeature${titleAttr}${descAttr}${iconAttr}${orientAttr}${classAttr} />`
+			}
+
+			case 'page-section': {
+				const headlineAttr = el.props.headline ? ` headline="${el.props.headline}"` : ''
+				const titleAttr = el.props.title ? ` title="${el.props.title}"` : ''
+				const descAttr = el.props.description ? ` description="${el.props.description}"` : ''
+				const iconAttr = el.props.icon ? ` icon="${el.props.icon}"` : ''
+				const orientAttr = el.props.orientation && el.props.orientation !== 'vertical' ? ` orientation="${el.props.orientation}"` : ''
+				const reverseAttr = el.props.reverse ? ' :reverse="true"' : ''
+				const links = []
+				if (el.props.primaryBtnText) links.push(`{ label: '${el.props.primaryBtnText}', color: 'primary' }`)
+				if (el.props.secondaryBtnText) links.push(`{ label: '${el.props.secondaryBtnText}', color: 'neutral', variant: 'outline' }`)
+				const linksAttr = links.length > 0 ? ` :links="[${links.join(', ')}]"` : ''
+
+				let inner = ''
+				if (el.children && el.children.length > 0) {
+					inner = '\n' + el.children.map((c) => renderElementCode(c, depth + 1)).join('\n') + `\n${indent}`
+				} else if (el.props.showIllustration && el.props.imageUrl) {
+					inner = `\n${childIndent}<img src="${el.props.imageUrl}" alt="Illustration" class="rounded-xl shadow-2xl ring-1 ring-neutral-200 dark:ring-neutral-800" />\n${indent}`
+				}
+
+				if (inner) {
+					return `${indent}<UPageSection${headlineAttr}${titleAttr}${descAttr}${iconAttr}${orientAttr}${reverseAttr}${linksAttr}${classAttr}>${inner}</UPageSection>`
+				} else {
+					return `${indent}<UPageSection${headlineAttr}${titleAttr}${descAttr}${iconAttr}${orientAttr}${reverseAttr}${linksAttr}${classAttr} />`
+				}
+			}
+
+			case 'page-cta': {
+				const headlineAttr = el.props.headline ? ` headline="${el.props.headline}"` : ''
+				const titleAttr = el.props.title ? ` title="${el.props.title}"` : ''
+				const descAttr = el.props.description ? ` description="${el.props.description}"` : ''
+				const variantAttr = el.props.variant ? ` variant="${el.props.variant}"` : ''
+				const orientAttr = el.props.orientation && el.props.orientation !== 'vertical' ? ` orientation="${el.props.orientation}"` : ''
+				const links = []
+				if (el.props.primaryBtnText) links.push(`{ label: '${el.props.primaryBtnText}', color: 'primary' }`)
+				if (el.props.secondaryBtnText) links.push(`{ label: '${el.props.secondaryBtnText}', color: 'neutral', variant: 'outline' }`)
+				const linksAttr = links.length > 0 ? ` :links="[${links.join(', ')}]"` : ''
+				return `${indent}<UPageCTA${headlineAttr}${titleAttr}${descAttr}${variantAttr}${orientAttr}${linksAttr}${classAttr} />`
+			}
+
+			case 'page-logos': {
+				const titleAttr = el.props.title ? ` title="${el.props.title}"` : ''
+				const logos = (el.props.logos || '').split(',').map((s: string) => `'${s.trim()}'`)
+				return `${indent}<UPageLogos${titleAttr} :logos="[${logos.join(', ')}] "${classAttr} />`
+			}
+
+			case 'page-list': {
+				const titleAttr = el.props.title ? ` title="${el.props.title}"` : ''
+				const descAttr = el.props.description ? ` description="${el.props.description}"` : ''
+				const childrenCode = el.children && el.children.length > 0
+					? el.children.map((c) => renderElementCode(c, depth + 1)).join('\n')
+					: `${childIndent}<!-- List items -->`
+				return `${indent}<UPageList${titleAttr}${descAttr}${classAttr}>\n${childrenCode}\n${indent}</UPageList>`
+			}
+
+			case 'page-links': {
+				const titleAttr = el.props.title ? ` title="${el.props.title}"` : ''
+				const linksArr = (el.props.links || '').split(',').map((s: string) => `{ label: '${s.trim()}', to: '#' }`)
+				return `${indent}<UPageLinks${titleAttr} :links="[${linksArr.join(', ')}] "${classAttr} />`
+			}
+
+			case 'pricing-plan': {
+				const titleAttr = el.props.title ? ` title="${el.props.title}"` : ''
+				const descAttr = el.props.description ? ` description="${el.props.description}"` : ''
+				const priceAttr = el.props.price ? ` price="${el.props.price}"` : ''
+				const periodAttr = el.props.billingPeriod ? ` billing-period="${el.props.billingPeriod}"` : ''
+				const badgeAttr = el.props.badge ? ` :badge="{ label: '${el.props.badge}' }"` : ''
+				const btnAttr = ` :button="{ label: '${el.props.buttonText || 'Subscribe'}', color: '${el.props.highlight ? 'primary' : 'neutral'}' }"`
+				const highlightAttr = el.props.highlight ? ' :highlight="true"' : ''
+				const features = (el.props.features || '').split(',').map((s: string) => `'${s.trim()}'`)
+				const featuresAttr = ` :features="[${features.join(', ')}]"`
+				return `${indent}<UPricingPlan${titleAttr}${descAttr}${priceAttr}${periodAttr}${badgeAttr}${btnAttr}${highlightAttr}${featuresAttr}${classAttr} />`
+			}
+
+			case 'pricing-plans': {
+				const scaleAttr = el.props.scale ? ' :scale="true"' : ''
+				const childrenCode = el.children && el.children.length > 0
+					? el.children.map((c) => renderElementCode(c, depth + 1)).join('\n')
+					: `${childIndent}<!-- Drop UPricingPlan cards here -->`
+				return `${indent}<UPricingPlans${scaleAttr}${classAttr}>\n${childrenCode}\n${indent}</UPricingPlans>`
+			}
+
+			case 'pricing-table': {
+				const titleAttr = el.props.title ? ` title="${el.props.title}"` : ''
+				const descAttr = el.props.description ? ` description="${el.props.description}"` : ''
+				return `${indent}<UPricingTable${titleAttr}${descAttr}${classAttr} />`
+			}
+
 			default:
 				return `${indent}<!-- Unsupported component: ${el.type} -->`
 		}
@@ -392,6 +614,134 @@ ${templateBody}
 
 			case 'footer-section': {
 				return `${indent}::footer-section{brandName="${el.props.brandName || 'Brand'}" tagline="${el.props.tagline || ''}" copyright="${el.props.copyright || '© 2026'}"}`
+			}
+
+			// ================= PAGE & PRO COMPONENTS MDC =================
+			case 'auth-form': {
+				return `${indent}::u-auth-form{title="${el.props.title || 'Welcome back'}" description="${el.props.description || ''}" icon="${el.props.icon || 'lucide:lock'}"}`
+			}
+
+			case 'blog-post': {
+				return `${indent}::u-blog-post{title="${el.props.title || 'Blog Post'}" description="${el.props.description || ''}" date="${el.props.date || ''}" badge="${el.props.badge || ''}" image="${el.props.image || ''}" authorName="${el.props.authorName || ''}"}`
+			}
+
+			case 'blog-posts': {
+				const childrenMdc = el.children && el.children.length > 0
+					? '\n' + el.children.map((c) => renderElementMdc(c, depth + 1)).join('\n\n') + '\n' + indent
+					: ''
+				return `${indent}${colons}u-blog-posts${childrenMdc}${colons}`
+			}
+
+			case 'changelog-version': {
+				const childrenMdc = el.children && el.children.length > 0
+					? '\n' + el.children.map((c) => renderElementMdc(c, depth + 1)).join('\n\n') + '\n' + indent
+					: ''
+				return `${indent}${colons}u-changelog-version{version="${el.props.version || 'v1.0.0'}" date="${el.props.date || ''}" title="${el.props.title || ''}" description="${el.props.description || ''}"}${childrenMdc}${colons}`
+			}
+
+			case 'changelog-versions': {
+				const childrenMdc = el.children && el.children.length > 0
+					? '\n' + el.children.map((c) => renderElementMdc(c, depth + 1)).join('\n\n') + '\n' + indent
+					: ''
+				return `${indent}${colons}u-changelog-versions${childrenMdc}${colons}`
+			}
+
+			case 'page': {
+				const childrenMdc = el.children && el.children.length > 0
+					? '\n' + el.children.map((c) => renderElementMdc(c, depth + 1)).join('\n\n') + '\n' + indent
+					: ''
+				return `${indent}${colons}u-page${childrenMdc}${colons}`
+			}
+
+			case 'page-header': {
+				return `${indent}::u-page-header{headline="${el.props.headline || ''}" title="${el.props.title || 'Page Header'}" description="${el.props.description || ''}" icon="${el.props.icon || ''}"}`
+			}
+
+			case 'page-body': {
+				const childrenMdc = el.children && el.children.length > 0
+					? '\n' + el.children.map((c) => renderElementMdc(c, depth + 1)).join('\n\n') + '\n' + indent
+					: ''
+				return `${indent}${colons}u-page-body{prose=${el.props.prose ? 'true' : 'false'}}${childrenMdc}${colons}`
+			}
+
+			case 'page-aside': {
+				const childrenMdc = el.children && el.children.length > 0
+					? '\n' + el.children.map((c) => renderElementMdc(c, depth + 1)).join('\n\n') + '\n' + indent
+					: ''
+				return `${indent}${colons}u-page-aside{title="${el.props.title || 'Navigation'}"}${childrenMdc}${colons}`
+			}
+
+			case 'page-anchors': {
+				return `${indent}::u-page-anchors{title="${el.props.title || 'On this page'}" links="${el.props.links || ''}"}`
+			}
+
+			case 'page-grid': {
+				const childrenMdc = el.children && el.children.length > 0
+					? '\n' + el.children.map((c) => renderElementMdc(c, depth + 1)).join('\n\n') + '\n' + indent
+					: ''
+				return `${indent}${colons}u-page-grid{columns="${el.props.columns || '3'}"}${childrenMdc}${colons}`
+			}
+
+			case 'page-columns': {
+				const childrenMdc = el.children && el.children.length > 0
+					? '\n' + el.children.map((c) => renderElementMdc(c, depth + 1)).join('\n\n') + '\n' + indent
+					: ''
+				return `${indent}${colons}u-page-columns${childrenMdc}${colons}`
+			}
+
+			case 'page-card': {
+				const childrenMdc = el.children && el.children.length > 0
+					? '\n' + el.children.map((c) => renderElementMdc(c, depth + 1)).join('\n\n') + '\n' + indent
+					: ''
+				return `${indent}${colons}u-page-card{title="${el.props.title || 'Card'}" description="${el.props.description || ''}" icon="${el.props.icon || ''}" variant="${el.props.variant || 'outline'}"}${childrenMdc}${colons}`
+			}
+
+			case 'page-feature': {
+				return `${indent}::u-page-feature{title="${el.props.title || 'Feature'}" description="${el.props.description || ''}" icon="${el.props.icon || ''}" orientation="${el.props.orientation || 'horizontal'}"}`
+			}
+
+			case 'page-section': {
+				const childrenMdc = el.children && el.children.length > 0
+					? '\n' + el.children.map((c) => renderElementMdc(c, depth + 1)).join('\n\n') + '\n' + indent
+					: (el.props.showIllustration && el.props.imageUrl ? `\n${indent}  ![Illustration](${el.props.imageUrl})\n${indent}` : '')
+				return `${indent}${colons}u-page-section{title="${el.props.title || 'Section Title'}" headline="${el.props.headline || ''}" description="${el.props.description || ''}" icon="${el.props.icon || ''}" orientation="${el.props.orientation || 'vertical'}"}${childrenMdc}${colons}`
+			}
+
+			case 'page-cta': {
+				const childrenMdc = el.children && el.children.length > 0
+					? '\n' + el.children.map((c) => renderElementMdc(c, depth + 1)).join('\n\n') + '\n' + indent
+					: ''
+				return `${indent}${colons}u-page-cta{title="${el.props.title || 'CTA Title'}" headline="${el.props.headline || ''}" description="${el.props.description || ''}" variant="${el.props.variant || 'subtle'}"}${childrenMdc}${colons}`
+			}
+
+			case 'page-logos': {
+				return `${indent}::u-page-logos{title="${el.props.title || ''}" logos="${el.props.logos || ''}"}`
+			}
+
+			case 'page-list': {
+				const childrenMdc = el.children && el.children.length > 0
+					? '\n' + el.children.map((c) => renderElementMdc(c, depth + 1)).join('\n\n') + '\n' + indent
+					: ''
+				return `${indent}${colons}u-page-list{title="${el.props.title || 'FAQ'}" description="${el.props.description || ''}"}${childrenMdc}${colons}`
+			}
+
+			case 'page-links': {
+				return `${indent}::u-page-links{title="${el.props.title || 'Resources'}" links="${el.props.links || ''}"}`
+			}
+
+			case 'pricing-plan': {
+				return `${indent}::u-pricing-plan{title="${el.props.title || 'Plan'}" price="${el.props.price || '$29'}" billingPeriod="${el.props.billingPeriod || '/month'}" badge="${el.props.badge || ''}" description="${el.props.description || ''}" features="${el.props.features || ''}"}`
+			}
+
+			case 'pricing-plans': {
+				const childrenMdc = el.children && el.children.length > 0
+					? '\n' + el.children.map((c) => renderElementMdc(c, depth + 1)).join('\n\n') + '\n' + indent
+					: ''
+				return `${indent}${colons}u-pricing-plans${childrenMdc}${colons}`
+			}
+
+			case 'pricing-table': {
+				return `${indent}::u-pricing-table{title="${el.props.title || 'Compare Features'}" description="${el.props.description || ''}"}`
 			}
 
 			default:

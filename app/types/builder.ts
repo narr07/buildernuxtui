@@ -1,5 +1,6 @@
 export type ComponentCategory = 
 	| 'layout'
+	| 'page'
 	| 'typography'
 	| 'element'
 	| 'form'

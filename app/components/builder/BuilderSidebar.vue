@@ -22,6 +22,7 @@ const selectedCategory = ref<string>('all')
 
 const categories: { id: string; label: string; icon: string }[] = [
 	{ id: 'all', label: 'All', icon: 'lucide:layout-grid' },
+	{ id: 'page', label: 'Pages & Pro', icon: 'lucide:layout-template' },
 	{ id: 'layout', label: 'Layout', icon: 'lucide:box-select' },
 	{ id: 'typography', label: 'Type', icon: 'lucide:heading' },
 	{ id: 'element', label: 'Elements', icon: 'lucide:mouse-pointer-click' },

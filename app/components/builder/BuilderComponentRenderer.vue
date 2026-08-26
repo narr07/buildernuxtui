@@ -743,6 +743,644 @@ const splitFeatures = computed(() => {
 			</div>
 		</footer>
 
+		<!-- ================= PAGE & PRO COMPONENTS ================= -->
+
+		<!-- UAuthForm -->
+		<UCard
+			v-else-if="element.type === 'auth-form'"
+			:class="['w-full shadow-xl border border-neutral-200 dark:border-neutral-800', styleClasses]"
+		>
+			<div class="text-center mb-6">
+				<div class="inline-flex p-3 rounded-2xl bg-primary-50 dark:bg-primary-950/60 text-primary mb-3">
+					<UIcon :name="element.props.icon || 'lucide:lock'" class="w-6 h-6" />
+				</div>
+				<h2 class="text-xl font-bold text-neutral-900 dark:text-white">{{ element.props.title || 'Welcome back' }}</h2>
+				<p class="text-xs text-neutral-500 mt-1">{{ element.props.description || '' }}</p>
+			</div>
+
+			<div v-if="element.props.showProviders" class="grid grid-cols-2 gap-2 mb-4">
+				<UButton color="neutral" variant="outline" size="sm" icon="lucide:globe" label="Google" block />
+				<UButton color="neutral" variant="outline" size="sm" icon="lucide:github" label="GitHub" block />
+			</div>
+
+			<div v-if="element.props.showProviders" class="relative my-4">
+				<div class="absolute inset-0 flex items-center"><span class="w-full border-t border-neutral-200 dark:border-neutral-800" /></div>
+				<div class="relative flex justify-center text-[10px] uppercase"><span class="bg-white dark:bg-neutral-900 px-2 text-neutral-400">or continue with</span></div>
+			</div>
+
+			<div class="space-y-3">
+				<div>
+					<label class="block text-xs font-medium text-neutral-700 dark:text-neutral-300 mb-1">Email address</label>
+					<UInput placeholder="you@example.com" icon="lucide:mail" class="w-full" />
+				</div>
+				<div>
+					<label class="block text-xs font-medium text-neutral-700 dark:text-neutral-300 mb-1">Password</label>
+					<UInput type="password" placeholder="••••••••" icon="lucide:key" class="w-full" />
+				</div>
+				<UButton block color="primary" size="lg" :label="element.props.submitBtnText || 'Continue with Email'" class="mt-4" />
+			</div>
+		</UCard>
+
+		<!-- UBlogPost -->
+		<UCard
+			v-else-if="element.type === 'blog-post'"
+			:class="[
+				'overflow-hidden group hover:shadow-xl transition-all duration-300',
+				element.props.orientation === 'horizontal' ? 'flex flex-col md:flex-row' : '',
+				styleClasses
+			]"
+		>
+			<div
+				v-if="element.props.image"
+				:class="element.props.orientation === 'horizontal' ? 'md:w-2/5 shrink-0 overflow-hidden' : 'h-48 overflow-hidden -mx-6 -mt-6 mb-4'"
+			>
+				<img
+					:src="element.props.image"
+					:alt="element.props.title"
+					class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+				/>
+			</div>
+			<div class="flex flex-col justify-between flex-1">
+				<div>
+					<div class="flex items-center gap-2 mb-3">
+						<UBadge v-if="element.props.badge" color="primary" variant="subtle" size="xs" :label="element.props.badge" />
+						<span class="text-xs text-neutral-400">{{ element.props.date || 'Recent' }}</span>
+					</div>
+					<h3 class="text-lg font-bold text-neutral-900 dark:text-white group-hover:text-primary transition-colors mb-2">
+						{{ element.props.title || 'Blog Post Title' }}
+					</h3>
+					<p class="text-xs text-neutral-500 dark:text-neutral-400 line-clamp-2 leading-relaxed">
+						{{ element.props.description || '' }}
+					</p>
+				</div>
+				<div class="flex items-center gap-2.5 mt-4 pt-3 border-t border-neutral-100 dark:border-neutral-800/60">
+					<UAvatar :src="element.props.authorAvatar" :alt="element.props.authorName" size="xs" />
+					<div class="text-left">
+						<h4 class="text-xs font-semibold text-neutral-900 dark:text-white">{{ element.props.authorName || 'Author' }}</h4>
+						<p class="text-[10px] text-neutral-400">{{ element.props.authorRole || '' }}</p>
+					</div>
+				</div>
+			</div>
+		</UCard>
+
+		<!-- UBlogPosts Container -->
+		<div
+			v-else-if="element.type === 'blog-posts'"
+			:class="[
+				'grid gap-6',
+				element.props.orientation === 'horizontal' ? 'grid-cols-1' : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3',
+				styleClasses
+			]"
+		>
+			<template v-if="element.children && element.children.length > 0">
+				<BuilderComponentRenderer
+					v-for="(child, cIdx) in element.children"
+					:key="child.id"
+					:element="child"
+					:parent-id="element.id"
+					:index="cIdx"
+				/>
+			</template>
+			<div
+				v-else-if="!previewMode"
+				class="col-span-full border-2 border-dashed border-neutral-300 dark:border-neutral-700/80 rounded-xl p-8 text-center text-xs text-neutral-400 flex flex-col items-center justify-center gap-2"
+			>
+				<UIcon name="lucide:newspaper" class="w-6 h-6 text-neutral-400" />
+				<span>Drop UBlogPost cards here</span>
+			</div>
+		</div>
+
+		<!-- UChangelogVersion -->
+		<div
+			v-else-if="element.type === 'changelog-version'"
+			:class="['relative pl-8 pb-8 border-l border-neutral-200 dark:border-neutral-800 text-left', styleClasses]"
+		>
+			<div class="absolute -left-2.5 top-0 w-5 h-5 rounded-full bg-primary-500 ring-4 ring-white dark:ring-neutral-900 flex items-center justify-center">
+				<div class="w-2 h-2 rounded-full bg-white" />
+			</div>
+			<div class="flex items-center gap-2.5 mb-1.5">
+				<span class="font-mono text-sm font-bold text-neutral-900 dark:text-white">{{ element.props.version || 'v1.0.0' }}</span>
+				<UBadge v-if="element.props.badge" color="primary" variant="subtle" size="xs" :label="element.props.badge" />
+				<span class="text-xs text-neutral-400">{{ element.props.date || '' }}</span>
+			</div>
+			<h3 class="text-base font-bold text-neutral-900 dark:text-white mb-2">{{ element.props.title || 'Version Release Title' }}</h3>
+			<p class="text-xs text-neutral-600 dark:text-neutral-300 mb-4 leading-relaxed">{{ element.props.description || '' }}</p>
+			
+			<div v-if="element.children && element.children.length > 0" class="space-y-3">
+				<BuilderComponentRenderer
+					v-for="(child, cIdx) in element.children"
+					:key="child.id"
+					:element="child"
+					:parent-id="element.id"
+					:index="cIdx"
+				/>
+			</div>
+		</div>
+
+		<!-- UChangelogVersions Container -->
+		<div
+			v-else-if="element.type === 'changelog-versions'"
+			:class="['max-w-3xl mx-auto space-y-4 py-8', styleClasses]"
+		>
+			<template v-if="element.children && element.children.length > 0">
+				<BuilderComponentRenderer
+					v-for="(child, cIdx) in element.children"
+					:key="child.id"
+					:element="child"
+					:parent-id="element.id"
+					:index="cIdx"
+				/>
+			</template>
+			<div
+				v-else-if="!previewMode"
+				class="border-2 border-dashed border-neutral-300 dark:border-neutral-700/80 rounded-xl p-8 text-center text-xs text-neutral-400 flex flex-col items-center justify-center gap-2"
+			>
+				<UIcon name="lucide:git-commit" class="w-6 h-6 text-neutral-400" />
+				<span>Drop UChangelogVersion entries into this timeline</span>
+			</div>
+		</div>
+
+		<!-- UPage Root Layout -->
+		<div
+			v-else-if="element.type === 'page'"
+			:class="['w-full max-w-7xl mx-auto flex flex-col gap-6', styleClasses]"
+		>
+			<template v-if="element.children && element.children.length > 0">
+				<BuilderComponentRenderer
+					v-for="(child, cIdx) in element.children"
+					:key="child.id"
+					:element="child"
+					:parent-id="element.id"
+					:index="cIdx"
+				/>
+			</template>
+			<div
+				v-else-if="!previewMode"
+				class="border-2 border-dashed border-neutral-300 dark:border-neutral-700/80 rounded-xl p-8 text-center text-xs text-neutral-400 flex flex-col items-center justify-center gap-2"
+			>
+				<UIcon name="lucide:app-window" class="w-6 h-6 text-neutral-400" />
+				<span>UPage Root Layout: Drop UPageHeader, UPageBody, or sections inside</span>
+			</div>
+		</div>
+
+		<!-- UPageHeader -->
+		<div
+			v-else-if="element.type === 'page-header'"
+			:class="['border-b border-neutral-200 dark:border-neutral-800 pb-8 text-left', styleClasses]"
+		>
+			<div class="flex items-center gap-2 mb-2">
+				<UBadge v-if="element.props.headline" color="primary" variant="subtle" size="sm" :label="element.props.headline" />
+				<UIcon v-if="element.props.icon" :name="element.props.icon" class="w-5 h-5 text-primary" />
+			</div>
+			<h1 class="text-3xl sm:text-4xl font-extrabold text-neutral-900 dark:text-white tracking-tight mb-3">
+				{{ element.props.title || 'Page Title' }}
+			</h1>
+			<p class="text-base text-neutral-600 dark:text-neutral-300 max-w-3xl leading-relaxed mb-6">
+				{{ element.props.description || '' }}
+			</p>
+			<div v-if="element.props.primaryBtnText || element.props.secondaryBtnText" class="flex items-center gap-3">
+				<UButton v-if="element.props.primaryBtnText" color="primary" size="md" :label="element.props.primaryBtnText" />
+				<UButton v-if="element.props.secondaryBtnText" color="neutral" variant="outline" size="md" :label="element.props.secondaryBtnText" />
+			</div>
+		</div>
+
+		<!-- UPageBody -->
+		<div
+			v-else-if="element.type === 'page-body'"
+			:class="[
+				'w-full',
+				element.props.prose ? 'prose dark:prose-invert max-w-none' : '',
+				styleClasses
+			]"
+		>
+			<template v-if="element.children && element.children.length > 0">
+				<BuilderComponentRenderer
+					v-for="(child, cIdx) in element.children"
+					:key="child.id"
+					:element="child"
+					:parent-id="element.id"
+					:index="cIdx"
+				/>
+			</template>
+			<div
+				v-else-if="!previewMode"
+				class="border-2 border-dashed border-neutral-300 dark:border-neutral-700/80 rounded-xl p-8 text-center text-xs text-neutral-400 flex flex-col items-center justify-center gap-2"
+			>
+				<UIcon name="lucide:align-left" class="w-6 h-6 text-neutral-400" />
+				<span>UPageBody: Drop documentation or content components here</span>
+			</div>
+		</div>
+
+		<!-- UPageAside -->
+		<aside
+			v-else-if="element.type === 'page-aside'"
+			:class="['border-r border-neutral-200 dark:border-neutral-800 text-left', styleClasses]"
+		>
+			<h4 class="text-xs font-bold text-neutral-400 uppercase tracking-wider mb-4">{{ element.props.title || 'Navigation' }}</h4>
+			<div class="space-y-3">
+				<template v-if="element.children && element.children.length > 0">
+					<BuilderComponentRenderer
+						v-for="(child, cIdx) in element.children"
+						:key="child.id"
+						:element="child"
+						:parent-id="element.id"
+						:index="cIdx"
+					/>
+				</template>
+				<div
+					v-else-if="!previewMode"
+					class="border border-dashed border-neutral-300 dark:border-neutral-700 rounded p-4 text-center text-xs text-neutral-400"
+				>
+					<span>Drop Aside Navigation Links</span>
+				</div>
+			</div>
+		</aside>
+
+		<!-- UPageAnchors -->
+		<div
+			v-else-if="element.type === 'page-anchors'"
+			:class="['border-l border-neutral-200 dark:border-neutral-800 pl-4 text-left', styleClasses]"
+		>
+			<h4 class="text-xs font-bold text-neutral-900 dark:text-white mb-3 flex items-center gap-1.5">
+				<UIcon name="lucide:list-tree" class="w-3.5 h-3.5 text-primary" />
+				<span>{{ element.props.title || 'On this page' }}</span>
+			</h4>
+			<ul class="space-y-2 text-xs">
+				<li
+					v-for="(item, aIdx) in (element.props.links || '').split(',').map((s: string) => s.trim()).filter(Boolean)"
+					:key="aIdx"
+					class="text-neutral-500 hover:text-primary cursor-pointer transition-colors"
+				>
+					{{ item }}
+				</li>
+			</ul>
+		</div>
+
+		<!-- UPageGrid -->
+		<div
+			v-else-if="element.type === 'page-grid'"
+			:class="[
+				'grid gap-6',
+				element.props.columns === '2' ? 'grid-cols-1 md:grid-cols-2' :
+				element.props.columns === '4' ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-4' : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3',
+				styleClasses
+			]"
+		>
+			<template v-if="element.children && element.children.length > 0">
+				<BuilderComponentRenderer
+					v-for="(child, cIdx) in element.children"
+					:key="child.id"
+					:element="child"
+					:parent-id="element.id"
+					:index="cIdx"
+				/>
+			</template>
+			<div
+				v-else-if="!previewMode"
+				class="col-span-full border-2 border-dashed border-neutral-300 dark:border-neutral-700/80 rounded-xl p-8 text-center text-xs text-neutral-400 flex flex-col items-center justify-center gap-2"
+			>
+				<UIcon name="lucide:layout-grid" class="w-6 h-6 text-neutral-400" />
+				<span>UPageGrid: Drop cards or feature items here</span>
+			</div>
+		</div>
+
+		<!-- UPageColumns -->
+		<div
+			v-else-if="element.type === 'page-columns'"
+			:class="['columns-1 md:columns-2 lg:columns-3 gap-6 space-y-6', styleClasses]"
+		>
+			<template v-if="element.children && element.children.length > 0">
+				<BuilderComponentRenderer
+					v-for="(child, cIdx) in element.children"
+					:key="child.id"
+					:element="child"
+					:parent-id="element.id"
+					:index="cIdx"
+				/>
+			</template>
+			<div
+				v-else-if="!previewMode"
+				class="border-2 border-dashed border-neutral-300 dark:border-neutral-700/80 rounded-xl p-8 text-center text-xs text-neutral-400 flex flex-col items-center justify-center gap-2"
+			>
+				<UIcon name="lucide:columns-3" class="w-6 h-6 text-neutral-400" />
+				<span>UPageColumns: Drop staggered cards or testimonials</span>
+			</div>
+		</div>
+
+		<!-- UPageCard -->
+		<UCard
+			v-else-if="element.type === 'page-card'"
+			:variant="element.props.variant || 'outline'"
+			:class="[
+				'group relative hover:shadow-xl transition-all duration-300',
+				element.props.highlight ? 'ring-1 ring-primary-500/30' : '',
+				styleClasses
+			]"
+		>
+			<div
+				class="flex flex-col gap-4"
+				:class="element.props.orientation === 'horizontal' ? 'md:flex-row md:items-center' : ''"
+			>
+				<div
+					v-if="element.props.icon"
+					class="w-12 h-12 rounded-xl bg-primary-50 dark:bg-primary-950/60 flex items-center justify-center text-primary shrink-0 ring-1 ring-primary/20"
+				>
+					<UIcon :name="element.props.icon" class="w-6 h-6" />
+				</div>
+				<div class="flex-1 text-left">
+					<h3 class="text-base font-bold text-neutral-900 dark:text-white group-hover:text-primary transition-colors mb-1.5">
+						{{ element.props.title || 'Card Title' }}
+					</h3>
+					<p class="text-xs text-neutral-500 dark:text-neutral-400 leading-relaxed">
+						{{ element.props.description || '' }}
+					</p>
+					<div v-if="element.children && element.children.length > 0" class="mt-4">
+						<BuilderComponentRenderer
+							v-for="(child, cIdx) in element.children"
+							:key="child.id"
+							:element="child"
+							:parent-id="element.id"
+							:index="cIdx"
+						/>
+					</div>
+				</div>
+			</div>
+		</UCard>
+
+		<!-- UPageFeature -->
+		<div
+			v-else-if="element.type === 'page-feature'"
+			:class="[
+				'flex gap-3 text-left',
+				element.props.orientation === 'vertical' ? 'flex-col items-start' : 'items-start',
+				styleClasses
+			]"
+		>
+			<div class="p-2 rounded-lg bg-primary-50 dark:bg-primary-950/60 text-primary shrink-0 ring-1 ring-primary/20">
+				<UIcon :name="element.props.icon || 'lucide:sparkles'" class="w-5 h-5" />
+			</div>
+			<div>
+				<h4 class="text-sm font-bold text-neutral-900 dark:text-white mb-1">{{ element.props.title || 'Feature' }}</h4>
+				<p class="text-xs text-neutral-500 dark:text-neutral-400 leading-relaxed">{{ element.props.description || '' }}</p>
+			</div>
+		</div>
+
+		<!-- UPageSection -->
+		<section
+			v-else-if="element.type === 'page-section'"
+			:class="['relative py-16 px-6 lg:py-24', styleClasses]"
+		>
+			<div
+				class="max-w-7xl mx-auto flex flex-col gap-10"
+				:class="element.props.orientation === 'horizontal' ? (element.props.reverse ? 'lg:flex-row-reverse lg:items-center' : 'lg:flex-row lg:items-center') : 'text-center items-center'"
+			>
+				<div
+					class="flex flex-col gap-4"
+					:class="element.props.orientation === 'horizontal' ? 'lg:max-w-xl text-left items-start' : 'max-w-3xl mx-auto items-center text-center'"
+				>
+					<UBadge v-if="element.props.headline" color="primary" variant="subtle" size="md" :label="element.props.headline" />
+					<UIcon v-if="element.props.icon" :name="element.props.icon" class="w-8 h-8 text-primary" />
+					<h2 class="text-3xl sm:text-5xl font-extrabold text-neutral-900 dark:text-white tracking-tight leading-tight">
+						{{ element.props.title || 'Section Title' }}
+					</h2>
+					<p class="text-base text-neutral-600 dark:text-neutral-300 leading-relaxed">
+						{{ element.props.description || '' }}
+					</p>
+					<div v-if="element.props.primaryBtnText || element.props.secondaryBtnText" class="flex flex-wrap items-center gap-3 pt-2">
+						<UButton v-if="element.props.primaryBtnText" color="primary" size="lg" :label="element.props.primaryBtnText" />
+						<UButton v-if="element.props.secondaryBtnText" color="neutral" variant="outline" size="lg" :label="element.props.secondaryBtnText" />
+					</div>
+				</div>
+
+				<div
+					v-if="(element.children && element.children.length > 0) || element.props.showIllustration || !previewMode"
+					class="w-full flex-1"
+					:class="element.props.orientation === 'horizontal' ? 'lg:max-w-xl' : 'max-w-5xl mx-auto w-full mt-6'"
+				>
+					<template v-if="element.children && element.children.length > 0">
+						<div class="space-y-4 w-full">
+							<BuilderComponentRenderer
+								v-for="(child, cIdx) in element.children"
+								:key="child.id"
+								:element="child"
+								:parent-id="element.id"
+								:index="cIdx"
+							/>
+						</div>
+					</template>
+					<div
+						v-else-if="element.props.showIllustration"
+						class="rounded-xl overflow-hidden shadow-2xl border border-neutral-200 dark:border-neutral-800"
+					>
+						<img :src="element.props.imageUrl" alt="Section Illustration" class="w-full h-auto object-cover" />
+					</div>
+					<div
+						v-else-if="!previewMode"
+						class="border-2 border-dashed border-neutral-300 dark:border-neutral-700/80 rounded-xl p-8 text-center text-xs text-neutral-400 flex flex-col items-center justify-center gap-2"
+					>
+						<UIcon name="lucide:layout-panel-top" class="w-6 h-6 text-neutral-400" />
+						<span>UPageSection Default Slot: Drop Cards, Grids or Content</span>
+					</div>
+				</div>
+			</div>
+		</section>
+
+		<!-- UPageCTA -->
+		<section
+			v-else-if="element.type === 'page-cta'"
+			:class="[
+				'relative py-16 px-6 rounded-3xl overflow-hidden text-center my-6',
+				element.props.variant === 'solid' ? 'bg-primary text-inverted' : 'bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800',
+				styleClasses
+			]"
+		>
+			<div class="max-w-3xl mx-auto flex flex-col items-center gap-4">
+				<UBadge v-if="element.props.headline" color="primary" variant="subtle" size="sm" :label="element.props.headline" />
+				<h2 class="text-3xl sm:text-5xl font-extrabold tracking-tight">{{ element.props.title || 'CTA Title' }}</h2>
+				<p class="text-base text-neutral-500 dark:text-neutral-400 max-w-xl">{{ element.props.description || '' }}</p>
+				<div class="flex flex-wrap items-center gap-3 pt-2">
+					<UButton v-if="element.props.primaryBtnText" color="primary" size="xl" :label="element.props.primaryBtnText" />
+					<UButton v-if="element.props.secondaryBtnText" color="neutral" variant="outline" size="xl" :label="element.props.secondaryBtnText" />
+				</div>
+				<div v-if="element.children && element.children.length > 0" class="mt-6 w-full">
+					<BuilderComponentRenderer
+						v-for="(child, cIdx) in element.children"
+						:key="child.id"
+						:element="child"
+						:parent-id="element.id"
+						:index="cIdx"
+					/>
+				</div>
+			</div>
+		</section>
+
+		<!-- UPageLogos -->
+		<section
+			v-else-if="element.type === 'page-logos'"
+			:class="['py-12 px-6 text-center border-y border-neutral-100 dark:border-neutral-900', styleClasses]"
+		>
+			<p class="text-xs font-semibold text-neutral-400 uppercase tracking-widest mb-8">{{ element.props.title || 'Trusted by leaders' }}</p>
+			<div class="max-w-6xl mx-auto flex flex-wrap items-center justify-center gap-8 md:gap-16 opacity-75 grayscale hover:grayscale-0 transition-all">
+				<div
+					v-for="(logo, lIdx) in (element.props.logos || '').split(',').map((s: string) => s.trim()).filter(Boolean)"
+					:key="lIdx"
+					class="font-extrabold text-lg tracking-tight text-neutral-700 dark:text-neutral-300 flex items-center gap-1.5"
+				>
+					<UIcon name="lucide:sparkles" class="w-4 h-4 text-primary" />
+					<span>{{ logo }}</span>
+				</div>
+			</div>
+		</section>
+
+		<!-- UPageList -->
+		<div
+			v-else-if="element.type === 'page-list'"
+			:class="['text-left max-w-4xl mx-auto py-10 space-y-4', styleClasses]"
+		>
+			<h3 class="text-2xl font-bold text-neutral-900 dark:text-white">{{ element.props.title || 'Frequently Asked Questions' }}</h3>
+			<p class="text-sm text-neutral-500 mb-6">{{ element.props.description || '' }}</p>
+			<div class="space-y-4">
+				<template v-if="element.children && element.children.length > 0">
+					<BuilderComponentRenderer
+						v-for="(child, cIdx) in element.children"
+						:key="child.id"
+						:element="child"
+						:parent-id="element.id"
+						:index="cIdx"
+					/>
+				</template>
+				<div
+					v-else-if="!previewMode"
+					class="border-2 border-dashed border-neutral-300 dark:border-neutral-700/80 rounded-xl p-8 text-center text-xs text-neutral-400"
+				>
+					<span>UPageList: Drop list items, cards or accordions</span>
+				</div>
+			</div>
+		</div>
+
+		<!-- UPageLinks -->
+		<div
+			v-else-if="element.type === 'page-links'"
+			:class="['text-left p-4 space-y-3', styleClasses]"
+		>
+			<h4 class="text-xs font-bold text-neutral-400 uppercase tracking-wider">{{ element.props.title || 'Resources' }}</h4>
+			<ul class="space-y-2 text-xs">
+				<li
+					v-for="(link, lIdx) in (element.props.links || '').split(',').map((s: string) => s.trim()).filter(Boolean)"
+					:key="lIdx"
+					class="flex items-center gap-2 text-neutral-700 dark:text-neutral-300 hover:text-primary cursor-pointer transition-colors"
+				>
+					<UIcon name="lucide:external-link" class="w-3.5 h-3.5 text-primary shrink-0" />
+					<span>{{ link }}</span>
+				</li>
+			</ul>
+		</div>
+
+		<!-- UPricingPlan -->
+		<UCard
+			v-else-if="element.type === 'pricing-plan'"
+			:class="[
+				'relative flex flex-col justify-between h-full transition-all text-left',
+				element.props.highlight ? 'ring-2 ring-primary shadow-2xl shadow-primary/10' : '',
+				styleClasses
+			]"
+		>
+			<div>
+				<div class="flex items-center justify-between mb-3">
+					<h3 class="text-xl font-bold text-neutral-900 dark:text-white">{{ element.props.title || 'Plan' }}</h3>
+					<UBadge v-if="element.props.badge" color="primary" variant="subtle" size="sm" :label="element.props.badge" />
+				</div>
+				<p class="text-xs text-neutral-500 mb-6 leading-relaxed">{{ element.props.description || '' }}</p>
+				<div class="flex items-baseline gap-1 mb-6">
+					<span class="text-4xl font-extrabold text-neutral-900 dark:text-white">{{ element.props.price || '$0' }}</span>
+					<span class="text-sm text-neutral-400">{{ element.props.billingPeriod || '/month' }}</span>
+				</div>
+				<ul class="space-y-3 mb-8">
+					<li
+						v-for="(feat, fIdx) in (element.props.features || '').split(',').map((s: string) => s.trim()).filter(Boolean)"
+						:key="fIdx"
+						class="flex items-center gap-2 text-sm text-neutral-600 dark:text-neutral-300"
+					>
+						<UIcon name="lucide:check" class="w-4 h-4 text-primary shrink-0" />
+						<span>{{ feat }}</span>
+					</li>
+				</ul>
+			</div>
+			<UButton
+				block
+				size="lg"
+				:color="element.props.highlight ? 'primary' : 'neutral'"
+				:variant="element.props.highlight ? 'solid' : 'outline'"
+				:label="element.props.buttonText || 'Subscribe'"
+			/>
+		</UCard>
+
+		<!-- UPricingPlans Container -->
+		<div
+			v-else-if="element.type === 'pricing-plans'"
+			:class="['grid grid-cols-1 md:grid-cols-3 gap-8 max-w-7xl mx-auto py-12 items-stretch', styleClasses]"
+		>
+			<template v-if="element.children && element.children.length > 0">
+				<BuilderComponentRenderer
+					v-for="(child, cIdx) in element.children"
+					:key="child.id"
+					:element="child"
+					:parent-id="element.id"
+					:index="cIdx"
+				/>
+			</template>
+			<div
+				v-else-if="!previewMode"
+				class="col-span-full border-2 border-dashed border-neutral-300 dark:border-neutral-700/80 rounded-xl p-8 text-center text-xs text-neutral-400 flex flex-col items-center justify-center gap-2"
+			>
+				<UIcon name="lucide:table-properties" class="w-6 h-6 text-neutral-400" />
+				<span>UPricingPlans: Drop UPricingPlan cards into this multi-column grid</span>
+			</div>
+		</div>
+
+		<!-- UPricingTable -->
+		<div
+			v-else-if="element.type === 'pricing-table'"
+			:class="['max-w-6xl mx-auto py-12 text-left space-y-6', styleClasses]"
+		>
+			<div class="text-center max-w-2xl mx-auto mb-8">
+				<h2 class="text-3xl font-extrabold text-neutral-900 dark:text-white">{{ element.props.title || 'Compare Features' }}</h2>
+				<p class="text-xs text-neutral-500 mt-2">{{ element.props.description || '' }}</p>
+			</div>
+			<div class="border border-neutral-200 dark:border-neutral-800 rounded-xl overflow-hidden shadow-sm">
+				<table class="w-full text-xs text-left">
+					<thead class="bg-neutral-50 dark:bg-neutral-900 border-b border-neutral-200 dark:border-neutral-800">
+						<tr>
+							<th class="p-4 font-bold">Feature</th>
+							<th class="p-4 font-bold text-center">Starter</th>
+							<th class="p-4 font-bold text-center text-primary">Pro</th>
+							<th class="p-4 font-bold text-center">Enterprise</th>
+						</tr>
+					</thead>
+					<tbody class="divide-y divide-neutral-200 dark:divide-neutral-800">
+						<tr>
+							<td class="p-4 font-medium">Visual Builder Canvas</td>
+							<td class="p-4 text-center"><UIcon name="lucide:check" class="w-4 h-4 text-primary inline" /></td>
+							<td class="p-4 text-center"><UIcon name="lucide:check" class="w-4 h-4 text-primary inline" /></td>
+							<td class="p-4 text-center"><UIcon name="lucide:check" class="w-4 h-4 text-primary inline" /></td>
+						</tr>
+						<tr>
+							<td class="p-4 font-medium">Vue 4 SFC & MDC Export</td>
+							<td class="p-4 text-center text-neutral-400">-</td>
+							<td class="p-4 text-center"><UIcon name="lucide:check" class="w-4 h-4 text-primary inline" /></td>
+							<td class="p-4 text-center"><UIcon name="lucide:check" class="w-4 h-4 text-primary inline" /></td>
+						</tr>
+						<tr>
+							<td class="p-4 font-medium">Custom Theme Engine</td>
+							<td class="p-4 text-center text-neutral-400">-</td>
+							<td class="p-4 text-center"><UIcon name="lucide:check" class="w-4 h-4 text-primary inline" /></td>
+							<td class="p-4 text-center"><UIcon name="lucide:check" class="w-4 h-4 text-primary inline" /></td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+
 		<!-- FALLBACK -->
 		<div
 			v-else
