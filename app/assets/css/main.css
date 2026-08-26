@@ -1,0 +1,58 @@
+@import "tailwindcss";
+@import "@nuxt/ui";
+
+@layer base {
+	* {
+		scrollbar-width: thin;
+		scrollbar-color: var(--ui-border) transparent;
+	}
+
+	::-webkit-scrollbar {
+		width: 6px;
+		height: 6px;
+	}
+
+	::-webkit-scrollbar-track {
+		background: transparent;
+	}
+
+	::-webkit-scrollbar-thumb {
+		background: var(--ui-border);
+		border-radius: 9999px;
+	}
+
+	::-webkit-scrollbar-thumb:hover {
+		background: var(--ui-border-accented);
+	}
+}
+
+/* Custom Grid background for Canvas Artboard */
+.builder-canvas-grid {
+	background-size: 24px 24px;
+	background-image: 
+		linear-gradient(to right, rgba(120, 120, 120, 0.08) 1px, transparent 1px),
+		linear-gradient(to bottom, rgba(120, 120, 120, 0.08) 1px, transparent 1px);
+}
+
+.dark .builder-canvas-grid {
+	background-image: 
+		linear-gradient(to right, rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+		linear-gradient(to bottom, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+}
+
+/* Element Selection & Hover Outlines */
+.builder-element-hover {
+	outline: 2px dashed rgba(59, 130, 246, 0.4);
+	outline-offset: -2px;
+}
+
+.builder-element-selected {
+	outline: 2px solid var(--ui-primary, #3b82f6) !important;
+	outline-offset: -2px;
+}
+
+/* Drag over container visual pulse */
+.builder-drop-target {
+	outline: 2px solid var(--ui-primary, #3b82f6) !important;
+	background-color: rgba(59, 130, 246, 0.08) !important;
+}

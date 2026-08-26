@@ -1,0 +1,24 @@
+{
+  "name": "buildernuxtui",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "dev": "nuxt dev",
+    "build": "nuxt build",
+    "preview": "nuxt preview",
+    "postinstall": "nuxt prepare"
+  },
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "dependencies": {
+    "@iconify-json/lucide": "^1.2.126",
+    "@nuxt/icon": "^2.5.1",
+    "@nuxt/ui": "^4.11.0",
+    "@tailwindcss/vite": "^4.3.3",
+    "@vueuse/core": "^14.4.0",
+    "@vueuse/nuxt": "^14.4.0",
+    "nuxt": "^4.5.2",
+    "tailwindcss": "^4.3.3"
+  }
+}
