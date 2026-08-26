@@ -124,6 +124,114 @@ export const useCodeGenerator = () => {
 				return `${indent}<p${combinedClass ? ` class="${combinedClass}"` : ''}>${el.props.text || ''}</p>`
 			}
 
+			case 'lead': {
+				const combinedClass = ['text-xl font-medium text-neutral-800 dark:text-neutral-200 leading-relaxed', styleClass].filter(Boolean).join(' ')
+				return `${indent}<p class="${combinedClass}">${el.props.text || ''}</p>`
+			}
+
+			case 'blockquote': {
+				return `${indent}<blockquote class="pl-5 py-2 border-l-4 border-primary-500 my-4 italic text-neutral-700 dark:text-neutral-300">\n${childIndent}<p>"${el.props.quote || ''}"</p>\n${childIndent}${el.props.author ? `<footer class="text-xs font-semibold not-italic text-neutral-500 mt-2">— ${el.props.author}</footer>` : ''}\n${indent}</blockquote>`
+			}
+
+			case 'list': {
+				const items = (el.props.items || '').split(',').map((s: string) => s.trim()).filter(Boolean)
+				if (el.props.type === 'ordered') {
+					const lis = items.map((it: string) => `${childIndent}<li>${it}</li>`).join('\n')
+					return `${indent}<ol class="list-decimal list-inside space-y-2 text-sm text-neutral-700 dark:text-neutral-300">\n${lis}\n${indent}</ol>`
+				} else if (el.props.type === 'icon') {
+					const lis = items.map((it: string) => `${childIndent}<li class="flex items-start gap-2"><UIcon name="${el.props.icon || 'lucide:check-circle-2'}" class="w-4 h-4 text-primary shrink-0 mt-0.5" /><span>${it}</span></li>`).join('\n')
+					return `${indent}<ul class="space-y-2.5 text-sm text-neutral-700 dark:text-neutral-300">\n${lis}\n${indent}</ul>`
+				} else {
+					const lis = items.map((it: string) => `${childIndent}<li>${it}</li>`).join('\n')
+					return `${indent}<ul class="list-disc list-inside space-y-2 text-sm text-neutral-700 dark:text-neutral-300">\n${lis}\n${indent}</ul>`
+				}
+			}
+
+			case 'table': {
+				return `${indent}<div class="border border-neutral-200 dark:border-neutral-800 rounded-xl overflow-x-auto shadow-sm my-4">\n${childIndent}<table class="w-full text-xs text-left">\n${childIndent}\t<thead class="bg-neutral-50 dark:bg-neutral-900 border-b border-neutral-200 dark:border-neutral-800">\n${childIndent}\t\t<tr><th class="p-3 font-semibold">Prop</th><th class="p-3 font-semibold">Type</th><th class="p-3 font-semibold">Default</th><th class="p-3 font-semibold">Description</th></tr>\n${childIndent}\t</thead>\n${childIndent}\t<tbody class="divide-y divide-neutral-200 dark:divide-neutral-800 font-mono text-[11px]">\n${childIndent}\t\t<tr><td class="p-3 font-bold text-primary">color</td><td class="p-3 text-neutral-500">string</td><td class="p-3 text-neutral-400">'primary'</td><td class="p-3 font-sans text-neutral-600 dark:text-neutral-300">Color scheme.</td></tr>\n${childIndent}\t</tbody>\n${childIndent}</table>\n${indent}</div>`
+			}
+
+			case 'image': {
+				const caption = el.props.caption ? `\n${childIndent}<figcaption class="text-xs text-neutral-500 mt-2 text-center italic">${el.props.caption}</figcaption>` : ''
+				return `${indent}<figure class="my-4">\n${childIndent}<img src="${el.props.src || ''}" alt="${el.props.alt || ''}" class="rounded-xl shadow-lg border border-neutral-200 dark:border-neutral-800 w-full h-auto" />${caption}\n${indent}</figure>`
+			}
+
+			case 'code': {
+				return `${indent}<code class="px-1.5 py-0.5 rounded font-mono text-xs bg-neutral-100 dark:bg-neutral-800 text-primary-600 dark:text-primary-400 border border-neutral-200 dark:border-neutral-700/60">${el.props.code || ''}</code>`
+			}
+
+			case 'code-block': {
+				return `${indent}<div class="rounded-xl overflow-hidden border border-neutral-800 bg-neutral-950 text-neutral-100 text-left font-mono text-xs my-4 shadow-xl">\n${childIndent}<div class="h-8 px-4 bg-neutral-900 border-b border-neutral-800 flex items-center justify-between text-[11px] text-neutral-400">\n${childIndent}\t<span>${el.props.filename || el.props.language || 'code'}</span>\n${childIndent}</div>\n${childIndent}<pre class="p-4 overflow-x-auto"><code>${el.props.code || ''}</code></pre>\n${indent}</div>`
+			}
+
+			case 'code-group': {
+				return `${indent}<div class="rounded-xl overflow-hidden border border-neutral-800 bg-neutral-950 text-neutral-100 text-left font-mono text-xs my-4 shadow-xl">\n${childIndent}<div class="h-8 px-3 bg-neutral-900 border-b border-neutral-800 flex items-center gap-2 text-[11px]">\n${childIndent}\t<span class="px-2 py-0.5 rounded bg-primary/20 text-primary font-semibold">pnpm</span>\n${childIndent}</div>\n${childIndent}<pre class="p-4 overflow-x-auto"><code>${el.props.pnpm || 'pnpm add @nuxt/ui'}</code></pre>\n${indent}</div>`
+			}
+
+			case 'code-collapse': {
+				return `${indent}<div class="rounded-xl border border-neutral-800 bg-neutral-950 text-neutral-100 text-left font-mono text-xs my-4 shadow-xl overflow-hidden">\n${childIndent}<div class="h-9 px-4 bg-neutral-900 border-b border-neutral-800 flex items-center gap-2 text-xs text-neutral-300">\n${childIndent}\t<span class="font-sans font-medium">${el.props.title || 'View Code'}</span>\n${childIndent}</div>\n${childIndent}<pre class="p-4 overflow-x-auto"><code>${el.props.code || ''}</code></pre>\n${indent}</div>`
+			}
+
+			case 'code-preview': {
+				return `${indent}<div class="rounded-xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 overflow-hidden text-left my-4">\n${childIndent}<div class="p-6 flex items-center justify-center bg-neutral-50/60 dark:bg-neutral-950/60 border-b border-neutral-200 dark:border-neutral-800">\n${childIndent}\t<UButton color="primary" label="Interactive Action" />\n${childIndent}</div>\n${childIndent}<pre class="p-3 bg-neutral-950 text-neutral-100 font-mono text-xs"><code>${el.props.code || ''}</code></pre>\n${indent}</div>`
+			}
+
+			case 'code-tree': {
+				return `${indent}<div class="rounded-xl border border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-900/60 p-4 text-left font-mono text-xs my-4">\n${childIndent}<h4 class="font-sans font-bold text-neutral-800 dark:text-neutral-200 mb-2">${el.props.title || 'Project Structure'}</h4>\n${childIndent}<pre class="overflow-x-auto text-neutral-700 dark:text-neutral-300"><code>${el.props.tree || ''}</code></pre>\n${indent}</div>`
+			}
+
+			case 'prompt': {
+				return `${indent}<div class="flex items-center justify-between p-3.5 rounded-xl bg-neutral-950 text-neutral-100 font-mono text-xs border border-neutral-800 my-3 shadow-lg">\n${childIndent}<span>$ ${el.props.command || 'npx nuxi init'}</span>\n${indent}</div>`
+			}
+
+			case 'callout': {
+				return `${indent}<div class="p-4 rounded-xl border text-left my-4 flex items-start gap-3 bg-primary-50/50 dark:bg-primary-950/30 border-primary-500/30 text-primary-950 dark:text-primary-100">\n${childIndent}<UIcon name="${el.props.icon || 'lucide:sparkles'}" class="w-5 h-5 shrink-0 mt-0.5 text-primary" />\n${childIndent}<div>\n${childIndent}\t<h4 class="text-sm font-bold mb-1">${el.props.title || 'Tip'}</h4>\n${childIndent}\t<p class="text-xs opacity-90 leading-relaxed">${el.props.description || ''}</p>\n${childIndent}</div>\n${indent}</div>`
+			}
+
+			case 'card-group': {
+				const childrenCode = el.children && el.children.length > 0
+					? el.children.map((c) => renderElementCode(c, depth + 1)).join('\n')
+					: `${childIndent}<!-- Cards -->`
+				return `${indent}<div class="grid grid-cols-1 md:grid-cols-2 gap-4 my-4">\n${childrenCode}\n${indent}</div>`
+			}
+
+			case 'collapsible': {
+				const childrenCode = el.children && el.children.length > 0
+					? el.children.map((c) => renderElementCode(c, depth + 1)).join('\n')
+					: `${childIndent}<!-- Collapsible content -->`
+				return `${indent}<div class="border border-neutral-200 dark:border-neutral-800 rounded-xl overflow-hidden my-3 text-left">\n${childIndent}<div class="p-3.5 bg-neutral-50 dark:bg-neutral-900 font-medium text-xs">${el.props.title || 'Expand details'}</div>\n${childIndent}<div class="p-4 bg-white dark:bg-neutral-950 border-t border-neutral-200 dark:border-neutral-800">\n${childrenCode}\n${childIndent}</div>\n${indent}</div>`
+			}
+
+			case 'field': {
+				return `${indent}<div class="p-3 rounded-lg border border-neutral-200 dark:border-neutral-800 text-left my-2 text-xs bg-white dark:bg-neutral-900">\n${childIndent}<div class="flex items-center gap-2 mb-1"><span class="font-mono font-bold text-primary">${el.props.name || 'prop'}</span><span class="font-mono text-[10px] text-neutral-400 bg-neutral-100 dark:bg-neutral-800 px-1.5 py-0.5 rounded">${el.props.type || 'string'}</span></div>\n${childIndent}<p class="text-neutral-600 dark:text-neutral-400">${el.props.description || ''}</p>\n${indent}</div>`
+			}
+
+			case 'field-group': {
+				const childrenCode = el.children && el.children.length > 0
+					? el.children.map((c) => renderElementCode(c, depth + 1)).join('\n')
+					: `${childIndent}<!-- Fields -->`
+				return `${indent}<div class="border border-neutral-200 dark:border-neutral-800 rounded-xl p-4 text-left my-4 space-y-3 bg-neutral-50/50 dark:bg-neutral-900/30">\n${childIndent}<h4 class="text-xs font-bold text-neutral-900 dark:text-white uppercase tracking-wider">${el.props.title || 'Properties'}</h4>\n${childrenCode}\n${indent}</div>`
+			}
+
+			case 'steps': {
+				const steps = (el.props.steps || '').split(',').map((s: string) => s.trim()).filter(Boolean)
+				const stepsHtml = steps.map((st: string, idx: number) => `${childIndent}<div class="flex items-start gap-3.5"><div class="w-6 h-6 rounded-full bg-primary-500 text-white flex items-center justify-center text-xs font-bold shrink-0">${idx + 1}</div><p class="text-sm font-medium text-neutral-800 dark:text-neutral-200">${st}</p></div>`).join('\n')
+				return `${indent}<div class="text-left my-4 space-y-4">\n${stepsHtml}\n${indent}</div>`
+			}
+
+			case 'tabs': {
+				const childrenCode = el.children && el.children.length > 0
+					? el.children.map((c) => renderElementCode(c, depth + 1)).join('\n')
+					: `${childIndent}<!-- Tab content -->`
+				return `${indent}<div class="border border-neutral-200 dark:border-neutral-800 rounded-xl overflow-hidden my-4 text-left">\n${childIndent}<div class="flex border-b border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-900 px-3 pt-2 gap-4 text-xs font-medium"><span class="pb-2 border-b-2 border-primary text-primary font-semibold">${el.props.tab1 || 'Overview'}</span><span class="pb-2 text-neutral-400">${el.props.tab2 || 'Usage'}</span></div>\n${childIndent}<div class="p-4 bg-white dark:bg-neutral-950">\n${childrenCode}\n${childIndent}</div>\n${indent}</div>`
+			}
+
+			case 'accordion': {
+				const items = (el.props.items || '').split(',').map((s: string) => s.trim()).filter(Boolean)
+				const itemsHtml = items.map((it: string) => `${childIndent}<div class="p-4"><h4 class="font-bold text-xs text-neutral-900 dark:text-white mb-1">${it.split(':')[0] || it}</h4><p class="text-xs text-neutral-500">${it.split(':')[1] || ''}</p></div>`).join('\n')
+				return `${indent}<div class="border border-neutral-200 dark:border-neutral-800 rounded-xl divide-y divide-neutral-200 dark:divide-neutral-800 my-4 text-left overflow-hidden">\n${itemsHtml}\n${indent}</div>`
+			}
+
 			case 'kbd': {
 				const sizeAttr = el.props.size ? ` size="${el.props.size}"` : ''
 				return `${indent}<UKbd${sizeAttr}${classAttr}>${el.props.value || '⌘K'}</UKbd>`
@@ -574,6 +682,111 @@ ${templateBody}
 
 			case 'paragraph': {
 				return `${indent}${el.props.text || ''}`
+			}
+
+			case 'lead': {
+				return `${indent}${el.props.text || ''}`
+			}
+
+			case 'blockquote': {
+				const authorLine = el.props.author ? `\n${indent}>\n${indent}> — ${el.props.author}` : ''
+				return `${indent}> ${el.props.quote || ''}${authorLine}`
+			}
+
+			case 'list': {
+				const items = (el.props.items || '').split(',').map((s: string) => s.trim()).filter(Boolean)
+				if (el.props.type === 'ordered') {
+					return items.map((it: string, idx: number) => `${indent}${idx + 1}. ${it}`).join('\n')
+				} else {
+					return items.map((it: string) => `${indent}- ${it}`).join('\n')
+				}
+			}
+
+			case 'table': {
+				return `${indent}| Prop | Type | Default | Description |\n${indent}| --- | --- | --- | --- |\n${indent}| color | \`string\` | \`'primary'\` | Color scheme identifier |\n${indent}| size | \`string\` | \`'md'\` | Component size variant |`
+			}
+
+			case 'image': {
+				const caption = el.props.caption ? `\n${indent}*${el.props.caption}*` : ''
+				return `${indent}![${el.props.alt || 'Image'}](${el.props.src || ''})${caption}`
+			}
+
+			case 'code': {
+				return `${indent}\`${el.props.code || 'code'}\``
+			}
+
+			case 'code-block': {
+				return `${indent}\`\`\`${el.props.language || 'typescript'} [${el.props.filename || ''}]\n${el.props.code || ''}\n${indent}\`\`\``
+			}
+
+			case 'code-group': {
+				return `${indent}${colons}code-group\n\`\`\`bash [pnpm]\n${el.props.pnpm || 'pnpm add @nuxt/ui'}\n\`\`\`\n\n\`\`\`bash [npm]\n${el.props.npm || 'npm install @nuxt/ui'}\n\`\`\`\n\n\`\`\`bash [bun]\n${el.props.bun || 'bun add @nuxt/ui'}\n\`\`\`\n${indent}${colons}`
+			}
+
+			case 'code-collapse': {
+				return `${indent}${colons}code-collapse{title="${el.props.title || 'View code'}"}\n\`\`\`vue\n${el.props.code || ''}\n\`\`\`\n${indent}${colons}`
+			}
+
+			case 'code-preview': {
+				return `${indent}${colons}code-preview\n${el.props.code || ''}\n${indent}${colons}`
+			}
+
+			case 'code-tree': {
+				return `${indent}${colons}code-tree{title="${el.props.title || 'Structure'}"}\n${el.props.tree || ''}\n${indent}${colons}`
+			}
+
+			case 'prompt': {
+				return `${indent}::prompt{command="${el.props.command || 'npx nuxi init'}"}`
+			}
+
+			case 'callout': {
+				return `${indent}${colons}callout{type="${el.props.type || 'tip'}" title="${el.props.title || 'Tip'}"}\n${indent}${el.props.description || ''}\n${indent}${colons}`
+			}
+
+			case 'card-group': {
+				const childrenMdc = el.children && el.children.length > 0
+					? '\n' + el.children.map((c) => renderElementMdc(c, depth + 1)).join('\n\n') + '\n' + indent
+					: ''
+				return `${indent}${colons}card-group{columns="${el.props.columns || '2'}"}${childrenMdc}${colons}`
+			}
+
+			case 'collapsible': {
+				const childrenMdc = el.children && el.children.length > 0
+					? '\n' + el.children.map((c) => renderElementMdc(c, depth + 1)).join('\n\n') + '\n' + indent
+					: ''
+				return `${indent}${colons}collapsible{title="${el.props.title || 'Details'}"}${childrenMdc}${colons}`
+			}
+
+			case 'field': {
+				return `${indent}::field{name="${el.props.name || 'prop'}" type="${el.props.type || 'string'}" description="${el.props.description || ''}"}`
+			}
+
+			case 'field-group': {
+				const childrenMdc = el.children && el.children.length > 0
+					? '\n' + el.children.map((c) => renderElementMdc(c, depth + 1)).join('\n\n') + '\n' + indent
+					: ''
+				return `${indent}${colons}field-group{title="${el.props.title || 'Props'}"}${childrenMdc}${colons}`
+			}
+
+			case 'steps': {
+				const steps = (el.props.steps || '').split(',').map((s: string) => s.trim()).filter(Boolean)
+				const stepsMdc = steps.map((st: string) => `${indent}### Step\n${indent}${st}`).join('\n\n')
+				return `${indent}${colons}steps\n${stepsMdc}\n${indent}${colons}`
+			}
+
+			case 'tabs': {
+				const childrenMdc = el.children && el.children.length > 0
+					? '\n' + el.children.map((c) => renderElementMdc(c, depth + 1)).join('\n\n') + '\n' + indent
+					: ''
+				return `${indent}${colons}tabs${childrenMdc}${colons}`
+			}
+
+			case 'accordion': {
+				return `${indent}::u-accordion{items="${el.props.items || ''}"}`
+			}
+
+			case 'kbd': {
+				return `${indent}::u-kbd{value="${el.props.value || '⌘K'}"}`
 			}
 
 			case 'button': {

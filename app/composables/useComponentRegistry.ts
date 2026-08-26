@@ -174,14 +174,14 @@ export const COMPONENT_REGISTRY: ComponentDefinition[] = [
 	},
 
 	// -------------------------------------------------------------
-	// TYPOGRAPHY
+	// TYPOGRAPHY & DOCUMENTATION COMPONENTS
 	// -------------------------------------------------------------
 	{
 		type: 'heading',
 		name: 'Heading',
 		category: 'typography',
 		icon: 'lucide:heading',
-		description: 'Page and section titles from H1 to H4',
+		description: 'Page and section titles from H1 to H6',
 		isContainer: false,
 		defaultProps: {
 			text: 'Create Stunning Web Experiences',
@@ -223,7 +223,7 @@ export const COMPONENT_REGISTRY: ComponentDefinition[] = [
 		isContainer: false,
 		defaultProps: {
 			text: 'Nuxt UI v4 provides high quality, accessible Vue components built on Tailwind CSS v4 and Reka UI with modern interactive features.',
-			size: 'base',
+			size: 'text-base',
 			color: 'muted'
 		},
 		defaultStyles: {
@@ -250,6 +250,730 @@ export const COMPONENT_REGISTRY: ComponentDefinition[] = [
 				type: 'select',
 				options: ['default', 'muted', 'primary', 'secondary'],
 				default: 'muted'
+			}
+		]
+	},
+	{
+		type: 'lead',
+		name: 'Lead Text',
+		category: 'typography',
+		icon: 'lucide:type',
+		description: 'Prominent introductory lead paragraph',
+		isContainer: false,
+		defaultProps: {
+			text: 'A modern, modular design system crafted specifically for Nuxt 4 and Vue 3 applications.'
+		},
+		defaultStyles: {
+			textAlign: 'left',
+			margin: 'mb-4'
+		},
+		propsSchema: [
+			{
+				name: 'text',
+				label: 'Lead Text Content',
+				type: 'textarea',
+				default: 'A modern, modular design system crafted specifically for Nuxt 4 and Vue 3 applications.'
+			}
+		]
+	},
+	{
+		type: 'blockquote',
+		name: 'Blockquote',
+		category: 'typography',
+		icon: 'lucide:quote',
+		description: 'Styled blockquote with author attribution',
+		isContainer: false,
+		defaultProps: {
+			quote: 'Nuxt UI combines the flexibility of headless primitives with stunning default styles out of the box.',
+			author: 'Alexandre Rochon',
+			role: 'Nuxt UI Maintainer'
+		},
+		defaultStyles: {
+			margin: 'my-4'
+		},
+		propsSchema: [
+			{
+				name: 'quote',
+				label: 'Quote Text',
+				type: 'textarea',
+				default: 'Nuxt UI combines the flexibility of headless primitives with stunning default styles.'
+			},
+			{
+				name: 'author',
+				label: 'Author Name',
+				type: 'string',
+				default: 'Alexandre Rochon'
+			},
+			{
+				name: 'role',
+				label: 'Author Role / Source',
+				type: 'string',
+				default: 'Nuxt UI Maintainer'
+			}
+		]
+	},
+	{
+		type: 'list',
+		name: 'List',
+		category: 'typography',
+		icon: 'lucide:list',
+		description: 'Unordered or ordered list with custom icons',
+		isContainer: false,
+		defaultProps: {
+			items: 'Full TypeScript type safety, Seamless dark and light mode, Zero-config Nuxt 4 integration, Accessible Reka UI primitives',
+			type: 'unordered',
+			icon: 'lucide:check-circle-2'
+		},
+		defaultStyles: {
+			margin: 'my-3'
+		},
+		propsSchema: [
+			{
+				name: 'items',
+				label: 'List Items (Comma separated)',
+				type: 'textarea',
+				default: 'Full TypeScript type safety, Seamless dark and light mode, Zero-config Nuxt 4 integration'
+			},
+			{
+				name: 'type',
+				label: 'List Style Type',
+				type: 'select',
+				options: ['unordered', 'ordered', 'icon'],
+				default: 'unordered'
+			},
+			{
+				name: 'icon',
+				label: 'Custom Bullet Icon',
+				type: 'icon',
+				default: 'lucide:check-circle-2'
+			}
+		]
+	},
+	{
+		type: 'table',
+		name: 'Table',
+		category: 'typography',
+		icon: 'lucide:table',
+		description: 'Content prose documentation table',
+		isContainer: false,
+		defaultProps: {
+			caption: 'Component Props Reference'
+		},
+		defaultStyles: {
+			margin: 'my-4',
+			width: 'w-full'
+		},
+		propsSchema: [
+			{
+				name: 'caption',
+				label: 'Table Caption',
+				type: 'string',
+				default: 'Component Props Reference'
+			}
+		]
+	},
+	{
+		type: 'image',
+		name: 'Image & Embed',
+		category: 'typography',
+		icon: 'lucide:image',
+		description: 'Documentation image with caption and zoom',
+		isContainer: false,
+		defaultProps: {
+			src: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=1000',
+			alt: 'Dashboard Screenshot',
+			caption: 'Figure 1: Nuxt UI interactive dashboard overview.'
+		},
+		defaultStyles: {
+			margin: 'my-4',
+			width: 'w-full'
+		},
+		propsSchema: [
+			{
+				name: 'src',
+				label: 'Image URL',
+				type: 'string',
+				default: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=1000'
+			},
+			{
+				name: 'alt',
+				label: 'Alt Text',
+				type: 'string',
+				default: 'Dashboard Screenshot'
+			},
+			{
+				name: 'caption',
+				label: 'Caption',
+				type: 'string',
+				default: 'Figure 1: Nuxt UI interactive dashboard overview.'
+			}
+		]
+	},
+	{
+		type: 'code',
+		name: 'Inline Code',
+		category: 'typography',
+		icon: 'lucide:code',
+		description: 'Inline formatted code tag',
+		isContainer: false,
+		defaultProps: {
+			code: 'npx nuxi init my-app'
+		},
+		defaultStyles: {},
+		propsSchema: [
+			{
+				name: 'code',
+				label: 'Code Text',
+				type: 'string',
+				default: 'npx nuxi init my-app'
+			}
+		]
+	},
+	{
+		type: 'code-block',
+		name: 'CodeBlock',
+		category: 'typography',
+		icon: 'lucide:terminal-square',
+		description: 'Syntax-highlighted code block with copy button and filename',
+		isContainer: false,
+		defaultProps: {
+			filename: 'app.config.ts',
+			language: 'typescript',
+			code: `export default defineAppConfig({
+  ui: {
+    primary: 'emerald',
+    neutral: 'zinc'
+  }
+})`
+		},
+		defaultStyles: {
+			margin: 'my-4',
+			width: 'w-full'
+		},
+		propsSchema: [
+			{
+				name: 'filename',
+				label: 'File Name',
+				type: 'string',
+				default: 'app.config.ts'
+			},
+			{
+				name: 'language',
+				label: 'Language',
+				type: 'select',
+				options: ['typescript', 'javascript', 'vue', 'bash', 'json', 'css', 'html'],
+				default: 'typescript'
+			},
+			{
+				name: 'code',
+				label: 'Source Code',
+				type: 'textarea',
+				default: `export default defineAppConfig({
+  ui: {
+    primary: 'emerald'
+  }
+})`
+			}
+		]
+	},
+	{
+		type: 'code-group',
+		name: 'CodeGroup',
+		category: 'typography',
+		icon: 'lucide:folder-code',
+		description: 'Tabbed code snippet switcher (pnpm, npm, yarn, bun)',
+		isContainer: false,
+		defaultProps: {
+			pnpm: 'pnpm add @nuxt/ui',
+			npm: 'npm install @nuxt/ui',
+			yarn: 'yarn add @nuxt/ui',
+			bun: 'bun add @nuxt/ui'
+		},
+		defaultStyles: {
+			margin: 'my-4',
+			width: 'w-full'
+		},
+		propsSchema: [
+			{
+				name: 'pnpm',
+				label: 'pnpm command',
+				type: 'string',
+				default: 'pnpm add @nuxt/ui'
+			},
+			{
+				name: 'npm',
+				label: 'npm command',
+				type: 'string',
+				default: 'npm install @nuxt/ui'
+			},
+			{
+				name: 'bun',
+				label: 'bun command',
+				type: 'string',
+				default: 'bun add @nuxt/ui'
+			}
+		]
+	},
+	{
+		type: 'code-collapse',
+		name: 'CodeCollapse',
+		category: 'typography',
+		icon: 'lucide:fold-vertical',
+		description: 'Collapsible code block for lengthy implementation examples',
+		isContainer: false,
+		defaultProps: {
+			title: 'View full component setup',
+			code: `<script setup lang="ts">
+const count = ref(0)
+</script>
+
+<template>
+  <UButton @click="count++">Clicked {{ count }} times</UButton>
+</template>`
+		},
+		defaultStyles: {
+			margin: 'my-4',
+			width: 'w-full'
+		},
+		propsSchema: [
+			{
+				name: 'title',
+				label: 'Accordion Title',
+				type: 'string',
+				default: 'View full component setup'
+			},
+			{
+				name: 'code',
+				label: 'Code snippet',
+				type: 'textarea',
+				default: '<script setup lang="ts">\nconst count = ref(0)\n</script>'
+			}
+		]
+	},
+	{
+		type: 'code-preview',
+		name: 'CodePreview',
+		category: 'typography',
+		icon: 'lucide:play-circle',
+		description: 'Interactive live preview with code source tab',
+		isContainer: false,
+		defaultProps: {
+			title: 'Interactive Button Demo',
+			code: `<UButton color="primary" icon="lucide:sparkles" label="Interactive Action" />`
+		},
+		defaultStyles: {
+			margin: 'my-4',
+			width: 'w-full'
+		},
+		propsSchema: [
+			{
+				name: 'title',
+				label: 'Preview Title',
+				type: 'string',
+				default: 'Interactive Button Demo'
+			},
+			{
+				name: 'code',
+				label: 'Source Code',
+				type: 'textarea',
+				default: '<UButton color="primary" label="Action" />'
+			}
+		]
+	},
+	{
+		type: 'code-tree',
+		name: 'CodeTree',
+		category: 'typography',
+		icon: 'lucide:folder-tree',
+		description: 'Directory file hierarchy tree diagram',
+		isContainer: false,
+		defaultProps: {
+			title: 'Project Structure',
+			tree: `app/
+├── components/
+│   ├── Header.vue
+│   └── Footer.vue
+├── composables/
+│   └── useTheme.ts
+├── pages/
+│   └── index.vue
+└── app.vue`
+		},
+		defaultStyles: {
+			margin: 'my-4',
+			width: 'w-full'
+		},
+		propsSchema: [
+			{
+				name: 'title',
+				label: 'Tree Title',
+				type: 'string',
+				default: 'Project Structure'
+			},
+			{
+				name: 'tree',
+				label: 'Folder Hierarchy',
+				type: 'textarea',
+				default: 'app/\n├── components/\n├── pages/\n└── app.vue'
+			}
+		]
+	},
+	{
+		type: 'prompt',
+		name: 'Prompt',
+		category: 'typography',
+		icon: 'lucide:terminal',
+		description: 'CLI command line prompt box with one-click copy',
+		isContainer: false,
+		defaultProps: {
+			command: 'npx nuxi@latest init my-nuxt-app'
+		},
+		defaultStyles: {
+			margin: 'my-3',
+			width: 'w-full'
+		},
+		propsSchema: [
+			{
+				name: 'command',
+				label: 'CLI Command',
+				type: 'string',
+				default: 'npx nuxi@latest init my-nuxt-app'
+			}
+		]
+	},
+	{
+		type: 'callout',
+		name: 'Callout',
+		category: 'typography',
+		icon: 'lucide:info',
+		description: 'Documentation alert callout (Tip, Note, Warning, Caution)',
+		isContainer: false,
+		defaultProps: {
+			type: 'tip',
+			title: 'Pro Tip',
+			description: 'Nuxt UI v4 automatically imports all components and icons without manual registration.',
+			icon: 'lucide:sparkles'
+		},
+		defaultStyles: {
+			margin: 'my-4',
+			width: 'w-full'
+		},
+		propsSchema: [
+			{
+				name: 'type',
+				label: 'Callout Type',
+				type: 'select',
+				options: ['tip', 'note', 'warning', 'important', 'caution'],
+				default: 'tip'
+			},
+			{
+				name: 'title',
+				label: 'Callout Title',
+				type: 'string',
+				default: 'Pro Tip'
+			},
+			{
+				name: 'description',
+				label: 'Message',
+				type: 'textarea',
+				default: 'Nuxt UI v4 automatically imports all components and icons.'
+			},
+			{
+				name: 'icon',
+				label: 'Icon',
+				type: 'icon',
+				default: 'lucide:sparkles'
+			}
+		]
+	},
+	{
+		type: 'card-group',
+		name: 'CardGroup',
+		category: 'typography',
+		icon: 'lucide:grid-2x2',
+		description: 'Grid group container for documentation cards',
+		isContainer: true,
+		defaultProps: {
+			columns: '2'
+		},
+		defaultStyles: {
+			margin: 'my-4',
+			width: 'w-full'
+		},
+		propsSchema: [
+			{
+				name: 'columns',
+				label: 'Columns',
+				type: 'select',
+				options: ['2', '3', '4'],
+				default: '2'
+			}
+		]
+	},
+	{
+		type: 'collapsible',
+		name: 'Collapsible',
+		category: 'typography',
+		icon: 'lucide:chevron-down',
+		description: 'Expandable toggle section for detailed content',
+		isContainer: true,
+		defaultProps: {
+			title: 'Click to expand details',
+			defaultOpen: false
+		},
+		defaultStyles: {
+			margin: 'my-3',
+			width: 'w-full'
+		},
+		propsSchema: [
+			{
+				name: 'title',
+				label: 'Header Title',
+				type: 'string',
+				default: 'Click to expand details'
+			},
+			{
+				name: 'defaultOpen',
+				label: 'Expanded by Default',
+				type: 'boolean',
+				default: false
+			}
+		]
+	},
+	{
+		type: 'field',
+		name: 'Field',
+		category: 'typography',
+		icon: 'lucide:text-cursor',
+		description: 'API prop/field documentation item',
+		isContainer: false,
+		defaultProps: {
+			name: 'color',
+			type: 'string',
+			required: false,
+			description: 'The color palette theme applied to the component.'
+		},
+		defaultStyles: {
+			margin: 'my-2',
+			width: 'w-full'
+		},
+		propsSchema: [
+			{
+				name: 'name',
+				label: 'Prop / Field Name',
+				type: 'string',
+				default: 'color'
+			},
+			{
+				name: 'type',
+				label: 'TypeScript Type',
+				type: 'string',
+				default: 'string'
+			},
+			{
+				name: 'required',
+				label: 'Required',
+				type: 'boolean',
+				default: false
+			},
+			{
+				name: 'description',
+				label: 'Description',
+				type: 'textarea',
+				default: 'The color palette theme applied to the component.'
+			}
+		]
+	},
+	{
+		type: 'field-group',
+		name: 'FieldGroup',
+		category: 'typography',
+		icon: 'lucide:list-collapse',
+		description: 'Group container for API prop fields',
+		isContainer: true,
+		defaultProps: {
+			title: 'Component Properties'
+		},
+		defaultStyles: {
+			margin: 'my-4',
+			width: 'w-full'
+		},
+		propsSchema: [
+			{
+				name: 'title',
+				label: 'Group Title',
+				type: 'string',
+				default: 'Component Properties'
+			}
+		]
+	},
+	{
+		type: 'steps',
+		name: 'Steps',
+		category: 'typography',
+		icon: 'lucide:list-ordered',
+		description: 'Numbered step-by-step tutorial guide',
+		isContainer: false,
+		defaultProps: {
+			steps: 'Install dependencies with bun add @nuxt/ui, Register the module in nuxt.config.ts, Build your pages with Nuxt UI components'
+		},
+		defaultStyles: {
+			margin: 'my-4',
+			width: 'w-full'
+		},
+		propsSchema: [
+			{
+				name: 'steps',
+				label: 'Steps (Comma separated)',
+				type: 'textarea',
+				default: 'Install dependencies with bun add @nuxt/ui, Register the module in nuxt.config.ts, Build your pages with Nuxt UI components'
+			}
+		]
+	},
+	{
+		type: 'tabs',
+		name: 'Tabs',
+		category: 'typography',
+		icon: 'lucide:table-cells-split',
+		description: 'Multi-tab content switcher',
+		isContainer: true,
+		defaultProps: {
+			tab1: 'Overview',
+			tab2: 'Usage',
+			tab3: 'API'
+		},
+		defaultStyles: {
+			margin: 'my-4',
+			width: 'w-full'
+		},
+		propsSchema: [
+			{
+				name: 'tab1',
+				label: 'Tab 1 Label',
+				type: 'string',
+				default: 'Overview'
+			},
+			{
+				name: 'tab2',
+				label: 'Tab 2 Label',
+				type: 'string',
+				default: 'Usage'
+			},
+			{
+				name: 'tab3',
+				label: 'Tab 3 Label',
+				type: 'string',
+				default: 'API'
+			}
+		]
+	},
+	{
+		type: 'accordion',
+		name: 'UAccordion',
+		category: 'typography',
+		icon: 'lucide:chevrons-up-down',
+		description: 'Stacked set of interactive collapsible panels',
+		isContainer: false,
+		defaultProps: {
+			items: 'How do I install Nuxt UI?:Run bun add @nuxt/ui and add it to modules in nuxt.config.ts.,Does it support SSR?:Yes Nuxt UI is built specifically for full Nuxt SSR hydration.,Can I customize colors?:Yes with 18 Tailwind color schemes and CSS variables.'
+		},
+		defaultStyles: {
+			margin: 'my-4',
+			width: 'w-full'
+		},
+		propsSchema: [
+			{
+				name: 'items',
+				label: 'Items (Question:Answer separated by comma)',
+				type: 'textarea',
+				default: 'How do I install Nuxt UI?:Run bun add @nuxt/ui.,Does it support SSR?:Yes Nuxt UI is built for SSR.'
+			}
+		]
+	},
+	{
+		type: 'badge',
+		name: 'UBadge',
+		category: 'typography',
+		icon: 'lucide:badge',
+		description: 'Short tag label to represent a status or category',
+		isContainer: false,
+		defaultProps: {
+			label: 'Nuxt 4 Ready',
+			color: 'primary',
+			variant: 'subtle',
+			size: 'md',
+			icon: 'lucide:sparkles'
+		},
+		defaultStyles: {},
+		propsSchema: [
+			{
+				name: 'label',
+				label: 'Badge Text',
+				type: 'string',
+				default: 'Nuxt 4 Ready'
+			},
+			{
+				name: 'color',
+				label: 'Color Scheme',
+				type: 'select',
+				options: ['primary', 'neutral', 'success', 'warning', 'error', 'info'],
+				default: 'primary'
+			},
+			{
+				name: 'variant',
+				label: 'Variant',
+				type: 'select',
+				options: ['solid', 'outline', 'soft', 'subtle'],
+				default: 'subtle'
+			},
+			{
+				name: 'size',
+				label: 'Size',
+				type: 'select',
+				options: ['xs', 'sm', 'md', 'lg'],
+				default: 'md'
+			},
+			{
+				name: 'icon',
+				label: 'Icon',
+				type: 'icon',
+				default: 'lucide:sparkles'
+			}
+		]
+	},
+	{
+		type: 'icon',
+		name: 'UIcon',
+		category: 'typography',
+		icon: 'lucide:smile',
+		description: 'Icon component powered by @nuxt/icon and Iconify',
+		isContainer: false,
+		defaultProps: {
+			name: 'lucide:sparkles',
+			size: 'w-6 h-6',
+			color: 'text-primary'
+		},
+		defaultStyles: {},
+		propsSchema: [
+			{
+				name: 'name',
+				label: 'Icon Identifier',
+				type: 'icon',
+				default: 'lucide:sparkles'
+			},
+			{
+				name: 'size',
+				label: 'Size Class',
+				type: 'select',
+				options: ['w-4 h-4', 'w-5 h-5', 'w-6 h-6', 'w-8 h-8', 'w-10 h-10', 'w-12 h-12'],
+				default: 'w-6 h-6'
+			},
+			{
+				name: 'color',
+				label: 'Color',
+				type: 'select',
+				options: ['text-primary', 'text-neutral-500', 'text-neutral-900 dark:text-white', 'text-green-500', 'text-amber-500', 'text-red-500'],
+				default: 'text-primary'
 			}
 		]
 	},

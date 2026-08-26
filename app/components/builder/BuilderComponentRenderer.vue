@@ -390,11 +390,365 @@ const splitFeatures = computed(() => {
 				element.props.color === 'muted' ? 'text-neutral-500 dark:text-neutral-400' : '',
 				element.props.color === 'primary' ? 'text-primary-600 dark:text-primary-400' : '',
 				!element.props.color || element.props.color === 'default' ? 'text-neutral-700 dark:text-neutral-200' : '',
+				'leading-relaxed break-words',
 				styleClasses
 			]"
 		>
 			{{ element.props.text || 'Paragraph text content' }}
 		</p>
+
+		<!-- LEAD -->
+		<p
+			v-else-if="element.type === 'lead'"
+			:class="[
+				'text-xl font-medium text-neutral-800 dark:text-neutral-200 leading-relaxed break-words',
+				styleClasses
+			]"
+		>
+			{{ element.props.text || 'Lead text introduction content.' }}
+		</p>
+
+		<!-- BLOCKQUOTE -->
+		<blockquote
+			v-else-if="element.type === 'blockquote'"
+			:class="[
+				'relative pl-5 py-2 border-l-4 border-primary-500 text-left my-4 italic text-neutral-700 dark:text-neutral-300 bg-neutral-50/50 dark:bg-neutral-900/30 rounded-r-lg',
+				styleClasses
+			]"
+		>
+			<p class="text-base mb-2">"{{ element.props.quote || 'Quote text' }}"</p>
+			<footer v-if="element.props.author" class="text-xs font-semibold not-italic text-neutral-500 dark:text-neutral-400">
+				— {{ element.props.author }} <span v-if="element.props.role" class="opacity-75">({{ element.props.role }})</span>
+			</footer>
+		</blockquote>
+
+		<!-- LIST -->
+		<div
+			v-else-if="element.type === 'list'"
+			:class="['text-left my-3', styleClasses]"
+		>
+			<ul v-if="element.props.type === 'unordered'" class="space-y-2 list-disc list-inside text-sm text-neutral-700 dark:text-neutral-300">
+				<li v-for="(item, iIdx) in (element.props.items || '').split(',').map((s: string) => s.trim()).filter(Boolean)" :key="iIdx" class="break-words">
+					{{ item }}
+				</li>
+			</ul>
+			<ol v-else-if="element.props.type === 'ordered'" class="space-y-2 list-decimal list-inside text-sm text-neutral-700 dark:text-neutral-300">
+				<li v-for="(item, iIdx) in (element.props.items || '').split(',').map((s: string) => s.trim()).filter(Boolean)" :key="iIdx" class="break-words">
+					{{ item }}
+				</li>
+			</ol>
+			<ul v-else class="space-y-2.5 text-sm text-neutral-700 dark:text-neutral-300">
+				<li v-for="(item, iIdx) in (element.props.items || '').split(',').map((s: string) => s.trim()).filter(Boolean)" :key="iIdx" class="flex items-start gap-2 break-words">
+					<UIcon :name="element.props.icon || 'lucide:check-circle-2'" class="w-4 h-4 text-primary shrink-0 mt-0.5" />
+					<span>{{ item }}</span>
+				</li>
+			</ul>
+		</div>
+
+		<!-- TABLE -->
+		<div
+			v-else-if="element.type === 'table'"
+			:class="['border border-neutral-200 dark:border-neutral-800 rounded-xl overflow-x-auto shadow-sm my-4 text-left text-xs max-w-full', styleClasses]"
+		>
+			<table class="w-full">
+				<caption v-if="element.props.caption" class="p-2 text-[11px] text-neutral-400 text-left bg-neutral-50 dark:bg-neutral-900 border-b border-neutral-200 dark:border-neutral-800 font-medium">
+					{{ element.props.caption }}
+				</caption>
+				<thead class="bg-neutral-50 dark:bg-neutral-900 border-b border-neutral-200 dark:border-neutral-800">
+					<tr>
+						<th class="p-3 font-semibold">Prop</th>
+						<th class="p-3 font-semibold">Type</th>
+						<th class="p-3 font-semibold">Default</th>
+						<th class="p-3 font-semibold">Description</th>
+					</tr>
+				</thead>
+				<tbody class="divide-y divide-neutral-200 dark:divide-neutral-800 font-mono text-[11px]">
+					<tr>
+						<td class="p-3 font-bold text-primary">color</td>
+						<td class="p-3 text-neutral-500">string</td>
+						<td class="p-3 text-neutral-400">'primary'</td>
+						<td class="p-3 font-sans text-neutral-600 dark:text-neutral-300">Color scheme identifier.</td>
+					</tr>
+					<tr>
+						<td class="p-3 font-bold text-primary">size</td>
+						<td class="p-3 text-neutral-500">'sm' | 'md' | 'lg'</td>
+						<td class="p-3 text-neutral-400">'md'</td>
+						<td class="p-3 font-sans text-neutral-600 dark:text-neutral-300">Size variant for the component.</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+
+		<!-- IMAGE & EMBED -->
+		<figure
+			v-else-if="element.type === 'image'"
+			:class="['my-4 text-left max-w-full', styleClasses]"
+		>
+			<div class="rounded-xl overflow-hidden shadow-lg border border-neutral-200 dark:border-neutral-800">
+				<img :src="element.props.src" :alt="element.props.alt" class="w-full h-auto object-cover max-h-[400px]" />
+			</div>
+			<figcaption v-if="element.props.caption" class="text-xs text-neutral-500 mt-2 text-center italic">
+				{{ element.props.caption }}
+			</figcaption>
+		</figure>
+
+		<!-- INLINE CODE -->
+		<code
+			v-else-if="element.type === 'code'"
+			:class="['px-1.5 py-0.5 rounded font-mono text-xs bg-neutral-100 dark:bg-neutral-800 text-primary-600 dark:text-primary-400 border border-neutral-200 dark:border-neutral-700/60 inline-block', styleClasses]"
+		>
+			{{ element.props.code || 'code' }}
+		</code>
+
+		<!-- CODE BLOCK -->
+		<div
+			v-else-if="element.type === 'code-block'"
+			:class="['rounded-xl overflow-hidden border border-neutral-800 bg-neutral-950 text-neutral-100 text-left font-mono text-xs my-4 shadow-xl max-w-full', styleClasses]"
+		>
+			<div class="h-8 px-4 bg-neutral-900 border-b border-neutral-800 flex items-center justify-between text-[11px] text-neutral-400 select-none">
+				<span class="flex items-center gap-1.5">
+					<UIcon name="lucide:file-code" class="w-3.5 h-3.5 text-primary" />
+					<span>{{ element.props.filename || element.props.language || 'code' }}</span>
+				</span>
+				<UIcon name="lucide:copy" class="w-3.5 h-3.5 hover:text-white cursor-pointer" />
+			</div>
+			<pre class="p-4 overflow-x-auto select-text leading-relaxed"><code>{{ element.props.code || '' }}</code></pre>
+		</div>
+
+		<!-- CODE GROUP -->
+		<div
+			v-else-if="element.type === 'code-group'"
+			:class="['rounded-xl overflow-hidden border border-neutral-800 bg-neutral-950 text-neutral-100 text-left font-mono text-xs my-4 shadow-xl max-w-full', styleClasses]"
+		>
+			<div class="h-8 px-3 bg-neutral-900 border-b border-neutral-800 flex items-center justify-between text-[11px] select-none">
+				<div class="flex items-center gap-2">
+					<span class="px-2 py-0.5 rounded bg-primary/20 text-primary font-semibold">pnpm</span>
+					<span class="px-2 py-0.5 text-neutral-400">npm</span>
+					<span class="px-2 py-0.5 text-neutral-400">bun</span>
+				</div>
+				<UIcon name="lucide:copy" class="w-3.5 h-3.5 text-neutral-400 hover:text-white cursor-pointer" />
+			</div>
+			<pre class="p-4 overflow-x-auto select-text"><code>{{ element.props.pnpm || element.props.npm || 'pnpm add @nuxt/ui' }}</code></pre>
+		</div>
+
+		<!-- CODE COLLAPSE -->
+		<div
+			v-else-if="element.type === 'code-collapse'"
+			:class="['rounded-xl border border-neutral-800 bg-neutral-950 text-neutral-100 text-left font-mono text-xs my-4 shadow-xl overflow-hidden max-w-full', styleClasses]"
+		>
+			<div class="h-9 px-4 bg-neutral-900 border-b border-neutral-800 flex items-center justify-between text-xs text-neutral-300 cursor-pointer select-none">
+				<span class="flex items-center gap-2">
+					<UIcon name="lucide:chevron-down" class="w-4 h-4 text-primary" />
+					<span class="font-sans font-medium">{{ element.props.title || 'View Code' }}</span>
+				</span>
+				<UIcon name="lucide:copy" class="w-3.5 h-3.5 text-neutral-400 hover:text-white" />
+			</div>
+			<pre class="p-4 overflow-x-auto select-text leading-relaxed"><code>{{ element.props.code || '' }}</code></pre>
+		</div>
+
+		<!-- CODE PREVIEW -->
+		<div
+			v-else-if="element.type === 'code-preview'"
+			:class="['rounded-xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 overflow-hidden text-left my-4 shadow-sm max-w-full', styleClasses]"
+		>
+			<div class="p-6 flex items-center justify-center bg-neutral-50/60 dark:bg-neutral-950/60 border-b border-neutral-200 dark:border-neutral-800">
+				<UButton color="primary" icon="lucide:sparkles" label="Interactive Action" />
+			</div>
+			<div class="p-3 bg-neutral-950 text-neutral-100 font-mono text-xs flex items-center justify-between">
+				<span>{{ element.props.code || '<UButton color="primary" label="Action" />' }}</span>
+				<UIcon name="lucide:copy" class="w-3.5 h-3.5 text-neutral-400 hover:text-white cursor-pointer" />
+			</div>
+		</div>
+
+		<!-- CODE TREE -->
+		<div
+			v-else-if="element.type === 'code-tree'"
+			:class="['rounded-xl border border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-900/60 p-4 text-left font-mono text-xs my-4 shadow-sm max-w-full', styleClasses]"
+		>
+			<div class="flex items-center gap-2 mb-3 pb-2 border-b border-neutral-200 dark:border-neutral-800 font-sans font-bold text-neutral-800 dark:text-neutral-200">
+				<UIcon name="lucide:folder-tree" class="w-4 h-4 text-primary" />
+				<span>{{ element.props.title || 'Project Structure' }}</span>
+			</div>
+			<pre class="overflow-x-auto text-neutral-700 dark:text-neutral-300 leading-relaxed select-text"><code>{{ element.props.tree || 'app/\n├── pages/\n└── app.vue' }}</code></pre>
+		</div>
+
+		<!-- PROMPT -->
+		<div
+			v-else-if="element.type === 'prompt'"
+			:class="['flex items-center justify-between gap-3 p-3.5 rounded-xl bg-neutral-950 text-neutral-100 font-mono text-xs border border-neutral-800 my-3 shadow-lg max-w-full', styleClasses]"
+		>
+			<div class="flex items-center gap-2 overflow-x-auto">
+				<span class="text-primary font-bold">$</span>
+				<span class="select-text whitespace-nowrap">{{ element.props.command || 'npx nuxi init' }}</span>
+			</div>
+			<UIcon name="lucide:copy" class="w-4 h-4 text-neutral-400 hover:text-white cursor-pointer shrink-0" />
+		</div>
+
+		<!-- CALLOUT -->
+		<div
+			v-else-if="element.type === 'callout'"
+			:class="[
+				'p-4 rounded-xl border text-left my-4 flex items-start gap-3 shadow-sm max-w-full',
+				element.props.type === 'tip' ? 'bg-primary-50/50 dark:bg-primary-950/30 border-primary-500/30 text-primary-950 dark:text-primary-100' :
+				element.props.type === 'warning' ? 'bg-amber-50/50 dark:bg-amber-950/30 border-amber-500/30 text-amber-950 dark:text-amber-100' :
+				element.props.type === 'caution' ? 'bg-red-50/50 dark:bg-red-950/30 border-red-500/30 text-red-950 dark:text-red-100' :
+				'bg-neutral-50 dark:bg-neutral-900 border-neutral-200 dark:border-neutral-800 text-neutral-900 dark:text-white',
+				styleClasses
+			]"
+		>
+			<UIcon :name="element.props.icon || 'lucide:info'" class="w-5 h-5 shrink-0 mt-0.5 text-primary" />
+			<div class="flex-1">
+				<h4 class="text-sm font-bold mb-1 break-words">{{ element.props.title || 'Note' }}</h4>
+				<p class="text-xs opacity-90 leading-relaxed break-words">{{ element.props.description || '' }}</p>
+			</div>
+		</div>
+
+		<!-- CARD GROUP CONTAINER -->
+		<div
+			v-else-if="element.type === 'card-group'"
+			:class="[
+				'grid gap-4 my-4 max-w-full',
+				element.props.columns === '3' ? 'grid-cols-1 md:grid-cols-3' :
+				element.props.columns === '4' ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-4' : 'grid-cols-1 md:grid-cols-2',
+				styleClasses
+			]"
+		>
+			<template v-if="element.children && element.children.length > 0">
+				<BuilderComponentRenderer
+					v-for="(child, cIdx) in element.children"
+					:key="child.id"
+					:element="child"
+					:parent-id="element.id"
+					:index="cIdx"
+				/>
+			</template>
+			<div
+				v-else-if="!previewMode"
+				class="col-span-full border-2 border-dashed border-neutral-300 dark:border-neutral-700 rounded-xl p-6 text-center text-xs text-neutral-400"
+			>
+				<span>CardGroup: Drop cards inside</span>
+			</div>
+		</div>
+
+		<!-- COLLAPSIBLE CONTAINER -->
+		<div
+			v-else-if="element.type === 'collapsible'"
+			:class="['border border-neutral-200 dark:border-neutral-800 rounded-xl overflow-hidden my-3 text-left max-w-full', styleClasses]"
+		>
+			<div class="p-3.5 bg-neutral-50 dark:bg-neutral-900 flex items-center justify-between font-medium text-xs text-neutral-900 dark:text-white cursor-pointer select-none">
+				<span>{{ element.props.title || 'Expand details' }}</span>
+				<UIcon name="lucide:chevron-down" class="w-4 h-4 text-neutral-400" />
+			</div>
+			<div class="p-4 space-y-3 bg-white dark:bg-neutral-950 border-t border-neutral-200 dark:border-neutral-800">
+				<template v-if="element.children && element.children.length > 0">
+					<BuilderComponentRenderer
+						v-for="(child, cIdx) in element.children"
+						:key="child.id"
+						:element="child"
+						:parent-id="element.id"
+						:index="cIdx"
+					/>
+				</template>
+				<p v-else class="text-xs text-neutral-500">Collapsible content panel.</p>
+			</div>
+		</div>
+
+		<!-- FIELD -->
+		<div
+			v-else-if="element.type === 'field'"
+			:class="['p-3 rounded-lg border border-neutral-200 dark:border-neutral-800 text-left my-2 text-xs max-w-full bg-white dark:bg-neutral-900', styleClasses]"
+		>
+			<div class="flex items-center gap-2 mb-1">
+				<span class="font-mono font-bold text-primary">{{ element.props.name || 'prop' }}</span>
+				<span class="font-mono text-[10px] text-neutral-400 bg-neutral-100 dark:bg-neutral-800 px-1.5 py-0.5 rounded">{{ element.props.type || 'string' }}</span>
+				<UBadge v-if="element.props.required" color="error" variant="subtle" size="xs" label="Required" />
+			</div>
+			<p class="text-neutral-600 dark:text-neutral-400 leading-relaxed">{{ element.props.description || '' }}</p>
+		</div>
+
+		<!-- FIELD GROUP CONTAINER -->
+		<div
+			v-else-if="element.type === 'field-group'"
+			:class="['border border-neutral-200 dark:border-neutral-800 rounded-xl p-4 text-left my-4 space-y-3 bg-neutral-50/50 dark:bg-neutral-900/30 max-w-full', styleClasses]"
+		>
+			<h4 class="text-xs font-bold text-neutral-900 dark:text-white uppercase tracking-wider mb-2">{{ element.props.title || 'Properties' }}</h4>
+			<template v-if="element.children && element.children.length > 0">
+				<BuilderComponentRenderer
+					v-for="(child, cIdx) in element.children"
+					:key="child.id"
+					:element="child"
+					:parent-id="element.id"
+					:index="cIdx"
+				/>
+			</template>
+			<div
+				v-else-if="!previewMode"
+				class="border border-dashed border-neutral-300 dark:border-neutral-700 rounded p-4 text-center text-xs text-neutral-400"
+			>
+				<span>FieldGroup: Drop field elements inside</span>
+			</div>
+		</div>
+
+		<!-- STEPS -->
+		<div
+			v-else-if="element.type === 'steps'"
+			:class="['text-left my-4 space-y-4 max-w-full', styleClasses]"
+		>
+			<div
+				v-for="(step, sIdx) in (element.props.steps || '').split(',').map((s: string) => s.trim()).filter(Boolean)"
+				:key="sIdx"
+				class="flex items-start gap-3.5"
+			>
+				<div class="w-6 h-6 rounded-full bg-primary-500 text-white flex items-center justify-center text-xs font-bold shrink-0 mt-0.5 ring-2 ring-primary-500/20">
+					{{ sIdx + 1 }}
+				</div>
+				<div class="flex-1">
+					<p class="text-sm font-medium text-neutral-800 dark:text-neutral-200 break-words">{{ step }}</p>
+				</div>
+			</div>
+		</div>
+
+		<!-- TABS CONTAINER -->
+		<div
+			v-else-if="element.type === 'tabs'"
+			:class="['border border-neutral-200 dark:border-neutral-800 rounded-xl overflow-hidden my-4 text-left max-w-full', styleClasses]"
+		>
+			<div class="flex border-b border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-900 px-3 pt-2 gap-4 text-xs font-medium select-none">
+				<span class="pb-2 border-b-2 border-primary text-primary font-semibold cursor-pointer">{{ element.props.tab1 || 'Overview' }}</span>
+				<span class="pb-2 text-neutral-400 hover:text-neutral-700 cursor-pointer">{{ element.props.tab2 || 'Usage' }}</span>
+				<span v-if="element.props.tab3" class="pb-2 text-neutral-400 hover:text-neutral-700 cursor-pointer">{{ element.props.tab3 }}</span>
+			</div>
+			<div class="p-4 space-y-3 bg-white dark:bg-neutral-950">
+				<template v-if="element.children && element.children.length > 0">
+					<BuilderComponentRenderer
+						v-for="(child, cIdx) in element.children"
+						:key="child.id"
+						:element="child"
+						:parent-id="element.id"
+						:index="cIdx"
+					/>
+				</template>
+				<p v-else class="text-xs text-neutral-500">Active tab content area.</p>
+			</div>
+		</div>
+
+		<!-- ACCORDION -->
+		<div
+			v-else-if="element.type === 'accordion'"
+			:class="['border border-neutral-200 dark:border-neutral-800 rounded-xl divide-y divide-neutral-200 dark:divide-neutral-800 my-4 text-left overflow-hidden max-w-full', styleClasses]"
+		>
+			<div
+				v-for="(item, aIdx) in (element.props.items || '').split(',').map((s: string) => s.trim()).filter(Boolean)"
+				:key="aIdx"
+				class="p-4 bg-white dark:bg-neutral-950"
+			>
+				<div class="flex items-center justify-between font-bold text-xs text-neutral-900 dark:text-white cursor-pointer mb-1.5">
+					<span>{{ item.split(':')[0] || item }}</span>
+					<UIcon name="lucide:chevron-down" class="w-4 h-4 text-neutral-400" />
+				</div>
+				<p class="text-xs text-neutral-500 dark:text-neutral-400 leading-relaxed">{{ item.split(':')[1] || 'Expandable panel description content.' }}</p>
+			</div>
+		</div>
 
 		<!-- UKBD -->
 		<UKbd
