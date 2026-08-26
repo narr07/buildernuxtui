@@ -1,11 +1,13 @@
 <script setup lang="ts">
 import { useBuilder } from '~/composables/useBuilder'
+import { useTheme } from '~/composables/useTheme'
 import BuilderHeader from '~/components/builder/BuilderHeader.vue'
 import BuilderSidebar from '~/components/builder/BuilderSidebar.vue'
 import BuilderCanvas from '~/components/builder/BuilderCanvas.vue'
 import BuilderInspector from '~/components/builder/BuilderInspector.vue'
 import ExportModal from '~/components/builder/ExportModal.vue'
 import TemplatePicker from '~/components/builder/TemplatePicker.vue'
+import ThemeCustomizerModal from '~/components/builder/ThemeCustomizerModal.vue'
 
 useSeoMeta({
 	title: 'NuxtUI Studio - Visual Drag & Drop Builder for Nuxt 4 & Nuxt UI',
@@ -23,8 +25,12 @@ const {
 	selectElement
 } = useBuilder()
 
+// Initialize live theme
+useTheme()
+
 const showExportModal = ref(false)
 const showTemplateModal = ref(false)
+const showThemeModal = ref(false)
 
 // Global keyboard shortcuts (Ctrl+Z, Ctrl+Y, Delete, Esc)
 onMounted(() => {
@@ -67,6 +73,7 @@ onMounted(() => {
 		<BuilderHeader
 			@open-export="showExportModal = true"
 			@open-templates="showTemplateModal = true"
+			@open-theme="showThemeModal = true"
 		/>
 
 		<!-- Studio Main Workspace Area -->
@@ -106,7 +113,7 @@ onMounted(() => {
 			/>
 		</div>
 
-		<!-- Export Code & JSON Schema Modal -->
+		<!-- Export Code & Nuxt Content (.md) Modal -->
 		<ExportModal
 			v-model="showExportModal"
 		/>
@@ -114,6 +121,11 @@ onMounted(() => {
 		<!-- Template Picker Modal -->
 		<TemplatePicker
 			v-model="showTemplateModal"
+		/>
+
+		<!-- Theme Customizer Modal -->
+		<ThemeCustomizerModal
+			v-model="showThemeModal"
 		/>
 	</div>
 </template>

@@ -5,6 +5,7 @@ import type { ViewportMode } from '~/types/builder'
 const emit = defineEmits<{
 	openExport: []
 	openTemplates: []
+	openTheme: []
 }>()
 
 const {
@@ -135,8 +136,18 @@ const handleClear = () => {
 			/>
 		</div>
 
-		<!-- Right: Right Inspector Toggle, Preview, Clear, Theme, Export -->
+		<!-- Right: Theme Customizer, Right Inspector Toggle, Preview, Clear, Theme, Export -->
 		<div class="flex items-center gap-2">
+			<!-- Theme Customizer Button -->
+			<UButton
+				color="neutral"
+				variant="outline"
+				size="sm"
+				icon="lucide:palette"
+				label="Theme"
+				@click="emit('openTheme')"
+			/>
+
 			<!-- Toggle Right Inspector Button -->
 			<UButton
 				color="neutral"

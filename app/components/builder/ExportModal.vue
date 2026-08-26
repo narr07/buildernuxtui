@@ -11,16 +11,21 @@ const emit = defineEmits<{
 }>()
 
 const { elements, importFromJSON, exportToJSON } = useBuilder()
-const { generateFullSfcCode } = useCodeGenerator()
+const { generateFullSfcCode, generateNuxtContentMarkdown } = useCodeGenerator()
 
-const activeTab = ref<'code' | 'exportJson' | 'importJson'>('code')
+const activeTab = ref<'code' | 'mdc' | 'exportJson' | 'importJson'>('code')
 const copiedCode = ref(false)
+const copiedMdc = ref(false)
 const copiedJson = ref(false)
 const importInput = ref('')
 const importError = ref('')
 
 const generatedCode = computed(() => {
 	return generateFullSfcCode(elements.value)
+})
+
+const generatedMdc = computed(() => {
+	return generateNuxtContentMarkdown(elements.value)
 })
 
 const generatedJson = computed(() => {
@@ -33,6 +38,18 @@ const copyCodeToClipboard = async () => {
 		copiedCode.value = true
 		setTimeout(() => {
 			copiedCode.value = false
+		}, 2000)
+	} catch (e) {
+		console.error('Failed to copy', e)
+	}
+}
+
+const copyMdcToClipboard = async () => {
+	try {
+		await navigator.clipboard.writeText(generatedMdc.value)
+		copiedMdc.value = true
+		setTimeout(() => {
+			copiedMdc.value = false
 		}, 2000)
 	} catch (e) {
 		console.error('Failed to copy', e)
@@ -57,6 +74,16 @@ const downloadVueFile = () => {
 	const link = document.createElement('a')
 	link.href = url
 	link.download = 'PageBuilder.vue'
+	link.click()
+	URL.revokeObjectURL(url)
+}
+
+const downloadMdcFile = () => {
+	const blob = new Blob([generatedMdc.value], { type: 'text/markdown;charset=utf-8' })
+	const url = URL.createObjectURL(blob)
+	const link = document.createElement('a')
+	link.href = url
+	link.download = 'page.md'
 	link.click()
 	URL.revokeObjectURL(url)
 }
@@ -91,24 +118,33 @@ const handleImport = () => {
 	<UModal
 		:model-value="modelValue"
 		title="Export & Share Code"
-		description="Export clean Nuxt 4 + Nuxt UI v4 Single File Component code or backup/restore JSON design schemas."
+		description="Export clean Nuxt 4 Vue code, Nuxt Content (.md / MDC) documents, or backup/restore JSON design schemas."
 		@update:model-value="emit('update:modelValue', $event)"
 	>
 		<template #body>
 			<div class="space-y-4">
 				<!-- Navigation Tabs -->
-				<div class="flex border-b border-neutral-200 dark:border-neutral-800 gap-2">
+				<div class="flex border-b border-neutral-200 dark:border-neutral-800 gap-2 overflow-x-auto pb-1">
 					<button
-						class="pb-2 text-xs font-semibold border-b-2 transition-all flex items-center gap-1.5"
+						class="pb-2 text-xs font-semibold border-b-2 transition-all flex items-center gap-1.5 whitespace-nowrap"
 						:class="activeTab === 'code' ? 'border-primary-500 text-primary-600 dark:text-primary-400' : 'border-transparent text-neutral-500 hover:text-neutral-900 dark:hover:text-white'"
 						@click="activeTab = 'code'"
 					>
 						<UIcon name="lucide:code-2" class="w-4 h-4" />
-						<span>Vue SFC Code</span>
+						<span>Vue SFC (.vue)</span>
 					</button>
 
 					<button
-						class="pb-2 text-xs font-semibold border-b-2 transition-all flex items-center gap-1.5"
+						class="pb-2 text-xs font-semibold border-b-2 transition-all flex items-center gap-1.5 whitespace-nowrap"
+						:class="activeTab === 'mdc' ? 'border-primary-500 text-primary-600 dark:text-primary-400' : 'border-transparent text-neutral-500 hover:text-neutral-900 dark:hover:text-white'"
+						@click="activeTab = 'mdc'"
+					>
+						<UIcon name="lucide:file-text" class="w-4 h-4" />
+						<span>Nuxt Content (.md)</span>
+					</button>
+
+					<button
+						class="pb-2 text-xs font-semibold border-b-2 transition-all flex items-center gap-1.5 whitespace-nowrap"
 						:class="activeTab === 'exportJson' ? 'border-primary-500 text-primary-600 dark:text-primary-400' : 'border-transparent text-neutral-500 hover:text-neutral-900 dark:hover:text-white'"
 						@click="activeTab = 'exportJson'"
 					>
@@ -117,7 +153,7 @@ const handleImport = () => {
 					</button>
 
 					<button
-						class="pb-2 text-xs font-semibold border-b-2 transition-all flex items-center gap-1.5"
+						class="pb-2 text-xs font-semibold border-b-2 transition-all flex items-center gap-1.5 whitespace-nowrap"
 						:class="activeTab === 'importJson' ? 'border-primary-500 text-primary-600 dark:text-primary-400' : 'border-transparent text-neutral-500 hover:text-neutral-900 dark:hover:text-white'"
 						@click="activeTab = 'importJson'"
 					>
@@ -129,7 +165,7 @@ const handleImport = () => {
 				<!-- ================= TAB 1: VUE SFC CODE ================= -->
 				<div v-if="activeTab === 'code'" class="space-y-3">
 					<div class="flex items-center justify-between">
-						<span class="text-xs text-neutral-500">Ready to use in your Nuxt 4 app (<code>app/pages/</code> or <code>app/components/</code>)</span>
+						<span class="text-xs text-neutral-500">Ready to paste into <code>app/pages/</code> or <code>app/components/</code></span>
 						<div class="flex items-center gap-2">
 							<UButton
 								size="xs"
@@ -154,7 +190,35 @@ const handleImport = () => {
 					</div>
 				</div>
 
-				<!-- ================= TAB 2: JSON SCHEMA EXPORT ================= -->
+				<!-- ================= TAB 2: NUXT CONTENT (.md / MDC) ================= -->
+				<div v-else-if="activeTab === 'mdc'" class="space-y-3">
+					<div class="flex items-center justify-between">
+						<span class="text-xs text-neutral-500">Ready to paste into <code>content/</code> folder for <code>@nuxt/content</code></span>
+						<div class="flex items-center gap-2">
+							<UButton
+								size="xs"
+								color="neutral"
+								variant="outline"
+								icon="lucide:download"
+								label="Download .md"
+								@click="downloadMdcFile"
+							/>
+							<UButton
+								size="xs"
+								:color="copiedMdc ? 'success' : 'primary'"
+								:icon="copiedMdc ? 'lucide:check' : 'lucide:copy'"
+								:label="copiedMdc ? 'Copied!' : 'Copy Markdown'"
+								@click="copyMdcToClipboard"
+							/>
+						</div>
+					</div>
+
+					<div class="relative rounded-lg bg-neutral-950 text-neutral-100 p-4 font-mono text-xs overflow-x-auto max-h-[380px] border border-neutral-800 select-text leading-relaxed">
+						<pre><code>{{ generatedMdc }}</code></pre>
+					</div>
+				</div>
+
+				<!-- ================= TAB 3: JSON SCHEMA EXPORT ================= -->
 				<div v-else-if="activeTab === 'exportJson'" class="space-y-3">
 					<div class="flex items-center justify-between">
 						<span class="text-xs text-neutral-500">Save complete design structure to restore or share with team</span>
@@ -182,7 +246,7 @@ const handleImport = () => {
 					</div>
 				</div>
 
-				<!-- ================= TAB 3: IMPORT JSON ================= -->
+				<!-- ================= TAB 4: IMPORT JSON ================= -->
 				<div v-else-if="activeTab === 'importJson'" class="space-y-3">
 					<p class="text-xs text-neutral-500">
 						Paste a previously exported JSON schema to load the project onto the canvas.

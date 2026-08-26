@@ -45,6 +45,7 @@ export const useCodeGenerator = () => {
 		return classes.filter(Boolean).join(' ')
 	}
 
+	// ==================== 1. VUE SFC GENERATOR ====================
 	const renderElementCode = (el: BuilderElement, depth: number = 2): string => {
 		const indent = '\t'.repeat(depth)
 		const childIndent = '\t'.repeat(depth + 1)
@@ -278,8 +279,120 @@ ${templateBody}
 `
 	}
 
+	// ==================== 2. NUXT CONTENT (.md) MDC GENERATOR ====================
+	const renderElementMdc = (el: BuilderElement, depth: number = 0): string => {
+		const indent = '  '.repeat(depth)
+		const colons = ':'.repeat(Math.max(2, depth + 2))
+
+		switch (el.type) {
+			case 'hero-section': {
+				return `${indent}${colons}hero-section
+${indent}---
+${indent}title: "${el.props.title || 'Hero Title'}"
+${indent}subtitle: "${el.props.subtitle || ''}"
+${indent}badgeText: "${el.props.badgeText || ''}"
+${indent}primaryBtnText: "${el.props.primaryBtnText || 'Get Started'}"
+${indent}secondaryBtnText: "${el.props.secondaryBtnText || 'Learn More'}"
+${indent}align: "${el.props.align || 'center'}"
+${indent}---
+${indent}${colons}`
+			}
+
+			case 'container': {
+				const childrenMdc = el.children && el.children.length > 0
+					? el.children.map((c) => renderElementMdc(c, depth + 1)).join('\n\n')
+					: ''
+				return `${indent}${colons}container\n${childrenMdc}\n${indent}${colons}`
+			}
+
+			case 'grid': {
+				const childrenMdc = el.children && el.children.length > 0
+					? el.children.map((c) => renderElementMdc(c, depth + 1)).join('\n\n')
+					: ''
+				return `${indent}${colons}grid{gridCols="${el.props.gridCols || 'grid-cols-1 md:grid-cols-3'}"}\n${childrenMdc}\n${indent}${colons}`
+			}
+
+			case 'card': {
+				const childrenMdc = el.children && el.children.length > 0
+					? el.children.map((c) => renderElementMdc(c, depth + 1)).join('\n\n')
+					: `${indent}  Card content`
+				return `${indent}${colons}card{headerText="${el.props.headerText || 'Card Title'}" variant="${el.props.variant || 'outline'}"}\n${childrenMdc}\n${indent}${colons}`
+			}
+
+			case 'heading': {
+				const level = el.props.level || 'h2'
+				const hashes = level === 'h1' ? '#' : level === 'h2' ? '##' : level === 'h3' ? '###' : '####'
+				return `${indent}${hashes} ${el.props.text || 'Heading'}`
+			}
+
+			case 'paragraph': {
+				return `${indent}${el.props.text || ''}`
+			}
+
+			case 'button': {
+				return `${indent}::u-button{label="${el.props.label || 'Button'}" color="${el.props.color || 'primary'}" variant="${el.props.variant || 'solid'}" size="${el.props.size || 'md'}" icon="${el.props.icon || ''}"}`
+			}
+
+			case 'badge': {
+				return `${indent}::u-badge{label="${el.props.label || 'Badge'}" color="${el.props.color || 'primary'}" variant="${el.props.variant || 'subtle'}" icon="${el.props.icon || ''}"}`
+			}
+
+			case 'avatar': {
+				return `${indent}::u-avatar{src="${el.props.src || ''}" alt="${el.props.alt || 'Avatar'}" size="${el.props.size || 'md'}"}`
+			}
+
+			case 'alert': {
+				return `${indent}::u-alert{title="${el.props.title || 'Alert'}" description="${el.props.description || ''}" color="${el.props.color || 'primary'}" icon="${el.props.icon || 'lucide:info'}"}`
+			}
+
+			case 'progress': {
+				return `${indent}::u-progress{value=${el.props.value || 50} color="${el.props.color || 'primary'}"}`
+			}
+
+			case 'stat-card': {
+				return `${indent}::stat-card{title="${el.props.title || 'Stat'}" value="${el.props.value || '0'}" change="${el.props.change || ''}" icon="${el.props.icon || 'lucide:trending-up'}"}`
+			}
+
+			case 'feature-card': {
+				return `${indent}::feature-card{title="${el.props.title || 'Feature'}" description="${el.props.description || ''}" icon="${el.props.icon || 'lucide:sparkles'}"}`
+			}
+
+			case 'pricing-card': {
+				return `${indent}::pricing-card{plan="${el.props.plan || 'Pro'}" price="${el.props.price || '$29'}" period="${el.props.period || '/month'}" description="${el.props.description || ''}" features="${el.props.features || ''}" buttonText="${el.props.buttonText || 'Get Started'}"}`
+			}
+
+			case 'testimonial-card': {
+				return `${indent}::testimonial-card{quote="${el.props.quote || ''}" author="${el.props.author || 'Author'}" role="${el.props.role || ''}" avatarUrl="${el.props.avatarUrl || ''}"}`
+			}
+
+			case 'footer-section': {
+				return `${indent}::footer-section{brandName="${el.props.brandName || 'Brand'}" tagline="${el.props.tagline || ''}" copyright="${el.props.copyright || '© 2026'}"}`
+			}
+
+			default:
+				return `${indent}::${el.type}`
+		}
+	}
+
+	const generateNuxtContentMarkdown = (elements: BuilderElement[]): string => {
+		const mdcBody = elements.length > 0
+			? elements.map((el) => renderElementMdc(el, 0)).join('\n\n')
+			: 'No content yet.'
+
+		return `---
+title: Nuxt UI Page Document
+description: Built visually with Nuxt UI Studio for @nuxt/content MDC rendering
+navigation:
+  title: Page Document
+---
+
+${mdcBody}
+`
+	}
+
 	return {
 		renderElementCode,
-		generateFullSfcCode
+		generateFullSfcCode,
+		generateNuxtContentMarkdown
 	}
 }
