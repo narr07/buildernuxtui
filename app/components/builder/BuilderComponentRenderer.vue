@@ -795,6 +795,74 @@ const splitFeatures = computed(() => {
 			:class="styleClasses"
 		/>
 
+		<!-- UAVATAR GROUP -->
+		<div
+			v-else-if="element.type === 'avatar-group'"
+			:class="['flex items-center -space-x-2 overflow-hidden py-1', styleClasses]"
+		>
+			<UAvatar
+				v-for="(url, aIdx) in (element.props.avatars || '').split(',').map((s: string) => s.trim()).filter(Boolean).slice(0, element.props.max || 3)"
+				:key="aIdx"
+				:src="url"
+				:size="element.props.size || 'md'"
+				class="ring-2 ring-white dark:ring-neutral-900"
+			/>
+			<div
+				v-if="(element.props.avatars || '').split(',').length > (element.props.max || 3)"
+				class="flex items-center justify-center rounded-full bg-neutral-200 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 font-bold text-xs ring-2 ring-white dark:ring-neutral-900 h-8 w-8"
+			>
+				+{{ (element.props.avatars || '').split(',').length - (element.props.max || 3) }}
+			</div>
+		</div>
+
+		<!-- UBANNER -->
+		<div
+			v-else-if="element.type === 'banner'"
+			:class="[
+				'px-4 py-2.5 rounded-xl border flex items-center justify-between text-xs font-medium shadow-sm my-2 max-w-full',
+				element.props.color === 'primary' ? 'bg-primary-500/10 border-primary-500/30 text-primary-900 dark:text-primary-200' :
+				element.props.color === 'success' ? 'bg-green-500/10 border-green-500/30 text-green-900 dark:text-green-200' :
+				'bg-neutral-100 dark:bg-neutral-800 border-neutral-200 dark:border-neutral-700 text-neutral-800 dark:text-neutral-200',
+				styleClasses
+			]"
+		>
+			<div class="flex items-center gap-2 overflow-hidden">
+				<UIcon :name="element.props.icon || 'lucide:sparkles'" class="w-4 h-4 shrink-0 text-primary" />
+				<span class="truncate">{{ element.props.title || 'Announcement banner message' }}</span>
+			</div>
+			<button v-if="element.props.close" class="p-1 hover:opacity-75 rounded shrink-0">
+				<UIcon name="lucide:x" class="w-3.5 h-3.5" />
+			</button>
+		</div>
+
+		<!-- UCALENDAR -->
+		<div
+			v-else-if="element.type === 'calendar'"
+			:class="['p-4 rounded-2xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 text-xs shadow-md max-w-full my-3 inline-block', styleClasses]"
+		>
+			<div class="flex items-center justify-between font-bold mb-3">
+				<span class="text-neutral-900 dark:text-white">August 2026</span>
+				<div class="flex items-center gap-1 text-neutral-400">
+					<UIcon name="lucide:chevron-left" class="w-4 h-4 cursor-pointer hover:text-white" />
+					<UIcon name="lucide:chevron-right" class="w-4 h-4 cursor-pointer hover:text-white" />
+				</div>
+			</div>
+			<div class="grid grid-cols-7 gap-1 text-center font-medium text-neutral-400 mb-1">
+				<span>Su</span><span>Mo</span><span>Tu</span><span>We</span><span>Th</span><span>Fr</span><span>Sa</span>
+			</div>
+			<div class="grid grid-cols-7 gap-1 text-center font-mono">
+				<span class="p-1.5 text-neutral-400">28</span><span class="p-1.5 text-neutral-400">29</span><span class="p-1.5 text-neutral-400">30</span><span class="p-1.5 text-neutral-400">31</span>
+				<span class="p-1.5 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded">1</span>
+				<span class="p-1.5 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded">2</span>
+				<span class="p-1.5 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded">3</span>
+				<span class="p-1.5 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded">4</span>
+				<span class="p-1.5 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded">5</span>
+				<span class="p-1.5 rounded-full bg-primary text-white font-bold">6</span>
+				<span class="p-1.5 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded">7</span>
+				<span class="p-1.5 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded">8</span>
+			</div>
+		</div>
+
 		<!-- UCHIP -->
 		<UChip
 			v-else-if="element.type === 'chip'"
@@ -813,16 +881,211 @@ const splitFeatures = computed(() => {
 			:class="[element.props.size || 'h-8 w-8', element.props.color || 'text-primary', styleClasses]"
 		/>
 
+		<!-- UPROGRESS GROUP -->
+		<div
+			v-else-if="element.type === 'progress-group'"
+			:class="['space-y-3 w-full my-3 text-left', styleClasses]"
+		>
+			<div
+				v-for="(it, pIdx) in (element.props.items || '').split(',').map((s: string) => s.trim()).filter(Boolean)"
+				:key="pIdx"
+				class="space-y-1"
+			>
+				<div class="flex justify-between text-xs font-medium text-neutral-700 dark:text-neutral-300">
+					<span>{{ it.split(':')[0] || it }}</span>
+					<span class="font-mono text-primary">{{ it.split(':')[1] || '50' }}%</span>
+				</div>
+				<UProgress :model-value="Number(it.split(':')[1] || 50)" :color="element.props.color || 'primary'" size="sm" />
+			</div>
+		</div>
+
+		<!-- USKELETON -->
+		<div
+			v-else-if="element.type === 'skeleton'"
+			:class="['my-2 max-w-full', styleClasses]"
+		>
+			<div v-if="element.props.shape === 'circle'" class="w-12 h-12 rounded-full bg-neutral-200 dark:bg-neutral-800 animate-pulse" />
+			<div v-else-if="element.props.shape === 'avatar-text'" class="flex items-center gap-3">
+				<div class="w-10 h-10 rounded-full bg-neutral-200 dark:bg-neutral-800 animate-pulse shrink-0" />
+				<div class="space-y-2 flex-1">
+					<div class="h-3.5 bg-neutral-200 dark:bg-neutral-800 rounded w-2/3 animate-pulse" />
+					<div class="h-2.5 bg-neutral-200 dark:bg-neutral-800 rounded w-1/2 animate-pulse" />
+				</div>
+			</div>
+			<div v-else :class="[element.props.height || 'h-6', element.props.width || 'w-full', 'rounded-lg bg-neutral-200 dark:bg-neutral-800 animate-pulse']" />
+		</div>
+
+		<!-- UFORM CONTAINER -->
+		<form
+			v-else-if="element.type === 'form'"
+			:class="['p-5 rounded-2xl border border-neutral-200 dark:border-neutral-800 bg-white/70 dark:bg-neutral-900/60 shadow-sm text-left my-4 space-y-4 max-w-full', styleClasses]"
+			@submit.prevent
+		>
+			<div v-if="element.props.title" class="border-b border-neutral-200 dark:border-neutral-800 pb-3">
+				<h3 class="font-bold text-sm text-neutral-900 dark:text-white">{{ element.props.title }}</h3>
+			</div>
+			<template v-if="element.children && element.children.length > 0">
+				<BuilderComponentRenderer
+					v-for="(child, cIdx) in element.children"
+					:key="child.id"
+					:element="child"
+					:parent-id="element.id"
+					:index="cIdx"
+				/>
+			</template>
+			<div
+				v-else-if="!previewMode"
+				class="border-2 border-dashed border-neutral-300 dark:border-neutral-700 rounded-xl p-6 text-center text-xs text-neutral-400"
+			>
+				<span>Drop form inputs & fields here</span>
+			</div>
+			<div class="pt-2">
+				<UButton type="button" :label="element.props.submitText || 'Save Changes'" color="primary" block />
+			</div>
+		</form>
+
+		<!-- UFORM FIELD CONTAINER -->
+		<div
+			v-else-if="element.type === 'form-field'"
+			:class="['space-y-1.5 text-left my-2.5 max-w-full', styleClasses]"
+		>
+			<div class="flex items-center justify-between">
+				<label class="font-medium text-xs text-neutral-800 dark:text-neutral-200">
+					{{ element.props.label || 'Field Label' }}
+					<span v-if="element.props.required" class="text-red-500 font-bold ml-0.5">*</span>
+				</label>
+			</div>
+			<template v-if="element.children && element.children.length > 0">
+				<BuilderComponentRenderer
+					v-for="(child, cIdx) in element.children"
+					:key="child.id"
+					:element="child"
+					:parent-id="element.id"
+					:index="cIdx"
+				/>
+			</template>
+			<UInput v-else placeholder="Enter text..." color="primary" />
+			<p v-if="element.props.description" class="text-[11px] text-neutral-500 dark:text-neutral-400">{{ element.props.description }}</p>
+			<p v-if="element.props.error" class="text-[11px] text-red-500 font-medium">{{ element.props.error }}</p>
+		</div>
+
 		<!-- UINPUT -->
 		<UInput
 			v-else-if="element.type === 'input'"
 			:placeholder="element.props.placeholder"
 			:icon="element.props.icon"
+			:type="element.props.type || 'text'"
 			:color="element.props.color || 'primary'"
 			:variant="element.props.variant || 'outline'"
 			:size="element.props.size || 'md'"
 			:class="styleClasses"
 		/>
+
+		<!-- UINPUT NUMBER -->
+		<div
+			v-else-if="element.type === 'input-number'"
+			:class="['flex items-center border border-neutral-200 dark:border-neutral-800 rounded-lg overflow-hidden bg-white dark:bg-neutral-900 w-36 my-2', styleClasses]"
+		>
+			<button class="px-3 py-2 hover:bg-neutral-100 dark:hover:bg-neutral-800 text-neutral-500 text-xs font-bold">-</button>
+			<span class="flex-1 text-center font-mono text-xs font-bold text-neutral-800 dark:text-white">{{ element.props.value || 1 }}</span>
+			<button class="px-3 py-2 hover:bg-neutral-100 dark:hover:bg-neutral-800 text-neutral-500 text-xs font-bold">+</button>
+		</div>
+
+		<!-- UINPUT DATE -->
+		<UInput
+			v-else-if="element.type === 'input-date'"
+			:placeholder="element.props.placeholder || 'Select date...'"
+			:icon="element.props.icon || 'lucide:calendar'"
+			:color="element.props.color || 'primary'"
+			:class="styleClasses"
+		/>
+
+		<!-- UINPUT TIME -->
+		<UInput
+			v-else-if="element.type === 'input-time'"
+			:placeholder="element.props.placeholder || 'Select time...'"
+			:icon="element.props.icon || 'lucide:clock'"
+			:color="element.props.color || 'primary'"
+			:class="styleClasses"
+		/>
+
+		<!-- UINPUT MENU / AUTOCOMPLETE -->
+		<div
+			v-else-if="element.type === 'input-menu'"
+			:class="['relative text-left my-2 w-full', styleClasses]"
+		>
+			<UInput :placeholder="element.props.placeholder || 'Search options...'" icon="lucide:search" trailing-icon="lucide:chevron-down" />
+		</div>
+
+		<!-- UINPUT TAGS -->
+		<div
+			v-else-if="element.type === 'input-tags'"
+			:class="['p-2 rounded-lg border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 flex flex-wrap items-center gap-1.5 my-2 w-full', styleClasses]"
+		>
+			<UBadge
+				v-for="(tag, tIdx) in (element.props.tags || '').split(',').map((s: string) => s.trim()).filter(Boolean)"
+				:key="tIdx"
+				:label="tag"
+				color="primary"
+				variant="subtle"
+				size="xs"
+			/>
+			<input type="text" :placeholder="element.props.placeholder || 'Add tag...'" class="flex-1 bg-transparent border-none text-xs outline-none min-w-[80px] p-1 text-neutral-700 dark:text-neutral-200" />
+		</div>
+
+		<!-- UINPUT RATING -->
+		<div
+			v-else-if="element.type === 'input-rating'"
+			:class="['flex items-center gap-1 my-2', styleClasses]"
+		>
+			<UIcon
+				v-for="star in (element.props.max || 5)"
+				:key="star"
+				name="lucide:star"
+				:class="[
+					'w-5 h-5 cursor-pointer',
+					star <= (element.props.value || 4) ? 'text-amber-400 fill-amber-400' : 'text-neutral-300 dark:text-neutral-700'
+				]"
+			/>
+		</div>
+
+		<!-- UPIN INPUT -->
+		<div
+			v-else-if="element.type === 'pin-input'"
+			:class="['flex items-center gap-2 my-2 justify-center', styleClasses]"
+		>
+			<input
+				v-for="p in (element.props.length || 4)"
+				:key="p"
+				type="text"
+				maxlength="1"
+				class="w-10 h-11 text-center font-mono font-bold text-base rounded-lg border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 focus:ring-2 focus:ring-primary outline-none"
+				:value="p === 1 ? '7' : p === 2 ? '4' : ''"
+			/>
+		</div>
+
+		<!-- UCOLOR PICKER -->
+		<div
+			v-else-if="element.type === 'color-picker'"
+			:class="['flex items-center gap-3 p-2 rounded-xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 w-fit my-2', styleClasses]"
+		>
+			<div class="w-8 h-8 rounded-lg border shadow-inner" :style="{ backgroundColor: element.props.value || '#10b981' }" />
+			<span class="font-mono text-xs font-semibold uppercase">{{ element.props.value || '#10b981' }}</span>
+		</div>
+
+		<!-- UFILE UPLOAD -->
+		<div
+			v-else-if="element.type === 'file-upload'"
+			:class="['border-2 border-dashed border-neutral-300 dark:border-neutral-700 hover:border-primary-500/60 rounded-2xl p-6 text-center text-xs flex flex-col items-center justify-center gap-2 bg-neutral-50/50 dark:bg-neutral-900/30 cursor-pointer my-3 w-full', styleClasses]"
+		>
+			<div class="p-3 rounded-full bg-primary-50 dark:bg-primary-950/40 text-primary">
+				<UIcon :name="element.props.icon || 'lucide:upload-cloud'" class="w-6 h-6" />
+			</div>
+			<div class="space-y-0.5">
+				<p class="font-medium text-neutral-800 dark:text-neutral-200">{{ element.props.label || 'Click or drag files here to upload' }}</p>
+				<p class="text-[11px] text-neutral-400">{{ element.props.hint || 'PNG, JPG, PDF up to 10MB' }}</p>
+			</div>
+		</div>
 
 		<!-- UTEXTAREA -->
 		<UTextarea
@@ -832,6 +1095,84 @@ const splitFeatures = computed(() => {
 			:variant="element.props.variant || 'outline'"
 			:class="styleClasses"
 		/>
+
+		<!-- USELECT -->
+		<div
+			v-else-if="element.type === 'select'"
+			:class="['relative text-left my-2 w-full', styleClasses]"
+		>
+			<div class="flex items-center justify-between p-2.5 rounded-lg border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 text-xs text-neutral-700 dark:text-neutral-200">
+				<span>{{ element.props.placeholder || 'Select option...' }}</span>
+				<UIcon name="lucide:chevron-down" class="w-4 h-4 text-neutral-400" />
+			</div>
+		</div>
+
+		<!-- USELECT MENU -->
+		<div
+			v-else-if="element.type === 'select-menu'"
+			:class="['relative text-left my-2 w-full', styleClasses]"
+		>
+			<div class="flex items-center justify-between p-2.5 rounded-lg border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 text-xs text-neutral-700 dark:text-neutral-200">
+				<span class="flex items-center gap-2">
+					<UAvatar src="https://avatars.githubusercontent.com/u/739984?v=4" size="xs" />
+					<span>Alexandre Rochon</span>
+				</span>
+				<UIcon name="lucide:chevrons-up-down" class="w-4 h-4 text-neutral-400" />
+			</div>
+		</div>
+
+		<!-- ULISTBOX -->
+		<div
+			v-else-if="element.type === 'listbox'"
+			:class="['border border-neutral-200 dark:border-neutral-800 rounded-xl divide-y divide-neutral-200 dark:divide-neutral-800 bg-white dark:bg-neutral-900 text-left my-2 w-full overflow-hidden text-xs shadow-sm', styleClasses]"
+		>
+			<div
+				v-for="(item, lIdx) in (element.props.items || '').split(',').map((s: string) => s.trim()).filter(Boolean)"
+				:key="lIdx"
+				class="p-2.5 flex items-center justify-between hover:bg-neutral-50 dark:hover:bg-neutral-800 cursor-pointer"
+			>
+				<span>{{ item }}</span>
+				<UIcon v-if="lIdx === 0" name="lucide:check" class="w-4 h-4 text-primary" />
+			</div>
+		</div>
+
+		<!-- URADIO GROUP -->
+		<div
+			v-else-if="element.type === 'radio-group'"
+			:class="[
+				'my-2.5 text-left',
+				element.props.orientation === 'horizontal' ? 'flex flex-wrap gap-4' : 'space-y-2',
+				styleClasses
+			]"
+		>
+			<label
+				v-for="(item, rIdx) in (element.props.items || '').split(',').map((s: string) => s.trim()).filter(Boolean)"
+				:key="rIdx"
+				class="flex items-center gap-2 text-xs font-medium text-neutral-700 dark:text-neutral-300 cursor-pointer"
+			>
+				<input type="radio" :name="`radio-${element.id}`" :checked="rIdx === 0" class="accent-primary" />
+				<span>{{ item }}</span>
+			</label>
+		</div>
+
+		<!-- UCHECKBOX GROUP -->
+		<div
+			v-else-if="element.type === 'checkbox-group'"
+			:class="[
+				'my-2.5 text-left',
+				element.props.orientation === 'horizontal' ? 'flex flex-wrap gap-4' : 'space-y-2',
+				styleClasses
+			]"
+		>
+			<label
+				v-for="(item, cIdx) in (element.props.items || '').split(',').map((s: string) => s.trim()).filter(Boolean)"
+				:key="cIdx"
+				class="flex items-center gap-2 text-xs font-medium text-neutral-700 dark:text-neutral-300 cursor-pointer"
+			>
+				<input type="checkbox" :checked="cIdx === 0" class="accent-primary rounded" />
+				<span>{{ item }}</span>
+			</label>
+		</div>
 
 		<!-- USWITCH -->
 		<USwitch
@@ -881,6 +1222,126 @@ const splitFeatures = computed(() => {
 			:status="element.props.status"
 			:class="styleClasses"
 		/>
+
+		<!-- UCAROUSEL -->
+		<div
+			v-else-if="element.type === 'carousel'"
+			:class="['relative rounded-2xl overflow-hidden border border-neutral-200 dark:border-neutral-800 my-4 shadow-md max-w-full', styleClasses]"
+		>
+			<img :src="(element.props.items || '').split(',')[0] || 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800'" class="w-full h-48 object-cover" />
+			<button v-if="element.props.arrows" class="absolute left-2 top-1/2 -translate-y-1/2 p-1.5 rounded-full bg-black/50 text-white hover:bg-black/70">
+				<UIcon name="lucide:chevron-left" class="w-4 h-4" />
+			</button>
+			<button v-if="element.props.arrows" class="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 rounded-full bg-black/50 text-white hover:bg-black/70">
+				<UIcon name="lucide:chevron-right" class="w-4 h-4" />
+			</button>
+			<div v-if="element.props.dots" class="absolute bottom-2 left-1/2 -translate-x-1/2 flex items-center gap-1.5">
+				<div class="w-2 h-2 rounded-full bg-white" />
+				<div class="w-2 h-2 rounded-full bg-white/50" />
+				<div class="w-2 h-2 rounded-full bg-white/50" />
+			</div>
+		</div>
+
+		<!-- UEMPTY -->
+		<div
+			v-else-if="element.type === 'empty'"
+			:class="['p-8 rounded-2xl border border-dashed border-neutral-300 dark:border-neutral-700 text-center flex flex-col items-center justify-center gap-3 my-4 bg-neutral-50/50 dark:bg-neutral-900/30 max-w-full', styleClasses]"
+		>
+			<div class="p-3 rounded-full bg-neutral-100 dark:bg-neutral-800 text-neutral-400">
+				<UIcon :name="element.props.icon || 'lucide:folder-plus'" class="w-8 h-8" />
+			</div>
+			<div class="space-y-1">
+				<h4 class="font-bold text-sm text-neutral-900 dark:text-white">{{ element.props.title || 'No Data' }}</h4>
+				<p class="text-xs text-neutral-500 dark:text-neutral-400 max-w-xs">{{ element.props.description || '' }}</p>
+			</div>
+			<UButton v-if="element.props.actionText" :label="element.props.actionText" color="primary" size="sm" />
+		</div>
+
+		<!-- UMARQUEE -->
+		<div
+			v-else-if="element.type === 'marquee'"
+			:class="['overflow-hidden py-3 border-y border-neutral-200 dark:border-neutral-800 my-4 max-w-full', styleClasses]"
+		>
+			<div class="flex items-center gap-8 whitespace-nowrap animate-pulse">
+				<span
+					v-for="(it, mIdx) in (element.props.items || '').split(',').map((s: string) => s.trim()).filter(Boolean)"
+					:key="mIdx"
+					class="font-semibold text-xs text-neutral-500 uppercase tracking-widest flex items-center gap-2"
+				>
+					<UIcon name="lucide:sparkles" class="w-3.5 h-3.5 text-primary" />
+					{{ it }}
+				</span>
+			</div>
+		</div>
+
+		<!-- USCROLL AREA -->
+		<div
+			v-else-if="element.type === 'scroll-area'"
+			:class="['border border-neutral-200 dark:border-neutral-800 rounded-xl overflow-y-auto p-4 text-left my-3 max-w-full bg-neutral-50/50 dark:bg-neutral-900/40', element.props.height || 'h-48', styleClasses]"
+		>
+			<template v-if="element.children && element.children.length > 0">
+				<BuilderComponentRenderer
+					v-for="(child, cIdx) in element.children"
+					:key="child.id"
+					:element="child"
+					:parent-id="element.id"
+					:index="cIdx"
+				/>
+			</template>
+			<div v-else class="space-y-3 text-xs text-neutral-500">
+				<p>ScrollArea allows smooth scrolling for tall content within restricted height.</p>
+				<p>Line 1 of scrollable content.</p>
+				<p>Line 2 of scrollable content.</p>
+				<p>Line 3 of scrollable content.</p>
+				<p>Line 4 of scrollable content.</p>
+				<p>Line 5 of scrollable content.</p>
+			</div>
+		</div>
+
+		<!-- UTIMELINE -->
+		<div
+			v-else-if="element.type === 'timeline'"
+			:class="['space-y-4 text-left my-4 max-w-full pl-2', styleClasses]"
+		>
+			<div
+				v-for="(it, tIdx) in (element.props.items || '').split(',').map((s: string) => s.trim()).filter(Boolean)"
+				:key="tIdx"
+				class="relative pl-6 border-l-2 border-primary-500/40 pb-2"
+			>
+				<div class="absolute -left-[7px] top-0 w-3 h-3 rounded-full bg-primary ring-4 ring-white dark:ring-neutral-900" />
+				<span class="font-bold text-xs text-primary">{{ it.split(':')[0] || 'Year' }}</span>
+				<p class="text-xs text-neutral-600 dark:text-neutral-300 mt-0.5">{{ it.split(':')[1] || it }}</p>
+			</div>
+		</div>
+
+		<!-- UTREE -->
+		<div
+			v-else-if="element.type === 'tree'"
+			:class="['p-4 rounded-xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 text-left text-xs my-3 shadow-sm max-w-full', styleClasses]"
+		>
+			<div class="font-bold mb-2 flex items-center gap-1.5 text-neutral-800 dark:text-neutral-200">
+				<UIcon name="lucide:folder" class="w-4 h-4 text-primary" />
+				<span>{{ element.props.title || 'Tree Navigator' }}</span>
+			</div>
+			<div class="pl-4 space-y-1.5 border-l border-neutral-200 dark:border-neutral-800 font-mono text-[11px] text-neutral-600 dark:text-neutral-400">
+				<div class="flex items-center gap-1.5"><UIcon name="lucide:file-text" class="w-3.5 h-3.5" /><span>Getting Started</span></div>
+				<div class="flex items-center gap-1.5"><UIcon name="lucide:file-text" class="w-3.5 h-3.5" /><span>Installation</span></div>
+				<div class="flex items-center gap-1.5"><UIcon name="lucide:file-text" class="w-3.5 h-3.5" /><span>Configuration</span></div>
+			</div>
+		</div>
+
+		<!-- UUSER -->
+		<div
+			v-else-if="element.type === 'user'"
+			:class="['p-3 rounded-xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 flex items-center gap-3 text-left my-2 shadow-sm max-w-full', styleClasses]"
+		>
+			<UAvatar :src="element.props.avatar || 'https://avatars.githubusercontent.com/u/739984?v=4'" size="md" />
+			<div class="flex-1 overflow-hidden">
+				<h4 class="font-bold text-xs text-neutral-900 dark:text-white truncate">{{ element.props.name || 'User Name' }}</h4>
+				<p class="text-[11px] text-neutral-500 truncate">{{ element.props.description || 'user@example.com' }}</p>
+			</div>
+			<UIcon name="lucide:external-link" class="w-4 h-4 text-neutral-400 hover:text-white cursor-pointer" />
+		</div>
 
 		<!-- STAT CARD -->
 		<UCard

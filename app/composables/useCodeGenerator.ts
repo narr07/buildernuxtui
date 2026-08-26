@@ -334,6 +334,187 @@ export const useCodeGenerator = () => {
 				return `${indent}<UProgress${valAttr}${colorAttr}${statusAttr}${classAttr} />`
 			}
 
+			case 'avatar-group': {
+				const sizeAttr = el.props.size ? ` size="${el.props.size}"` : ''
+				const maxAttr = el.props.max ? ` :max="${el.props.max}"` : ''
+				const avatars = (el.props.avatars || '').split(',').map((s: string) => s.trim()).filter(Boolean)
+				const avs = avatars.map((url: string) => `${childIndent}<UAvatar src="${url}" />`).join('\n')
+				return `${indent}<UAvatarGroup${sizeAttr}${maxAttr}${classAttr}>\n${avs}\n${indent}</UAvatarGroup>`
+			}
+
+			case 'banner': {
+				const titleAttr = el.props.title ? ` title="${el.props.title}"` : ''
+				const iconAttr = el.props.icon ? ` icon="${el.props.icon}"` : ''
+				const colorAttr = el.props.color ? ` color="${el.props.color}"` : ''
+				const closeAttr = el.props.close ? ` :close="true"` : ''
+				return `${indent}<UBanner${titleAttr}${iconAttr}${colorAttr}${closeAttr}${classAttr} />`
+			}
+
+			case 'calendar': {
+				const colorAttr = el.props.color ? ` color="${el.props.color}"` : ''
+				const sizeAttr = el.props.size ? ` size="${el.props.size}"` : ''
+				return `${indent}<UCalendar${colorAttr}${sizeAttr}${classAttr} />`
+			}
+
+			case 'progress-group': {
+				const colorAttr = el.props.color ? ` color="${el.props.color}"` : ''
+				return `${indent}<UProgressGroup${colorAttr}${classAttr} />`
+			}
+
+			case 'skeleton': {
+				const shapeClass = el.props.shape === 'circle' ? 'rounded-full w-12 h-12' : `${el.props.height || 'h-6'} ${el.props.width || 'w-full'} rounded-lg`
+				return `${indent}<USkeleton class="${shapeClass}" />`
+			}
+
+			case 'form': {
+				const childrenCode = el.children && el.children.length > 0
+					? el.children.map((c) => renderElementCode(c, depth + 1)).join('\n')
+					: `${childIndent}<!-- Form fields -->`
+				return `${indent}<UForm${classAttr}>\n${childrenCode}\n${childIndent}<UButton type="submit" label="${el.props.submitText || 'Submit'}" color="primary" />\n${indent}</UForm>`
+			}
+
+			case 'form-field': {
+				const labelAttr = el.props.label ? ` label="${el.props.label}"` : ''
+				const descAttr = el.props.description ? ` description="${el.props.description}"` : ''
+				const reqAttr = el.props.required ? ` :required="true"` : ''
+				const errAttr = el.props.error ? ` error="${el.props.error}"` : ''
+				const childrenCode = el.children && el.children.length > 0
+					? el.children.map((c) => renderElementCode(c, depth + 1)).join('\n')
+					: `${childIndent}<UInput placeholder="Enter value..." />`
+				return `${indent}<UFormField${labelAttr}${descAttr}${reqAttr}${errAttr}${classAttr}>\n${childrenCode}\n${indent}</UFormField>`
+			}
+
+			case 'input-number': {
+				const valAttr = el.props.value !== undefined ? ` :model-value="${el.props.value}"` : ''
+				const minAttr = el.props.min !== undefined ? ` :min="${el.props.min}"` : ''
+				const maxAttr = el.props.max !== undefined ? ` :max="${el.props.max}"` : ''
+				const colorAttr = el.props.color ? ` color="${el.props.color}"` : ''
+				return `${indent}<UInputNumber${valAttr}${minAttr}${maxAttr}${colorAttr}${classAttr} />`
+			}
+
+			case 'input-date': {
+				const phAttr = el.props.placeholder ? ` placeholder="${el.props.placeholder}"` : ''
+				const iconAttr = el.props.icon ? ` icon="${el.props.icon}"` : ''
+				const colorAttr = el.props.color ? ` color="${el.props.color}"` : ''
+				return `${indent}<UInputDate${phAttr}${iconAttr}${colorAttr}${classAttr} />`
+			}
+
+			case 'input-time': {
+				const phAttr = el.props.placeholder ? ` placeholder="${el.props.placeholder}"` : ''
+				const iconAttr = el.props.icon ? ` icon="${el.props.icon}"` : ''
+				const colorAttr = el.props.color ? ` color="${el.props.color}"` : ''
+				return `${indent}<UInputTime${phAttr}${iconAttr}${colorAttr}${classAttr} />`
+			}
+
+			case 'input-menu': {
+				const phAttr = el.props.placeholder ? ` placeholder="${el.props.placeholder}"` : ''
+				const items = (el.props.items || '').split(',').map((s: string) => `'${s.trim()}'`).filter(Boolean).join(', ')
+				return `${indent}<UInputMenu${phAttr} :items="[${items}]"${classAttr} />`
+			}
+
+			case 'input-tags': {
+				const phAttr = el.props.placeholder ? ` placeholder="${el.props.placeholder}"` : ''
+				const tags = (el.props.tags || '').split(',').map((s: string) => `'${s.trim()}'`).filter(Boolean).join(', ')
+				return `${indent}<UInputTags${phAttr} :model-value="[${tags}]"${classAttr} />`
+			}
+
+			case 'input-rating': {
+				const valAttr = el.props.value !== undefined ? ` :model-value="${el.props.value}"` : ''
+				const maxAttr = el.props.max !== undefined ? ` :max="${el.props.max}"` : ''
+				return `${indent}<UInputRating${valAttr}${maxAttr}${classAttr} />`
+			}
+
+			case 'pin-input': {
+				const lenAttr = el.props.length ? ` :length="${el.props.length}"` : ''
+				return `${indent}<UPinInput${lenAttr}${classAttr} />`
+			}
+
+			case 'color-picker': {
+				const valAttr = el.props.value ? ` :model-value="'${el.props.value}'"` : ''
+				return `${indent}<UColorPicker${valAttr}${classAttr} />`
+			}
+
+			case 'file-upload': {
+				const labelAttr = el.props.label ? ` label="${el.props.label}"` : ''
+				const iconAttr = el.props.icon ? ` icon="${el.props.icon}"` : ''
+				const multiAttr = el.props.multiple ? ` :multiple="true"` : ''
+				return `${indent}<UFileUpload${labelAttr}${iconAttr}${multiAttr}${classAttr} />`
+			}
+
+			case 'select': {
+				const phAttr = el.props.placeholder ? ` placeholder="${el.props.placeholder}"` : ''
+				const items = (el.props.options || '').split(',').map((s: string) => `'${s.trim()}'`).filter(Boolean).join(', ')
+				return `${indent}<USelect${phAttr} :items="[${items}]"${classAttr} />`
+			}
+
+			case 'select-menu': {
+				const phAttr = el.props.placeholder ? ` placeholder="${el.props.placeholder}"` : ''
+				const items = (el.props.items || '').split(',').map((s: string) => `'${s.trim()}'`).filter(Boolean).join(', ')
+				const searchAttr = el.props.searchable ? ` :searchable="true"` : ''
+				return `${indent}<USelectMenu${phAttr} :items="[${items}]"${searchAttr}${classAttr} />`
+			}
+
+			case 'listbox': {
+				const phAttr = el.props.placeholder ? ` placeholder="${el.props.placeholder}"` : ''
+				const items = (el.props.items || '').split(',').map((s: string) => `'${s.trim()}'`).filter(Boolean).join(', ')
+				return `${indent}<UListbox${phAttr} :items="[${items}]"${classAttr} />`
+			}
+
+			case 'radio-group': {
+				const items = (el.props.items || '').split(',').map((s: string) => `'${s.trim()}'`).filter(Boolean).join(', ')
+				const orientAttr = el.props.orientation ? ` orientation="${el.props.orientation}"` : ''
+				return `${indent}<URadioGroup :items="[${items}]"${orientAttr}${classAttr} />`
+			}
+
+			case 'checkbox-group': {
+				const items = (el.props.items || '').split(',').map((s: string) => `'${s.trim()}'`).filter(Boolean).join(', ')
+				const orientAttr = el.props.orientation ? ` orientation="${el.props.orientation}"` : ''
+				return `${indent}<UCheckboxGroup :items="[${items}]"${orientAttr}${classAttr} />`
+			}
+
+			case 'carousel': {
+				const items = (el.props.items || '').split(',').map((s: string) => `'${s.trim()}'`).filter(Boolean).join(', ')
+				const arrowsAttr = el.props.arrows ? ` :arrows="true"` : ''
+				const dotsAttr = el.props.dots ? ` :dots="true"` : ''
+				return `${indent}<UCarousel :items="[${items}]"${arrowsAttr}${dotsAttr}${classAttr} />`
+			}
+
+			case 'empty': {
+				const titleAttr = el.props.title ? ` title="${el.props.title}"` : ''
+				const descAttr = el.props.description ? ` description="${el.props.description}"` : ''
+				const iconAttr = el.props.icon ? ` icon="${el.props.icon}"` : ''
+				return `${indent}<UEmpty${titleAttr}${descAttr}${iconAttr}${classAttr}>\n${childIndent}<template #footer>\n${childIndent}\t<UButton label="${el.props.actionText || 'Action'}" color="primary" />\n${childIndent}</template>\n${indent}</UEmpty>`
+			}
+
+			case 'marquee': {
+				const items = (el.props.items || '').split(',').map((s: string) => `'${s.trim()}'`).filter(Boolean).join(', ')
+				return `${indent}<UMarquee :items="[${items}]"${classAttr} />`
+			}
+
+			case 'scroll-area': {
+				const childrenCode = el.children && el.children.length > 0
+					? el.children.map((c) => renderElementCode(c, depth + 1)).join('\n')
+					: `${childIndent}<!-- Scroll content -->`
+				return `${indent}<UScrollArea class="${el.props.height || 'h-48'}">\n${childrenCode}\n${indent}</UScrollArea>`
+			}
+
+			case 'timeline': {
+				const items = (el.props.items || '').split(',').map((s: string) => s.trim()).filter(Boolean)
+				const itemsJson = items.map((it: string) => `{ date: '${it.split(':')[0] || ''}', title: '${it.split(':')[1] || it}' }`).join(', ')
+				return `${indent}<UTimeline :items="[${itemsJson}]"${classAttr} />`
+			}
+
+			case 'tree': {
+				return `${indent}<UTree${classAttr} />`
+			}
+
+			case 'user': {
+				const nameAttr = el.props.name ? ` name="${el.props.name}"` : ''
+				const descAttr = el.props.description ? ` description="${el.props.description}"` : ''
+				const avatarAttr = el.props.avatar ? ` :avatar="{ src: '${el.props.avatar}' }"` : ''
+				return `${indent}<UUser${nameAttr}${descAttr}${avatarAttr}${classAttr} />`
+			}
+
 			case 'stat-card': {
 				return `${indent}<UCard${classAttr}>\n${childIndent}<div class="flex items-center justify-between">\n${childIndent}\t<span class="text-sm font-medium text-neutral-500">${el.props.title || 'Stat'}</span>\n${childIndent}\t<UIcon name="${el.props.icon || 'lucide:activity'}" class="h-5 w-5 text-primary" />\n${childIndent}</div>\n${childIndent}<div class="mt-2 flex items-baseline gap-2">\n${childIndent}\t<span class="text-2xl font-bold">${el.props.value || '0'}</span>\n${childIndent}\t<span class="text-xs font-semibold ${el.props.changeType === 'negative' ? 'text-error' : 'text-success'}">${el.props.change || ''}</span>\n${childIndent}</div>\n${indent}</UCard>`
 			}

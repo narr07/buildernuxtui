@@ -1008,8 +1008,248 @@ const count = ref(0)
 	},
 
 	// -------------------------------------------------------------
-	// ELEMENTS & ACTIONS
+	// ELEMENT COMPONENTS
 	// -------------------------------------------------------------
+	{
+		type: 'alert',
+		name: 'UAlert',
+		category: 'element',
+		icon: 'lucide:alert-circle',
+		description: 'Callout alert banner to draw the user attention',
+		isContainer: false,
+		defaultProps: {
+			title: 'Update Available',
+			description: 'A new version of Nuxt UI v4 is now available for download.',
+			icon: 'lucide:info',
+			color: 'primary',
+			variant: 'subtle',
+			close: false
+		},
+		defaultStyles: {
+			width: 'w-full'
+		},
+		propsSchema: [
+			{
+				name: 'title',
+				label: 'Alert Title',
+				type: 'string',
+				default: 'Update Available'
+			},
+			{
+				name: 'description',
+				label: 'Description',
+				type: 'textarea',
+				default: 'A new version is now available for download.'
+			},
+			{
+				name: 'icon',
+				label: 'Icon',
+				type: 'icon',
+				default: 'lucide:info'
+			},
+			{
+				name: 'color',
+				label: 'Color',
+				type: 'select',
+				options: ['primary', 'neutral', 'success', 'warning', 'error', 'info'],
+				default: 'primary'
+			},
+			{
+				name: 'variant',
+				label: 'Variant',
+				type: 'select',
+				options: ['solid', 'outline', 'soft', 'subtle'],
+				default: 'subtle'
+			}
+		]
+	},
+	{
+		type: 'avatar',
+		name: 'UAvatar',
+		category: 'element',
+		icon: 'lucide:circle-user-round',
+		description: 'User avatar with image, initials or fallback icon',
+		isContainer: false,
+		defaultProps: {
+			src: 'https://avatars.githubusercontent.com/u/739984?v=4',
+			alt: 'Anthony Fu',
+			text: 'AF',
+			size: 'md',
+			chip: true,
+			chipColor: 'success'
+		},
+		defaultStyles: {},
+		propsSchema: [
+			{
+				name: 'src',
+				label: 'Image URL',
+				type: 'string',
+				default: 'https://avatars.githubusercontent.com/u/739984?v=4'
+			},
+			{
+				name: 'alt',
+				label: 'Alt Text',
+				type: 'string',
+				default: 'Avatar'
+			},
+			{
+				name: 'text',
+				label: 'Fallback Initials',
+				type: 'string',
+				default: 'AF'
+			},
+			{
+				name: 'size',
+				label: 'Size',
+				type: 'select',
+				options: ['xs', 'sm', 'md', 'lg', 'xl', '2xl', '3xl'],
+				default: 'md'
+			},
+			{
+				name: 'chip',
+				label: 'Status Dot',
+				type: 'boolean',
+				default: true
+			},
+			{
+				name: 'chipColor',
+				label: 'Status Color',
+				type: 'select',
+				options: ['success', 'warning', 'error', 'neutral', 'primary'],
+				default: 'success'
+			}
+		]
+	},
+	{
+		type: 'avatar-group',
+		name: 'UAvatarGroup',
+		category: 'element',
+		icon: 'lucide:users-round',
+		description: 'Stack multiple avatars in an overlapping group',
+		isContainer: false,
+		defaultProps: {
+			size: 'md',
+			max: 3,
+			avatars: 'https://avatars.githubusercontent.com/u/739984?v=4, https://avatars.githubusercontent.com/u/904724?v=4, https://avatars.githubusercontent.com/u/28706372?v=4, https://avatars.githubusercontent.com/u/6492061?v=4'
+		},
+		defaultStyles: {},
+		propsSchema: [
+			{
+				name: 'size',
+				label: 'Size',
+				type: 'select',
+				options: ['xs', 'sm', 'md', 'lg', 'xl'],
+				default: 'md'
+			},
+			{
+				name: 'max',
+				label: 'Max Visible',
+				type: 'number',
+				default: 3
+			},
+			{
+				name: 'avatars',
+				label: 'Avatar URLs (Comma separated)',
+				type: 'textarea',
+				default: 'https://avatars.githubusercontent.com/u/739984?v=4, https://avatars.githubusercontent.com/u/904724?v=4, https://avatars.githubusercontent.com/u/28706372?v=4'
+			}
+		]
+	},
+	{
+		type: 'badge',
+		name: 'UBadge',
+		category: 'element',
+		icon: 'lucide:tag',
+		description: 'Small status or tag label badge',
+		isContainer: false,
+		defaultProps: {
+			label: 'New Feature',
+			color: 'primary',
+			variant: 'subtle',
+			size: 'md',
+			icon: 'lucide:sparkles'
+		},
+		defaultStyles: {},
+		propsSchema: [
+			{
+				name: 'label',
+				label: 'Badge Label',
+				type: 'string',
+				default: 'New Feature'
+			},
+			{
+				name: 'color',
+				label: 'Color',
+				type: 'select',
+				options: ['primary', 'neutral', 'success', 'warning', 'error', 'info'],
+				default: 'primary'
+			},
+			{
+				name: 'variant',
+				label: 'Variant',
+				type: 'select',
+				options: ['solid', 'outline', 'soft', 'subtle'],
+				default: 'subtle'
+			},
+			{
+				name: 'size',
+				label: 'Size',
+				type: 'select',
+				options: ['xs', 'sm', 'md', 'lg'],
+				default: 'md'
+			},
+			{
+				name: 'icon',
+				label: 'Icon',
+				type: 'icon',
+				default: 'lucide:sparkles'
+			}
+		]
+	},
+	{
+		type: 'banner',
+		name: 'UBanner',
+		category: 'element',
+		icon: 'lucide:flag',
+		description: 'Top-level announcement banner bar',
+		isContainer: false,
+		defaultProps: {
+			title: 'Nuxt UI v4 is now officially released! Check out the migration guide.',
+			icon: 'lucide:sparkles',
+			color: 'primary',
+			close: true
+		},
+		defaultStyles: {
+			width: 'w-full'
+		},
+		propsSchema: [
+			{
+				name: 'title',
+				label: 'Banner Text',
+				type: 'string',
+				default: 'Nuxt UI v4 is now officially released!'
+			},
+			{
+				name: 'icon',
+				label: 'Icon',
+				type: 'icon',
+				default: 'lucide:sparkles'
+			},
+			{
+				name: 'color',
+				label: 'Color',
+				type: 'select',
+				options: ['primary', 'neutral', 'success', 'warning', 'error', 'info'],
+				default: 'primary'
+			},
+			{
+				name: 'close',
+				label: 'Show Close Button',
+				type: 'boolean',
+				default: true
+			}
+		]
+	},
 	{
 		type: 'button',
 		name: 'UButton',
@@ -1077,110 +1317,33 @@ const count = ref(0)
 		]
 	},
 	{
-		type: 'badge',
-		name: 'UBadge',
+		type: 'calendar',
+		name: 'UCalendar',
 		category: 'element',
-		icon: 'lucide:tag',
-		description: 'Small status or tag label badge',
+		icon: 'lucide:calendar',
+		description: 'Interactive date selection calendar grid',
 		isContainer: false,
 		defaultProps: {
-			label: 'New Feature',
 			color: 'primary',
-			variant: 'subtle',
-			size: 'md',
-			icon: 'lucide:sparkles'
+			size: 'md'
 		},
-		defaultStyles: {},
+		defaultStyles: {
+			margin: 'my-3'
+		},
 		propsSchema: [
-			{
-				name: 'label',
-				label: 'Badge Label',
-				type: 'string',
-				default: 'New Feature'
-			},
 			{
 				name: 'color',
 				label: 'Color',
 				type: 'select',
-				options: ['primary', 'neutral', 'success', 'warning', 'error', 'info'],
+				options: ['primary', 'neutral', 'success', 'warning', 'error'],
 				default: 'primary'
 			},
 			{
-				name: 'variant',
-				label: 'Variant',
-				type: 'select',
-				options: ['solid', 'outline', 'soft', 'subtle'],
-				default: 'subtle'
-			},
-			{
 				name: 'size',
 				label: 'Size',
 				type: 'select',
-				options: ['xs', 'sm', 'md', 'lg'],
+				options: ['sm', 'md', 'lg'],
 				default: 'md'
-			},
-			{
-				name: 'icon',
-				label: 'Icon',
-				type: 'icon',
-				default: 'lucide:sparkles'
-			}
-		]
-	},
-	{
-		type: 'avatar',
-		name: 'UAvatar',
-		category: 'element',
-		icon: 'lucide:circle-user-round',
-		description: 'User avatar with image, initials or icon',
-		isContainer: false,
-		defaultProps: {
-			src: 'https://avatars.githubusercontent.com/u/739984?v=4',
-			alt: 'Anthony Fu',
-			text: 'AF',
-			size: 'md',
-			chip: true,
-			chipColor: 'success'
-		},
-		defaultStyles: {},
-		propsSchema: [
-			{
-				name: 'src',
-				label: 'Image URL',
-				type: 'string',
-				default: 'https://avatars.githubusercontent.com/u/739984?v=4'
-			},
-			{
-				name: 'alt',
-				label: 'Alt Text',
-				type: 'string',
-				default: 'Avatar'
-			},
-			{
-				name: 'text',
-				label: 'Fallback Initials',
-				type: 'string',
-				default: 'AF'
-			},
-			{
-				name: 'size',
-				label: 'Size',
-				type: 'select',
-				options: ['xs', 'sm', 'md', 'lg', 'xl', '2xl', '3xl'],
-				default: 'md'
-			},
-			{
-				name: 'chip',
-				label: 'Status Dot',
-				type: 'boolean',
-				default: true
-			},
-			{
-				name: 'chipColor',
-				label: 'Status Color',
-				type: 'select',
-				options: ['success', 'warning', 'error', 'neutral', 'primary'],
-				default: 'success'
 			}
 		]
 	},
@@ -1257,10 +1420,202 @@ const count = ref(0)
 			}
 		]
 	},
+	{
+		type: 'progress',
+		name: 'UProgress',
+		category: 'element',
+		icon: 'lucide:loader',
+		description: 'Progress bar with status value or indeterminate mode',
+		isContainer: false,
+		defaultProps: {
+			value: 75,
+			max: 100,
+			color: 'primary',
+			size: 'md',
+			status: true
+		},
+		defaultStyles: {
+			width: 'w-full'
+		},
+		propsSchema: [
+			{
+				name: 'value',
+				label: 'Progress Value',
+				type: 'number',
+				default: 75
+			},
+			{
+				name: 'color',
+				label: 'Color',
+				type: 'select',
+				options: ['primary', 'neutral', 'success', 'warning', 'error'],
+				default: 'primary'
+			},
+			{
+				name: 'size',
+				label: 'Size',
+				type: 'select',
+				options: ['xs', 'sm', 'md', 'lg', 'xl'],
+				default: 'md'
+			},
+			{
+				name: 'status',
+				label: 'Show Percentage Text',
+				type: 'boolean',
+				default: true
+			}
+		]
+	},
+	{
+		type: 'progress-group',
+		name: 'UProgressGroup',
+		category: 'element',
+		icon: 'lucide:layers-2',
+		description: 'Multi-bar grouped progress indicators',
+		isContainer: false,
+		defaultProps: {
+			items: 'Design:85, Development:60, Testing:40',
+			color: 'primary',
+			size: 'md'
+		},
+		defaultStyles: {
+			width: 'w-full',
+			margin: 'my-3'
+		},
+		propsSchema: [
+			{
+				name: 'items',
+				label: 'Items (Label:Percentage comma separated)',
+				type: 'textarea',
+				default: 'Design:85, Development:60, Testing:40'
+			},
+			{
+				name: 'color',
+				label: 'Color',
+				type: 'select',
+				options: ['primary', 'neutral', 'success', 'warning', 'error'],
+				default: 'primary'
+			}
+		]
+	},
+	{
+		type: 'skeleton',
+		name: 'USkeleton',
+		category: 'element',
+		icon: 'lucide:scan',
+		description: 'Placeholder loading skeleton animation shape',
+		isContainer: false,
+		defaultProps: {
+			shape: 'rectangle',
+			height: 'h-6',
+			width: 'w-full'
+		},
+		defaultStyles: {
+			margin: 'my-2'
+		},
+		propsSchema: [
+			{
+				name: 'shape',
+				label: 'Shape',
+				type: 'select',
+				options: ['rectangle', 'circle', 'card', 'avatar-text'],
+				default: 'rectangle'
+			},
+			{
+				name: 'height',
+				label: 'Height',
+				type: 'select',
+				options: ['h-4', 'h-6', 'h-8', 'h-12', 'h-24', 'h-36'],
+				default: 'h-6'
+			},
+			{
+				name: 'width',
+				label: 'Width',
+				type: 'select',
+				options: ['w-1/4', 'w-1/2', 'w-3/4', 'w-full', 'w-12'],
+				default: 'w-full'
+			}
+		]
+	},
 
 	// -------------------------------------------------------------
 	// FORMS & INPUTS
 	// -------------------------------------------------------------
+	{
+		type: 'form',
+		name: 'UForm',
+		category: 'form',
+		icon: 'lucide:file-input',
+		description: 'Form container wrapper with validation and submit handler',
+		isContainer: true,
+		defaultProps: {
+			title: 'User Profile Form',
+			submitText: 'Save Changes'
+		},
+		defaultStyles: {
+			width: 'w-full',
+			margin: 'my-4'
+		},
+		propsSchema: [
+			{
+				name: 'title',
+				label: 'Form Title',
+				type: 'string',
+				default: 'User Profile Form'
+			},
+			{
+				name: 'submitText',
+				label: 'Submit Button Text',
+				type: 'string',
+				default: 'Save Changes'
+			}
+		]
+	},
+	{
+		type: 'form-field',
+		name: 'UFormField',
+		category: 'form',
+		icon: 'lucide:form-input',
+		description: 'Form field container with label, description, help and error message',
+		isContainer: true,
+		defaultProps: {
+			label: 'Email Address',
+			description: 'We will never share your email with third parties.',
+			help: '',
+			required: true,
+			error: ''
+		},
+		defaultStyles: {
+			width: 'w-full',
+			margin: 'my-3'
+		},
+		propsSchema: [
+			{
+				name: 'label',
+				label: 'Field Label',
+				type: 'string',
+				default: 'Email Address'
+			},
+			{
+				name: 'description',
+				label: 'Help Description',
+				type: 'string',
+				default: 'We will never share your email.'
+			},
+			{
+				name: 'required',
+				label: 'Required Indicator',
+				type: 'boolean',
+				default: true
+			},
+			{
+				name: 'error',
+				label: 'Error Message (Optional)',
+				type: 'string',
+				default: ''
+			}
+		]
+	},
 	{
 		type: 'input',
 		name: 'UInput',
@@ -1274,6 +1629,7 @@ const count = ref(0)
 			color: 'primary',
 			variant: 'outline',
 			size: 'md',
+			type: 'text',
 			disabled: false
 		},
 		defaultStyles: {
@@ -1291,6 +1647,13 @@ const count = ref(0)
 				label: 'Leading Icon',
 				type: 'icon',
 				default: 'lucide:mail'
+			},
+			{
+				name: 'type',
+				label: 'Input Type',
+				type: 'select',
+				options: ['text', 'email', 'password', 'url', 'tel'],
+				default: 'text'
 			},
 			{
 				name: 'color',
@@ -1312,6 +1675,291 @@ const count = ref(0)
 				type: 'select',
 				options: ['xs', 'sm', 'md', 'lg', 'xl'],
 				default: 'md'
+			}
+		]
+	},
+	{
+		type: 'input-number',
+		name: 'UInputNumber',
+		category: 'form',
+		icon: 'lucide:binary',
+		description: 'Numeric step counter input with up/down controls',
+		isContainer: false,
+		defaultProps: {
+			value: 1,
+			min: 0,
+			max: 100,
+			step: 1,
+			color: 'primary',
+			size: 'md'
+		},
+		defaultStyles: {
+			width: 'w-full'
+		},
+		propsSchema: [
+			{
+				name: 'value',
+				label: 'Initial Value',
+				type: 'number',
+				default: 1
+			},
+			{
+				name: 'min',
+				label: 'Minimum',
+				type: 'number',
+				default: 0
+			},
+			{
+				name: 'max',
+				label: 'Maximum',
+				type: 'number',
+				default: 100
+			},
+			{
+				name: 'color',
+				label: 'Color',
+				type: 'select',
+				options: ['primary', 'neutral', 'success', 'warning', 'error'],
+				default: 'primary'
+			}
+		]
+	},
+	{
+		type: 'input-date',
+		name: 'UInputDate',
+		category: 'form',
+		icon: 'lucide:calendar-days',
+		description: 'Date picker input dropdown field',
+		isContainer: false,
+		defaultProps: {
+			placeholder: 'Select a date...',
+			icon: 'lucide:calendar',
+			color: 'primary',
+			size: 'md'
+		},
+		defaultStyles: {
+			width: 'w-full'
+		},
+		propsSchema: [
+			{
+				name: 'placeholder',
+				label: 'Placeholder',
+				type: 'string',
+				default: 'Select a date...'
+			},
+			{
+				name: 'icon',
+				label: 'Icon',
+				type: 'icon',
+				default: 'lucide:calendar'
+			}
+		]
+	},
+	{
+		type: 'input-time',
+		name: 'UInputTime',
+		category: 'form',
+		icon: 'lucide:clock',
+		description: 'Time selection input field',
+		isContainer: false,
+		defaultProps: {
+			placeholder: 'Select time...',
+			icon: 'lucide:clock',
+			color: 'primary',
+			size: 'md'
+		},
+		defaultStyles: {
+			width: 'w-full'
+		},
+		propsSchema: [
+			{
+				name: 'placeholder',
+				label: 'Placeholder',
+				type: 'string',
+				default: 'Select time...'
+			}
+		]
+	},
+	{
+		type: 'input-menu',
+		name: 'UInputMenu',
+		category: 'form',
+		icon: 'lucide:list-filter',
+		description: 'Autocomplete dropdown menu input',
+		isContainer: false,
+		defaultProps: {
+			placeholder: 'Search frameworks...',
+			items: 'Nuxt, Vue, Next, React, Svelte, Astro',
+			color: 'primary',
+			size: 'md'
+		},
+		defaultStyles: {
+			width: 'w-full'
+		},
+		propsSchema: [
+			{
+				name: 'placeholder',
+				label: 'Placeholder',
+				type: 'string',
+				default: 'Search frameworks...'
+			},
+			{
+				name: 'items',
+				label: 'Options (Comma separated)',
+				type: 'textarea',
+				default: 'Nuxt, Vue, Next, React, Svelte, Astro'
+			}
+		]
+	},
+	{
+		type: 'input-tags',
+		name: 'UInputTags',
+		category: 'form',
+		icon: 'lucide:tags',
+		description: 'Multi-tag pill badge creator input',
+		isContainer: false,
+		defaultProps: {
+			placeholder: 'Add tags...',
+			tags: 'Vue 3, Nuxt 4, Tailwind CSS, TypeScript',
+			color: 'primary'
+		},
+		defaultStyles: {
+			width: 'w-full'
+		},
+		propsSchema: [
+			{
+				name: 'placeholder',
+				label: 'Placeholder',
+				type: 'string',
+				default: 'Add tags...'
+			},
+			{
+				name: 'tags',
+				label: 'Initial Tags (Comma separated)',
+				type: 'textarea',
+				default: 'Vue 3, Nuxt 4, Tailwind CSS, TypeScript'
+			}
+		]
+	},
+	{
+		type: 'input-rating',
+		name: 'UInputRating',
+		category: 'form',
+		icon: 'lucide:star',
+		description: 'Star score rating input control',
+		isContainer: false,
+		defaultProps: {
+			value: 4,
+			max: 5,
+			color: 'warning',
+			icon: 'lucide:star'
+		},
+		defaultStyles: {},
+		propsSchema: [
+			{
+				name: 'value',
+				label: 'Rating Value',
+				type: 'number',
+				default: 4
+			},
+			{
+				name: 'max',
+				label: 'Maximum Stars',
+				type: 'number',
+				default: 5
+			}
+		]
+	},
+	{
+		type: 'pin-input',
+		name: 'UPinInput',
+		category: 'form',
+		icon: 'lucide:key-round',
+		description: 'OTP / Security PIN digit input boxes',
+		isContainer: false,
+		defaultProps: {
+			length: 4,
+			placeholder: '○',
+			color: 'primary',
+			size: 'md'
+		},
+		defaultStyles: {
+			margin: 'my-3'
+		},
+		propsSchema: [
+			{
+				name: 'length',
+				label: 'Number of Digits',
+				type: 'number',
+				default: 4
+			},
+			{
+				name: 'color',
+				label: 'Color',
+				type: 'select',
+				options: ['primary', 'neutral', 'success', 'warning', 'error'],
+				default: 'primary'
+			}
+		]
+	},
+	{
+		type: 'color-picker',
+		name: 'UColorPicker',
+		category: 'form',
+		icon: 'lucide:palette',
+		description: 'Hex / RGBA color palette picker',
+		isContainer: false,
+		defaultProps: {
+			value: '#10b981',
+			format: 'hex'
+		},
+		defaultStyles: {
+			margin: 'my-2'
+		},
+		propsSchema: [
+			{
+				name: 'value',
+				label: 'Hex Color Value',
+				type: 'color',
+				default: '#10b981'
+			}
+		]
+	},
+	{
+		type: 'file-upload',
+		name: 'UFileUpload',
+		category: 'form',
+		icon: 'lucide:upload-cloud',
+		description: 'Drag & Drop file upload dropzone',
+		isContainer: false,
+		defaultProps: {
+			label: 'Click or drag files here to upload',
+			hint: 'PNG, JPG, PDF up to 10MB',
+			icon: 'lucide:upload-cloud',
+			multiple: true
+		},
+		defaultStyles: {
+			width: 'w-full',
+			margin: 'my-3'
+		},
+		propsSchema: [
+			{
+				name: 'label',
+				label: 'Dropzone Label',
+				type: 'string',
+				default: 'Click or drag files here to upload'
+			},
+			{
+				name: 'hint',
+				label: 'Supported file types hint',
+				type: 'string',
+				default: 'PNG, JPG, PDF up to 10MB'
+			},
+			{
+				name: 'multiple',
+				label: 'Allow Multiple',
+				type: 'boolean',
+				default: true
 			}
 		]
 	},
@@ -1350,6 +1998,167 @@ const count = ref(0)
 				type: 'select',
 				options: ['outline', 'soft', 'subtle', 'none'],
 				default: 'outline'
+			}
+		]
+	},
+	{
+		type: 'select',
+		name: 'USelect',
+		category: 'form',
+		icon: 'lucide:chevron-down-square',
+		description: 'Standard native dropdown selection select',
+		isContainer: false,
+		defaultProps: {
+			placeholder: 'Select a country...',
+			options: 'United States, Indonesia, United Kingdom, Japan, Germany',
+			color: 'primary',
+			size: 'md'
+		},
+		defaultStyles: {
+			width: 'w-full'
+		},
+		propsSchema: [
+			{
+				name: 'placeholder',
+				label: 'Placeholder',
+				type: 'string',
+				default: 'Select a country...'
+			},
+			{
+				name: 'options',
+				label: 'Options (Comma separated)',
+				type: 'textarea',
+				default: 'United States, Indonesia, United Kingdom, Japan, Germany'
+			}
+		]
+	},
+	{
+		type: 'select-menu',
+		name: 'USelectMenu',
+		category: 'form',
+		icon: 'lucide:chevrons-up-down',
+		description: 'Custom rich select dropdown with search and avatars',
+		isContainer: false,
+		defaultProps: {
+			placeholder: 'Select team member...',
+			items: 'Alexandre Rochon, Sébastien Chopin, Anthony Fu, Benjamin Canac',
+			searchable: true,
+			color: 'primary',
+			size: 'md'
+		},
+		defaultStyles: {
+			width: 'w-full'
+		},
+		propsSchema: [
+			{
+				name: 'placeholder',
+				label: 'Placeholder',
+				type: 'string',
+				default: 'Select team member...'
+			},
+			{
+				name: 'items',
+				label: 'Items (Comma separated)',
+				type: 'textarea',
+				default: 'Alexandre Rochon, Sébastien Chopin, Anthony Fu, Benjamin Canac'
+			},
+			{
+				name: 'searchable',
+				label: 'Searchable Filter',
+				type: 'boolean',
+				default: true
+			}
+		]
+	},
+	{
+		type: 'listbox',
+		name: 'UListbox',
+		category: 'form',
+		icon: 'lucide:check-check',
+		description: 'Accessible listbox option picker',
+		isContainer: false,
+		defaultProps: {
+			placeholder: 'Choose role...',
+			items: 'Administrator, Editor, Contributor, Viewer',
+			color: 'primary'
+		},
+		defaultStyles: {
+			width: 'w-full'
+		},
+		propsSchema: [
+			{
+				name: 'placeholder',
+				label: 'Placeholder',
+				type: 'string',
+				default: 'Choose role...'
+			},
+			{
+				name: 'items',
+				label: 'Items (Comma separated)',
+				type: 'textarea',
+				default: 'Administrator, Editor, Contributor, Viewer'
+			}
+		]
+	},
+	{
+		type: 'radio-group',
+		name: 'URadioGroup',
+		category: 'form',
+		icon: 'lucide:circle-dot',
+		description: 'Radio button choice group',
+		isContainer: false,
+		defaultProps: {
+			items: 'Startup ($19/mo), Business ($49/mo), Enterprise ($99/mo)',
+			orientation: 'vertical',
+			color: 'primary'
+		},
+		defaultStyles: {
+			margin: 'my-3'
+		},
+		propsSchema: [
+			{
+				name: 'items',
+				label: 'Items (Comma separated)',
+				type: 'textarea',
+				default: 'Startup ($19/mo), Business ($49/mo), Enterprise ($99/mo)'
+			},
+			{
+				name: 'orientation',
+				label: 'Orientation',
+				type: 'select',
+				options: ['vertical', 'horizontal'],
+				default: 'vertical'
+			}
+		]
+	},
+	{
+		type: 'checkbox-group',
+		name: 'UCheckboxGroup',
+		category: 'form',
+		icon: 'lucide:list-checks',
+		description: 'Group of multiple checkbox choices',
+		isContainer: false,
+		defaultProps: {
+			items: 'Email Notifications, SMS Alerts, Weekly Summary Digest',
+			orientation: 'vertical',
+			color: 'primary'
+		},
+		defaultStyles: {
+			margin: 'my-3'
+		},
+		propsSchema: [
+			{
+				name: 'items',
+				label: 'Items (Comma separated)',
+				type: 'textarea',
+				default: 'Email Notifications, SMS Alerts, Weekly Summary Digest'
+			},
+			{
+				name: 'orientation',
+				label: 'Orientation',
+				type: 'select',
+				options: ['vertical', 'horizontal'],
+				default: 'vertical'
 			}
 		]
 	},
@@ -1474,104 +2283,249 @@ const count = ref(0)
 	},
 
 	// -------------------------------------------------------------
-	// DATA & FEEDBACK
+	// DATA & DISPLAY COMPONENTS
 	// -------------------------------------------------------------
 	{
-		type: 'alert',
-		name: 'UAlert',
+		type: 'table',
+		name: 'UTable',
 		category: 'data',
-		icon: 'lucide:alert-circle',
-		description: 'Callout notification banner with title and description',
+		icon: 'lucide:table-2',
+		description: 'Interactive data table with sort, paginate and row selection',
 		isContainer: false,
 		defaultProps: {
-			title: 'Update Available',
-			description: 'A new version of Nuxt UI v4 is now available for download.',
-			icon: 'lucide:info',
-			color: 'primary',
-			variant: 'subtle',
-			close: false
+			caption: 'Users Directory'
 		},
 		defaultStyles: {
-			width: 'w-full'
+			width: 'w-full',
+			margin: 'my-4'
+		},
+		propsSchema: [
+			{
+				name: 'caption',
+				label: 'Table Title',
+				type: 'string',
+				default: 'Users Directory'
+			}
+		]
+	},
+	{
+		type: 'carousel',
+		name: 'UCarousel',
+		category: 'data',
+		icon: 'lucide:gallery-horizontal',
+		description: 'Interactive multi-slide image / card carousel slider',
+		isContainer: false,
+		defaultProps: {
+			items: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800, https://images.unsplash.com/photo-1558655146-d09347e92766?w=800, https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?w=800',
+			arrows: true,
+			dots: true
+		},
+		defaultStyles: {
+			width: 'w-full',
+			margin: 'my-4'
+		},
+		propsSchema: [
+			{
+				name: 'items',
+				label: 'Image URLs (Comma separated)',
+				type: 'textarea',
+				default: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800, https://images.unsplash.com/photo-1558655146-d09347e92766?w=800'
+			},
+			{
+				name: 'arrows',
+				label: 'Show Navigation Arrows',
+				type: 'boolean',
+				default: true
+			},
+			{
+				name: 'dots',
+				label: 'Show Indicator Dots',
+				type: 'boolean',
+				default: true
+			}
+		]
+	},
+	{
+		type: 'empty',
+		name: 'UEmpty',
+		category: 'data',
+		icon: 'lucide:inbox',
+		description: 'Empty state illustration with call-to-action button',
+		isContainer: false,
+		defaultProps: {
+			title: 'No Projects Found',
+			description: 'Get started by creating a new project or importing from GitHub.',
+			icon: 'lucide:folder-plus',
+			actionText: 'Create New Project'
+		},
+		defaultStyles: {
+			width: 'w-full',
+			margin: 'my-6',
+			padding: 'p-8'
 		},
 		propsSchema: [
 			{
 				name: 'title',
-				label: 'Alert Title',
+				label: 'Title',
 				type: 'string',
-				default: 'Update Available'
+				default: 'No Projects Found'
 			},
 			{
 				name: 'description',
 				label: 'Description',
 				type: 'textarea',
-				default: 'A new version is now available for download.'
+				default: 'Get started by creating a new project.'
 			},
 			{
 				name: 'icon',
 				label: 'Icon',
 				type: 'icon',
-				default: 'lucide:info'
+				default: 'lucide:folder-plus'
 			},
 			{
-				name: 'color',
-				label: 'Color',
-				type: 'select',
-				options: ['primary', 'neutral', 'success', 'warning', 'error', 'info'],
-				default: 'primary'
-			},
-			{
-				name: 'variant',
-				label: 'Variant',
-				type: 'select',
-				options: ['solid', 'outline', 'soft', 'subtle'],
-				default: 'subtle'
+				name: 'actionText',
+				label: 'Button Label',
+				type: 'string',
+				default: 'Create New Project'
 			}
 		]
 	},
 	{
-		type: 'progress',
-		name: 'UProgress',
+		type: 'marquee',
+		name: 'UMarquee',
 		category: 'data',
-		icon: 'lucide:loader',
-		description: 'Progress bar with status value or indeterminate mode',
+		icon: 'lucide:move-horizontal',
+		description: 'Infinite animated scrolling ticker for logos and partner badges',
 		isContainer: false,
 		defaultProps: {
-			value: 75,
-			max: 100,
-			color: 'primary',
-			size: 'md',
-			status: true
+			items: 'Nuxt, Vue.js, Tailwind CSS, Vite, TypeScript, Nitro, Pinia',
+			speed: 25,
+			pauseOnHover: true
 		},
 		defaultStyles: {
-			width: 'w-full'
+			width: 'w-full',
+			margin: 'my-4'
 		},
 		propsSchema: [
 			{
-				name: 'value',
-				label: 'Progress Value',
-				type: 'number',
-				default: 75
+				name: 'items',
+				label: 'Items (Comma separated)',
+				type: 'textarea',
+				default: 'Nuxt, Vue.js, Tailwind CSS, Vite, TypeScript, Nitro, Pinia'
 			},
 			{
-				name: 'color',
-				label: 'Color',
-				type: 'select',
-				options: ['primary', 'neutral', 'success', 'warning', 'error'],
-				default: 'primary'
-			},
-			{
-				name: 'size',
-				label: 'Size',
-				type: 'select',
-				options: ['xs', 'sm', 'md', 'lg', 'xl'],
-				default: 'md'
-			},
-			{
-				name: 'status',
-				label: 'Show Percentage Text',
+				name: 'pauseOnHover',
+				label: 'Pause on Mouse Hover',
 				type: 'boolean',
 				default: true
+			}
+		]
+	},
+	{
+		type: 'scroll-area',
+		name: 'UScrollArea',
+		category: 'data',
+		icon: 'lucide:scroll',
+		description: 'Custom scrollbar container with smooth track overflow',
+		isContainer: true,
+		defaultProps: {
+			height: 'h-48'
+		},
+		defaultStyles: {
+			width: 'w-full',
+			margin: 'my-3'
+		},
+		propsSchema: [
+			{
+				name: 'height',
+				label: 'Height Class',
+				type: 'select',
+				options: ['h-32', 'h-48', 'h-64', 'h-96'],
+				default: 'h-48'
+			}
+		]
+	},
+	{
+		type: 'timeline',
+		name: 'UTimeline',
+		category: 'data',
+		icon: 'lucide:git-commit-horizontal',
+		description: 'Vertical chronological milestones timeline',
+		isContainer: false,
+		defaultProps: {
+			items: '2024: Nuxt UI v4 launch with Reka UI, 2023: Nuxt UI v2 release, 2022: Initial alpha release'
+		},
+		defaultStyles: {
+			width: 'w-full',
+			margin: 'my-4'
+		},
+		propsSchema: [
+			{
+				name: 'items',
+				label: 'Timeline Items (Year: Description comma separated)',
+				type: 'textarea',
+				default: '2024: Nuxt UI v4 launch, 2023: Nuxt UI v2 release, 2022: Initial alpha'
+			}
+		]
+	},
+	{
+		type: 'tree',
+		name: 'UTree',
+		category: 'data',
+		icon: 'lucide:network',
+		description: 'Interactive expandable tree view navigator',
+		isContainer: false,
+		defaultProps: {
+			title: 'Documentation Tree',
+			items: 'Getting Started: Installation, Configuration, Theming | Components: Button, Input, Table, Modal'
+		},
+		defaultStyles: {
+			width: 'w-full',
+			margin: 'my-3'
+		},
+		propsSchema: [
+			{
+				name: 'title',
+				label: 'Tree Title',
+				type: 'string',
+				default: 'Documentation Tree'
+			}
+		]
+	},
+	{
+		type: 'user',
+		name: 'UUser',
+		category: 'data',
+		icon: 'lucide:user-check',
+		description: 'User card row with avatar, name, email and action',
+		isContainer: false,
+		defaultProps: {
+			name: 'Alexandre Rochon',
+			description: 'Core Maintainer @ NuxtLabs',
+			avatar: 'https://avatars.githubusercontent.com/u/739984?v=4',
+			to: 'https://github.com/alexandrerf'
+		},
+		defaultStyles: {
+			margin: 'my-2'
+		},
+		propsSchema: [
+			{
+				name: 'name',
+				label: 'User Name',
+				type: 'string',
+				default: 'Alexandre Rochon'
+			},
+			{
+				name: 'description',
+				label: 'Description / Email',
+				type: 'string',
+				default: 'Core Maintainer @ NuxtLabs'
+			},
+			{
+				name: 'avatar',
+				label: 'Avatar URL',
+				type: 'string',
+				default: 'https://avatars.githubusercontent.com/u/739984?v=4'
 			}
 		]
 	},
