@@ -1,26 +1,19 @@
 <script setup lang="ts">
-defineProps<{
-	modelValue: boolean
-}>()
-
-const emit = defineEmits<{
-	'update:modelValue': [val: boolean]
-}>()
+const open = defineModel<boolean>({ default: false })
 
 const { loadTemplate } = useBuilder()
 
 const handleSelect = (templateId: string) => {
 	loadTemplate(templateId)
-	emit('update:modelValue', false)
+	open.value = false
 }
 </script>
 
 <template>
 	<UModal
-		:open="modelValue"
+		v-model:open="open"
 		title="Page & Section Templates"
 		description="Jumpstart your website with professionally crafted Nuxt UI templates."
-		@update:open="emit('update:modelValue', $event)"
 	>
 		<template #body>
 			<div class="grid grid-cols-1 md:grid-cols-3 gap-4">

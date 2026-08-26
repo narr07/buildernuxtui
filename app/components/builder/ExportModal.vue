@@ -1,11 +1,5 @@
 <script setup lang="ts">
-defineProps<{
-	modelValue: boolean
-}>()
-
-const emit = defineEmits<{
-	'update:modelValue': [val: boolean]
-}>()
+const open = defineModel<boolean>({ default: false })
 
 const { elements } = useBuilder()
 const { generateFullSfcCode, generateNuxtContentMarkdown } = useCodeGenerator()
@@ -71,10 +65,9 @@ const downloadMdcFile = () => {
 
 <template>
 	<UModal
-		:open="modelValue"
+		v-model:open="open"
 		title="Export Code"
 		description="Export ready-to-use Vue 4 SFC template (.vue) or Nuxt Content Markdown document (.md)."
-		@update:open="emit('update:modelValue', $event)"
 	>
 		<template #body>
 			<div class="space-y-4">

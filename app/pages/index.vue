@@ -74,7 +74,6 @@ onMounted(() => {
 		<BuilderHeader
 			@open-export="showExportModal = true"
 			@open-templates="showTemplateModal = true"
-			@open-theme="showThemeModal = true"
 		/>
 
 		<!-- Studio Main Workspace Area -->
@@ -121,13 +120,15 @@ onMounted(() => {
 		</div>
 
 		<!-- Export Code & Nuxt Content (.md) Modal -->
-		<ExportModal
-			v-model="showExportModal"
-		/>
+		<ClientOnly>
+			<ExportModal
+				v-model="showExportModal"
+			/>
 
-		<!-- Template Picker Modal -->
-		<TemplatePicker
-			v-model="showTemplateModal"
-		/>
+			<!-- Template Picker Modal -->
+			<TemplatePicker
+				v-model="showTemplateModal"
+			/>
+		</ClientOnly>
 	</div>
 </template>

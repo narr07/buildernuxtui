@@ -1,8 +1,7 @@
 <script setup lang="ts">
 const emit = defineEmits<{
-	openExport: []
-	openTemplates: []
-	openTheme: []
+	'open-export': []
+	'open-templates': []
 }>()
 
 const {
@@ -70,7 +69,7 @@ const handleClear = () => {
 				icon="lucide:layout-template"
 				label="Templates"
 				class="hidden sm:inline-flex"
-				@click="emit('openTemplates')"
+				@click="emit('open-templates')"
 			/>
 		</div>
 
@@ -170,7 +169,7 @@ const handleClear = () => {
 				size="sm"
 				icon="lucide:code"
 				label="Export Code"
-				@click="emit('openExport')"
+				@click="emit('open-export')"
 			/>
 		</div>
 	</header>
