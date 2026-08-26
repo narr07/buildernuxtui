@@ -6,7 +6,18 @@ dist
 
 # dependencies
 node_modules
-bun.lock
+package-lock.json
+
+# agents & skills
+.agents/
+.roo/
+skills-lock.json
+data.md
+element.md
+form.md
+layout.md
+navigation.md
+type.md
 
 # logs & caches
 *.log
