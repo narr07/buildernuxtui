@@ -143,10 +143,10 @@ const handleImport = () => {
 
 <template>
 	<UModal
-		:model-value="modelValue"
+		:open="modelValue"
 		title="Export & Share Code"
 		description="Export ready-to-use Vue 4 SFC pages, Nuxt Content Markdown (.md) or YAML (.yml) templates matching nuxt-ui-templates."
-		@update:model-value="emit('update:modelValue', $event)"
+		@update:open="emit('update:modelValue', $event)"
 	>
 		<template #body>
 			<div class="space-y-4">

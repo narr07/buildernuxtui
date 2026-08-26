@@ -20,10 +20,10 @@ const handleSelect = (templateId: string) => {
 
 <template>
 	<UModal
-		:model-value="modelValue"
+		:open="modelValue"
 		title="Page & Section Templates"
 		description="Jumpstart your website with professionally crafted Nuxt UI templates."
-		@update:model-value="emit('update:modelValue', $event)"
+		@update:open="emit('update:modelValue', $event)"
 	>
 		<template #body>
 			<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
