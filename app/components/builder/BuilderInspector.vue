@@ -6,6 +6,7 @@ import type { BuilderElementStyles } from '~/types/builder'
 const {
 	selectedElement,
 	selectedElementId,
+	showRightSidebar,
 	updateElementProps,
 	updateElementStyles,
 	removeElement,
@@ -67,15 +68,24 @@ const bgOptions = [
 				<span>Inspector</span>
 			</div>
 
-			<!-- Close/Deselect button -->
-			<button
-				v-if="selectedElement"
-				title="Deselect"
-				class="p-1 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded text-neutral-400 hover:text-neutral-900 dark:hover:text-white"
-				@click="selectElement(null)"
-			>
-				<UIcon name="lucide:x" class="w-4 h-4" />
-			</button>
+			<!-- Actions: Deselect & Collapse Inspector -->
+			<div class="flex items-center gap-1">
+				<button
+					v-if="selectedElement"
+					title="Deselect Element"
+					class="p-1 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded text-neutral-400 hover:text-neutral-900 dark:hover:text-white transition-colors"
+					@click="selectElement(null)"
+				>
+					<UIcon name="lucide:x" class="w-3.5 h-3.5" />
+				</button>
+				<button
+					title="Close Inspector"
+					class="p-1 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded text-neutral-400 hover:text-neutral-900 dark:hover:text-white transition-colors"
+					@click="showRightSidebar = false"
+				>
+					<UIcon name="lucide:panel-right-close" class="w-3.5 h-3.5" />
+				</button>
+			</div>
 		</div>
 
 		<!-- When No Element is Selected -->

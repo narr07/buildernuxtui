@@ -12,6 +12,8 @@ const {
 	zoom,
 	previewMode,
 	showGrid,
+	showLeftSidebar,
+	showRightSidebar,
 	canUndo,
 	canRedo,
 	undo,
@@ -41,8 +43,19 @@ const handleClear = () => {
 
 <template>
 	<header class="h-14 border-b border-neutral-200 dark:border-neutral-800 bg-white/90 dark:bg-neutral-900/90 backdrop-blur px-4 flex items-center justify-between shrink-0 z-40">
-		<!-- Left: Brand & Template Picker -->
-		<div class="flex items-center gap-3">
+		<!-- Left: Brand, Sidebar Toggle & Template Picker -->
+		<div class="flex items-center gap-2">
+			<!-- Toggle Left Sidebar Button -->
+			<UButton
+				color="neutral"
+				:variant="showLeftSidebar ? 'subtle' : 'ghost'"
+				size="sm"
+				:icon="showLeftSidebar ? 'lucide:panel-left-close' : 'lucide:panel-left'"
+				:title="showLeftSidebar ? 'Hide Left Sidebar' : 'Show Left Sidebar'"
+				class="mr-1"
+				@click="showLeftSidebar = !showLeftSidebar"
+			/>
+
 			<div class="flex items-center gap-2">
 				<div class="h-8 w-8 rounded-lg bg-gradient-to-tr from-primary-600 to-indigo-500 flex items-center justify-center text-white shadow-md shadow-primary/20">
 					<UIcon name="lucide:blocks" class="w-5 h-5" />
@@ -122,8 +135,18 @@ const handleClear = () => {
 			/>
 		</div>
 
-		<!-- Right: Preview, Clear, Theme, Export -->
+		<!-- Right: Right Inspector Toggle, Preview, Clear, Theme, Export -->
 		<div class="flex items-center gap-2">
+			<!-- Toggle Right Inspector Button -->
+			<UButton
+				color="neutral"
+				:variant="showRightSidebar ? 'subtle' : 'ghost'"
+				size="sm"
+				:icon="showRightSidebar ? 'lucide:panel-right-close' : 'lucide:panel-right'"
+				:title="showRightSidebar ? 'Hide Right Inspector' : 'Show Right Inspector'"
+				@click="showRightSidebar = !showRightSidebar"
+			/>
+
 			<UButton
 				:color="previewMode ? 'primary' : 'neutral'"
 				:variant="previewMode ? 'solid' : 'outline'"

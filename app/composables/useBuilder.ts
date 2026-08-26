@@ -13,6 +13,16 @@ export const useBuilder = () => {
 	const previewMode = useState<boolean>('builder-preview-mode', () => false)
 	const showLayers = useState<boolean>('builder-show-layers', () => false)
 	const showGrid = useState<boolean>('builder-show-grid', () => true)
+	const showLeftSidebar = useState<boolean>('builder-show-left-sidebar', () => true)
+	const showRightSidebar = useState<boolean>('builder-show-right-sidebar', () => true)
+
+	const toggleLeftSidebar = () => {
+		showLeftSidebar.value = !showLeftSidebar.value
+	}
+
+	const toggleRightSidebar = () => {
+		showRightSidebar.value = !showRightSidebar.value
+	}
 
 	// History snapshots for Undo / Redo
 	const history = useState<string[]>('builder-history', () => [])
@@ -315,6 +325,10 @@ export const useBuilder = () => {
 		previewMode,
 		showLayers,
 		showGrid,
+		showLeftSidebar,
+		showRightSidebar,
+		toggleLeftSidebar,
+		toggleRightSidebar,
 		canUndo,
 		canRedo,
 		undo,

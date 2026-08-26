@@ -15,6 +15,8 @@ useSeoMeta({
 const {
 	selectedElementId,
 	previewMode,
+	showLeftSidebar,
+	showRightSidebar,
 	undo,
 	redo,
 	removeElement,
@@ -69,18 +71,38 @@ onMounted(() => {
 
 		<!-- Studio Main Workspace Area -->
 		<div class="flex-1 flex overflow-hidden min-h-0 relative">
+			<!-- Left Floating Reopen Button (when hidden) -->
+			<button
+				v-if="!showLeftSidebar && !previewMode"
+				title="Show Left Sidebar"
+				class="absolute left-2.5 top-3 z-30 p-1.5 rounded-lg bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 shadow-md text-neutral-600 dark:text-neutral-300 hover:text-primary-500 hover:border-primary-500/50 transition-all flex items-center gap-1 text-xs"
+				@click="showLeftSidebar = true"
+			>
+				<UIcon name="lucide:panel-left-open" class="w-4 h-4 text-primary-500" />
+			</button>
+
 			<!-- Left Component Palette & Hierarchy Dock -->
 			<BuilderSidebar
-				v-show="!previewMode"
+				v-show="!previewMode && showLeftSidebar"
 				@open-templates-modal="showTemplateModal = true"
 			/>
 
 			<!-- Center Interactive Canvas Viewport -->
 			<BuilderCanvas />
 
+			<!-- Right Floating Reopen Button (when hidden) -->
+			<button
+				v-if="!showRightSidebar && !previewMode"
+				title="Show Right Inspector"
+				class="absolute right-2.5 top-3 z-30 p-1.5 rounded-lg bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 shadow-md text-neutral-600 dark:text-neutral-300 hover:text-primary-500 hover:border-primary-500/50 transition-all flex items-center gap-1 text-xs"
+				@click="showRightSidebar = true"
+			>
+				<UIcon name="lucide:panel-right-open" class="w-4 h-4 text-primary-500" />
+			</button>
+
 			<!-- Right Properties & Styling Inspector Dock -->
 			<BuilderInspector
-				v-show="!previewMode"
+				v-show="!previewMode && showRightSidebar"
 			/>
 		</div>
 

@@ -11,6 +11,7 @@ const emit = defineEmits<{
 const {
 	elements,
 	selectedElementId,
+	showLeftSidebar,
 	addElement,
 	loadTemplate
 } = useBuilder()
@@ -94,6 +95,16 @@ const handleComponentClick = (comp: ComponentDefinition) => {
 			>
 				<UIcon name="lucide:layout-template" class="w-3.5 h-3.5" />
 				<span>Presets</span>
+			</button>
+
+			<div class="h-4 w-px bg-neutral-200 dark:bg-neutral-800 mx-0.5" />
+
+			<button
+				title="Close Sidebar"
+				class="p-1 rounded-md text-neutral-400 hover:text-neutral-900 dark:hover:text-white hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
+				@click="showLeftSidebar = false"
+			>
+				<UIcon name="lucide:panel-left-close" class="w-3.5 h-3.5" />
 			</button>
 		</div>
 
