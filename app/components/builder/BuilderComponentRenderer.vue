@@ -547,45 +547,108 @@ const splitFeatures = computed(() => {
 			</div>
 		</UCard>
 
-		<!-- HERO SECTION -->
+		<!-- UPageHero SECTION -->
 		<section
 			v-else-if="element.type === 'hero-section'"
-			:class="['relative overflow-hidden', styleClasses]"
+			:class="[
+				'relative overflow-hidden py-16 px-6 lg:py-24',
+				styleClasses
+			]"
 		>
 			<div
-				class="max-w-4xl flex flex-col gap-6"
-				:class="element.props.align === 'left' ? 'text-left items-start' : 'text-center items-center mx-auto'"
+				class="max-w-7xl mx-auto flex flex-col gap-10"
+				:class="[
+					element.props.orientation === 'horizontal'
+						? (element.props.reverse ? 'lg:flex-row-reverse lg:items-center lg:justify-between' : 'lg:flex-row lg:items-center lg:justify-between')
+						: (element.props.reverse ? 'flex-col-reverse items-center text-center' : 'items-center text-center')
+				]"
 			>
-				<UBadge
-					v-if="element.props.badgeText"
-					variant="subtle"
-					size="lg"
-					icon="lucide:sparkles"
-					:label="element.props.badgeText"
-				/>
-				<h1 class="text-4xl sm:text-6xl font-extrabold tracking-tight text-neutral-900 dark:text-white leading-tight">
-					{{ element.props.title || 'Hero Title' }}
-				</h1>
-				<p class="text-lg sm:text-xl text-neutral-600 dark:text-neutral-300 max-w-2xl">
-					{{ element.props.subtitle || 'Hero Subtitle Description' }}
-				</p>
-				<div class="flex flex-wrap gap-4 pt-2">
-					<UButton
-						v-if="element.props.primaryBtnText"
-						size="xl"
-						color="primary"
-						:label="element.props.primaryBtnText"
-						:icon="element.props.primaryBtnIcon || 'lucide:arrow-right'"
-						trailing
-					/>
-					<UButton
-						v-if="element.props.secondaryBtnText"
-						size="xl"
-						color="neutral"
-						variant="outline"
-						:label="element.props.secondaryBtnText"
-						:icon="element.props.secondaryBtnIcon || 'lucide:book-open'"
-					/>
+				<!-- Main Text Content & Headline & Links -->
+				<div
+					class="flex flex-col gap-5"
+					:class="[
+						element.props.orientation === 'horizontal'
+							? 'lg:max-w-xl text-left items-start'
+							: 'max-w-3xl items-center text-center mx-auto'
+					]"
+				>
+					<!-- Headline Slot / Badge -->
+					<div v-if="element.props.headline || element.props.badgeText">
+						<UBadge
+							variant="subtle"
+							size="lg"
+							icon="lucide:sparkles"
+							:label="element.props.headline || element.props.badgeText"
+							class="font-semibold"
+						/>
+					</div>
+
+					<!-- Title -->
+					<h1 class="text-4xl sm:text-6xl font-extrabold tracking-tight text-neutral-900 dark:text-white leading-[1.1]">
+						{{ element.props.title || 'Ultimate Vue UI Library' }}
+					</h1>
+
+					<!-- Description -->
+					<p class="text-lg sm:text-xl text-neutral-600 dark:text-neutral-300 leading-relaxed">
+						{{ element.props.description || element.props.subtitle || 'A Nuxt/Vue-integrated UI library providing a rich set of fully-styled, accessible components.' }}
+					</p>
+
+					<!-- Links / Action Buttons -->
+					<div class="flex flex-wrap items-center gap-3.5 pt-2">
+						<UButton
+							v-if="element.props.primaryBtnText"
+							size="xl"
+							:color="element.props.primaryBtnColor || 'primary'"
+							:variant="element.props.primaryBtnVariant || 'solid'"
+							:label="element.props.primaryBtnText"
+							:icon="element.props.primaryBtnIcon || 'lucide:arrow-right'"
+							trailing
+						/>
+						<UButton
+							v-if="element.props.secondaryBtnText"
+							size="xl"
+							:color="element.props.secondaryBtnColor || 'neutral'"
+							:variant="element.props.secondaryBtnVariant || 'outline'"
+							:label="element.props.secondaryBtnText"
+							:icon="element.props.secondaryBtnIcon || 'lucide:book-open'"
+						/>
+					</div>
+				</div>
+
+				<!-- Default Slot: Dropped Children Components or Illustration / Screenshot -->
+				<div
+					v-if="(element.children && element.children.length > 0) || element.props.showIllustration || !previewMode"
+					class="w-full flex-1 transition-all"
+					:class="element.props.orientation === 'horizontal' ? 'lg:max-w-xl' : 'max-w-4xl mx-auto w-full mt-6'"
+				>
+					<template v-if="element.children && element.children.length > 0">
+						<div class="space-y-4 w-full">
+							<BuilderComponentRenderer
+								v-for="(child, cIdx) in element.children"
+								:key="child.id"
+								:element="child"
+								:parent-id="element.id"
+								:index="cIdx"
+							/>
+						</div>
+					</template>
+					<div
+						v-else-if="element.props.showIllustration"
+						class="rounded-xl overflow-hidden shadow-2xl border border-neutral-200 dark:border-neutral-800 ring-1 ring-neutral-900/5 dark:ring-white/10"
+					>
+						<img
+							:src="element.props.imageUrl || 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=1000'"
+							alt="App screenshot"
+							class="w-full h-auto object-cover"
+						/>
+					</div>
+					<div
+						v-else-if="!previewMode"
+						class="border-2 border-dashed border-neutral-300 dark:border-neutral-700/80 rounded-xl p-8 text-center text-xs text-neutral-400 flex flex-col items-center justify-center gap-2 bg-neutral-50/50 dark:bg-neutral-900/30"
+					>
+						<UIcon name="lucide:image-plus" class="w-6 h-6 text-neutral-400" />
+						<span>Drop an illustration, screenshot card, or components into the Hero Default Slot</span>
+					</div>
 				</div>
 			</div>
 		</section>

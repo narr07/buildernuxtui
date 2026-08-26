@@ -231,8 +231,33 @@ export const useCodeGenerator = () => {
 			}
 
 			case 'hero-section': {
-				const alignClass = el.props.align === 'left' ? 'text-left items-start' : 'text-center items-center mx-auto'
-				return `${indent}<section class="relative overflow-hidden py-16 px-4 md:py-24">\n${childIndent}<div class="max-w-4xl flex flex-col ${alignClass} gap-6">\n${childIndent}\t<UBadge variant="subtle" size="lg" icon="lucide:sparkles" label="${el.props.badgeText || 'Welcome'}" />\n${childIndent}\t<h1 class="text-4xl sm:text-6xl font-extrabold tracking-tight text-neutral-900 dark:text-white leading-tight">\n${childIndent}\t\t${el.props.title || 'Hero Title'}\n${childIndent}\t</h1>\n${childIndent}\t<p class="text-lg sm:text-xl text-neutral-600 dark:text-neutral-300 max-w-2xl">\n${childIndent}\t\t${el.props.subtitle || 'Hero description'}\n${childIndent}\t</p>\n${childIndent}\t<div class="flex flex-wrap gap-4 pt-2">\n${childIndent}\t\t<UButton size="xl" color="primary" label="${el.props.primaryBtnText || 'Get Started'}" icon="${el.props.primaryBtnIcon || 'lucide:arrow-right'}" trailing />\n${childIndent}\t\t<UButton size="xl" color="neutral" variant="outline" label="${el.props.secondaryBtnText || 'Learn More'}" icon="${el.props.secondaryBtnIcon || 'lucide:book-open'}" />\n${childIndent}\t</div>\n${childIndent}</div>\n${indent}</section>`
+				const headlineAttr = (el.props.headline || el.props.badgeText) ? ` headline="${el.props.headline || el.props.badgeText}"` : ''
+				const titleAttr = el.props.title ? ` title="${el.props.title}"` : ' title="Hero Title"'
+				const descAttr = (el.props.description || el.props.subtitle) ? ` description="${el.props.description || el.props.subtitle}"` : ''
+				const orientAttr = el.props.orientation && el.props.orientation !== 'vertical' ? ` orientation="${el.props.orientation}"` : ''
+				const reverseAttr = el.props.reverse ? ` :reverse="true"` : ''
+				
+				const links = []
+				if (el.props.primaryBtnText) {
+					links.push(`{ label: '${el.props.primaryBtnText}', color: '${el.props.primaryBtnColor || 'primary'}', variant: '${el.props.primaryBtnVariant || 'solid'}', trailingIcon: '${el.props.primaryBtnIcon || 'i-lucide-arrow-right'}' }`)
+				}
+				if (el.props.secondaryBtnText) {
+					links.push(`{ label: '${el.props.secondaryBtnText}', color: '${el.props.secondaryBtnColor || 'neutral'}', variant: '${el.props.secondaryBtnVariant || 'outline'}', icon: '${el.props.secondaryBtnIcon || 'i-lucide-book-open'}' }`)
+				}
+				const linksAttr = links.length > 0 ? ` :links="[\n${childIndent}\t${links.join(`,\n${childIndent}\t`)}\n${childIndent}]"` : ''
+
+				let inner = ''
+				if (el.children && el.children.length > 0) {
+					inner = '\n' + el.children.map((c) => renderElementCode(c, depth + 1)).join('\n') + `\n${indent}`
+				} else if (el.props.showIllustration && el.props.imageUrl) {
+					inner = `\n${childIndent}<img src="${el.props.imageUrl}" alt="App screenshot" class="rounded-xl shadow-2xl ring-1 ring-neutral-200 dark:ring-neutral-800" />\n${indent}`
+				}
+
+				if (inner) {
+					return `${indent}<UPageHero${headlineAttr}${titleAttr}${descAttr}${orientAttr}${reverseAttr}${linksAttr}${classAttr}>${inner}</UPageHero>`
+				} else {
+					return `${indent}<UPageHero${headlineAttr}${titleAttr}${descAttr}${orientAttr}${reverseAttr}${linksAttr}${classAttr} />`
+				}
 			}
 
 			case 'feature-card': {
@@ -286,16 +311,16 @@ ${templateBody}
 
 		switch (el.type) {
 			case 'hero-section': {
-				return `${indent}${colons}hero-section
-${indent}---
-${indent}title: "${el.props.title || 'Hero Title'}"
-${indent}subtitle: "${el.props.subtitle || ''}"
-${indent}badgeText: "${el.props.badgeText || ''}"
-${indent}primaryBtnText: "${el.props.primaryBtnText || 'Get Started'}"
-${indent}secondaryBtnText: "${el.props.secondaryBtnText || 'Learn More'}"
-${indent}align: "${el.props.align || 'center'}"
-${indent}---
-${indent}${colons}`
+				const childrenMdc = el.children && el.children.length > 0
+					? '\n' + el.children.map((c) => renderElementMdc(c, depth + 1)).join('\n\n') + '\n' + indent
+					: (el.props.showIllustration && el.props.imageUrl ? `\n${indent}  ![App screenshot](${el.props.imageUrl})\n${indent}` : '')
+
+				const headline = el.props.headline || el.props.badgeText || ''
+				const desc = el.props.description || el.props.subtitle || ''
+				const orient = el.props.orientation || 'vertical'
+				const rev = el.props.reverse ? ' :reverse="true"' : ''
+
+				return `${indent}${colons}u-page-hero{title="${el.props.title || 'Hero Title'}" headline="${headline}" description="${desc}" orientation="${orient}"${rev}}${childrenMdc}${colons}`
 			}
 
 			case 'container': {

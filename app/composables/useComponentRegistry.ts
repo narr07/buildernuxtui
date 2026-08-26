@@ -910,31 +910,38 @@ export const COMPONENT_REGISTRY: ComponentDefinition[] = [
 	// -------------------------------------------------------------
 	{
 		type: 'hero-section',
-		name: 'Hero Section',
+		name: 'UPageHero',
 		category: 'compound',
 		icon: 'lucide:sparkle',
-		description: 'Modern SaaS Hero banner with badge, title, CTA and glow',
+		description: 'Nuxt UI PageHero with title, description, headline, links, and illustration slot',
 		isContainer: true,
 		defaultProps: {
-			badgeText: '✨ Introducing Nuxt UI v4 Studio',
+			headline: 'New release',
 			title: 'Build Lightning Fast Web Apps with Nuxt UI',
-			subtitle: 'The modern visual drag and drop builder for Vue 3 and Nuxt. Ship responsive interfaces in seconds with complete code export.',
-			primaryBtnText: 'Start Building Free',
-			secondaryBtnText: 'Documentation',
+			description: 'A Nuxt/Vue-integrated UI library providing a rich set of fully-styled, accessible and highly customizable components for building modern web applications.',
+			orientation: 'vertical',
+			reverse: false,
+			primaryBtnText: 'Get Started',
 			primaryBtnIcon: 'lucide:arrow-right',
+			primaryBtnColor: 'primary',
+			primaryBtnVariant: 'solid',
+			secondaryBtnText: 'Learn More',
 			secondaryBtnIcon: 'lucide:book-open',
-			align: 'center'
+			secondaryBtnColor: 'neutral',
+			secondaryBtnVariant: 'outline',
+			showIllustration: false,
+			imageUrl: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=1000'
 		},
 		defaultStyles: {
-			padding: 'py-16 px-4',
+			padding: 'py-20 px-6',
 			width: 'w-full'
 		},
 		propsSchema: [
 			{
-				name: 'badgeText',
-				label: 'Badge Text',
+				name: 'headline',
+				label: 'Headline / Badge',
 				type: 'string',
-				default: '✨ Introducing Nuxt UI v4 Studio'
+				default: 'New release'
 			},
 			{
 				name: 'title',
@@ -943,29 +950,87 @@ export const COMPONENT_REGISTRY: ComponentDefinition[] = [
 				default: 'Build Lightning Fast Web Apps with Nuxt UI'
 			},
 			{
-				name: 'subtitle',
-				label: 'Subtitle',
+				name: 'description',
+				label: 'Description',
 				type: 'textarea',
-				default: 'The modern visual drag and drop builder for Vue 3 and Nuxt.'
+				default: 'A Nuxt/Vue-integrated UI library providing a rich set of fully-styled, accessible and highly customizable components.'
+			},
+			{
+				name: 'orientation',
+				label: 'Orientation',
+				type: 'select',
+				options: ['vertical', 'horizontal'],
+				default: 'vertical'
+			},
+			{
+				name: 'reverse',
+				label: 'Reverse Order',
+				type: 'boolean',
+				default: false
 			},
 			{
 				name: 'primaryBtnText',
-				label: 'Primary Button',
+				label: 'Primary Button Label',
 				type: 'string',
-				default: 'Start Building Free'
+				default: 'Get Started'
+			},
+			{
+				name: 'primaryBtnIcon',
+				label: 'Primary Button Icon',
+				type: 'icon',
+				default: 'lucide:arrow-right'
+			},
+			{
+				name: 'primaryBtnColor',
+				label: 'Primary Button Color',
+				type: 'select',
+				options: ['primary', 'neutral', 'success', 'warning', 'error'],
+				default: 'primary'
+			},
+			{
+				name: 'primaryBtnVariant',
+				label: 'Primary Button Variant',
+				type: 'select',
+				options: ['solid', 'outline', 'soft', 'subtle', 'ghost'],
+				default: 'solid'
 			},
 			{
 				name: 'secondaryBtnText',
-				label: 'Secondary Button',
+				label: 'Secondary Button Label',
 				type: 'string',
-				default: 'Documentation'
+				default: 'Learn More'
 			},
 			{
-				name: 'align',
-				label: 'Text Alignment',
+				name: 'secondaryBtnIcon',
+				label: 'Secondary Button Icon',
+				type: 'icon',
+				default: 'lucide:book-open'
+			},
+			{
+				name: 'secondaryBtnColor',
+				label: 'Secondary Button Color',
 				type: 'select',
-				options: ['center', 'left'],
-				default: 'center'
+				options: ['neutral', 'primary', 'secondary'],
+				default: 'neutral'
+			},
+			{
+				name: 'secondaryBtnVariant',
+				label: 'Secondary Button Variant',
+				type: 'select',
+				options: ['outline', 'solid', 'soft', 'subtle', 'ghost'],
+				default: 'outline'
+			},
+			{
+				name: 'showIllustration',
+				label: 'Show Image / Screenshot',
+				type: 'boolean',
+				default: false
+			},
+			{
+				name: 'imageUrl',
+				label: 'Image URL',
+				type: 'string',
+				default: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=1000'
 			}
 		]
 	},
