@@ -9,8 +9,16 @@ import ExportModal from '~/components/builder/ExportModal.vue'
 import TemplatePicker from '~/components/builder/TemplatePicker.vue'
 
 useSeoMeta({
-	title: 'NuxtUI Studio - Visual Drag & Drop Builder for Nuxt 4 & Nuxt UI',
-	description: 'Create responsive, high-converting websites and dashboards visually with Nuxt UI v4 components and export clean Vue SFC code.'
+	title: 'Builder Nuxt UI - Visual Drag & Drop Builder for Nuxt 4 & Nuxt UI',
+	description: 'Create responsive, high-converting websites and dashboards visually with Nuxt UI v4 components and export clean Vue SFC code.',
+	ogTitle: 'Builder Nuxt UI - Visual Drag & Drop Builder for Nuxt 4 & Nuxt UI',
+	ogDescription: 'Create responsive, high-converting websites and dashboards visually with Nuxt UI v4 components and export clean Vue SFC code.',
+	ogUrl: 'https://buildernuxtui.permadi.dev/',
+	ogImage: 'https://buildernuxtui.permadi.dev/icon-512.png',
+	twitterCard: 'summary_large_image',
+	twitterTitle: 'Builder Nuxt UI',
+	twitterDescription: 'Visual Drag & Drop Page Builder for Nuxt UI v4 and Nuxt Content',
+	twitterImage: 'https://buildernuxtui.permadi.dev/icon-512.png'
 })
 
 const {

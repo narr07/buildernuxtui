@@ -58,13 +58,11 @@ const handleClear = () => {
 				@click="showLeftSidebar = !showLeftSidebar"
 			/>
 
-			<div class="flex items-center gap-2">
-				<div class="h-8 w-8 rounded-lg bg-gradient-to-tr from-primary-600 to-indigo-500 flex items-center justify-center text-white shadow-md shadow-primary/20">
-					<UIcon name="lucide:blocks" class="w-5 h-5" />
-				</div>
+			<div class="flex items-center gap-2.5">
+				<img src="/favicon.svg" alt="Builder Nuxt UI Logo" class="h-8 w-8 object-contain rounded-lg shadow-sm" />
 				<div>
 					<span class="font-bold text-sm tracking-tight text-neutral-900 dark:text-white flex items-center gap-1.5">
-						Nuxt<span class="text-primary-500">UI</span> Studio
+						Builder <span class="text-primary-500">Nuxt UI</span>
 						<UBadge color="primary" variant="subtle" size="xs" label="v4" />
 					</span>
 				</div>
